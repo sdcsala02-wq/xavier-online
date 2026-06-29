@@ -2239,9 +2239,9 @@ body.tela-sistema .card-protocolo {
 .foto-edu{
     position: absolute;
 
-    width: 200px;       /* aumenta/diminui o tamanho */
+    width: 230px;       /* aumenta/diminui o tamanho */
     bottom: -20px;      /* desce (use valores negativos) */
-    left: 10px;        /* move para direita/esquerda */
+    left: -10px;        /* move para direita/esquerda */
 
     opacity: 0.95;
     z-index: 1;
@@ -2254,7 +2254,7 @@ body.tela-sistema .card-protocolo {
     position: absolute;
 
     width: 120px;       /* tamanho dos celulares */
-    bottom: -40px;      /* desce os celulares */
+    bottom: -30px;      /* desce os celulares */
     left: 20px;         /* move para direita/esquerda */
 
     z-index: 2;
