@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lideranças | Xavier Online</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="xavier-dashboard">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brasao">🏛️</div>
+      <div>
+        <h1>XAVIER ONLINE</h1>
+        <span>PRAIA GRANDE - SP</span>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a href="dashboard.html">▣ Dashboard</a>
+      <a href="admin.html">☑ Demandas</a>
+      <a href="cadastro.html">⊞ Nova Demanda</a>
+      <a href="protocolo.html">⊕ Protocolo</a>
+      <a href="mapa.html">🗺 Mapa da Cidade</a>
+      <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+
+      <a href="interacoes.html">🔁 Interações</a>
+
+      <a href="http://localhost:3000/api/demandas/exportar/excel">⬇ Exportar Excel</a>
+      <a href="http://localhost:3000/api/demandas/exportar/pdf">📄 Exportar PDF</a>
+      <a href="#">☷ Secretarias</a>
+      <a href="liderancas.html" class="ativo">👥 Lideranças</a>
+      <a href="#">⚙ Configurações</a>
+    </nav>
+
+    <div class="sidebar-info">
+      <strong>XAVIER ONLINE</strong>
+      <p>Gestão territorial de lideranças comunitárias.</p>
+      <small>Versão 1.0.0</small>
+    </div>
+  </aside>
+
+  <main class="main-dashboard">
+
+    <header class="topbar">
+      <div>
+        <h2>👥 Lideranças</h2>
+      </div>
+
+      <div class="topbar-right">
+        <span>Cadastro e acompanhamento por bairro</span>
+      </div>
+    </header>
+
+    <section class="cards-modernos">
+      <div class="card-mod azul">
+        <h3>Total de Lideranças</h3>
+        <strong id="totalLiderancas">0</strong>
+        <p>Registros ativos</p>
+      </div>
+
+      <div class="card-mod verde">
+        <h3>Bairros Atendidos</h3>
+        <strong id="totalBairrosLiderancas">0</strong>
+        <p>Bairros com liderança</p>
+      </div>
+
+      <div class="card-mod roxo">
+        <h3>Demandas Relacionadas</h3>
+        <strong id="totalDemandasLiderancas">0</strong>
+        <p>Demandas nos bairros</p>
+      </div>
+
+      <div class="card-mod laranja">
+        <h3>Status</h3>
+        <strong>Ativo</strong>
+        <p>Controle em operação</p>
+      </div>
+    </section>
+
+    <section class="liderancas-layout">
+
+      <div class="painel">
+        <div class="painel-topo">
+          <h3>Cadastrar Liderança</h3>
+        </div>
+
+        <form id="formLideranca" class="form-lideranca">
+          <div class="campo">
+            <label>Bairro</label>
+            <input type="text" id="bairro" placeholder="Ex: Boqueirão" required>
+          </div>
+
+          <div class="campo">
+            <label>Nome da Liderança</label>
+            <input type="text" id="nome" placeholder="Nome completo" required>
+          </div>
+
+          <div class="campo">
+            <label>Telefone</label>
+            <input type="text" id="telefone" placeholder="(13) 99999-9999">
+          </div>
+
+          <div class="campo">
+            <label>Observação</label>
+            <textarea id="observacao" placeholder="Observações sobre a liderança"></textarea>
+          </div>
+
+          <button type="submit" class="btn-nova">
+            Salvar Liderança
+          </button>
+        </form>
+      </div>
+
+      <div class="painel">
+        <div class="painel-topo">
+          <h3>Ranking por Bairro</h3>
+        </div>
+
+        <div id="rankingLiderancas" class="ranking-bairros">
+          <p>Carregando...</p>
+        </div>
+      </div>
+
+      <div class="painel painel-tabela demandas-bairro">
+        <div class="painel-topo">
+          <h3>Lideranças Cadastradas</h3>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Bairro</th>
+              <th>Liderança</th>
+              <th>Telefone</th>
+              <th>Observação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody id="listaLiderancas">
+            <tr>
+              <td colspan="5">Carregando lideranças...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="js/liderancas.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

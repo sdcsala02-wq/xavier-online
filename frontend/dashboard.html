@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Executivo | Xavier Online</title>
+
+  <script>
+    if (localStorage.getItem("usuarioLogado") !== "true") {
+      window.location.href = "index.html";
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard-executivo.css">
+</head>
+
+<body class="xavier-dashboard">
+
+  <div class="app-layout">
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
+
+        <div>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
+        </div>
+      </div>
+
+      <nav class="menu">
+
+        <a href="dashboard.html" class="active">
+          ▣ Dashboard
+        </a>
+
+        <a href="admin.html">
+          📋 Demandas
+        </a>
+
+        <a href="nova-demanda.html">
+          ➕ Nova Demanda
+        </a>
+
+        <a href="protocolo.html">
+          🔎 Protocolo
+        </a>
+
+        <a href="mapa.html">
+          🗺️ Mapa da Cidade
+        </a>
+
+        <a href="relatorio-legislativo.html">
+          📊 Relatório Legislativo
+        </a>
+
+        <a href="interacoes.html">
+          💬 Interações
+        </a>
+
+        <a href="importar.html">
+          ⬆ Importar Planilha
+        </a>
+
+        <a href="#" onclick="exportarExcel(); return false;">
+          ⬇ Exportar Excel
+        </a>
+
+        <a href="#" onclick="exportarPDF(); return false;">
+          📄 Exportar PDF
+        </a>
+
+        <a href="secretarias.html">
+          ☷ Secretarias
+        </a>
+
+        <a href="liderancas.html">
+          👥 Lideranças
+        </a>
+
+        <a href="configuracoes.html">
+          ⚙ Configurações
+        </a>
+
+      </nav>
+
+      <div class="sidebar-phone">
+
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+            
+      </div>
+
+      <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Gestão territorial de demandas comunitárias.</p>
+        <span>Versão 1.0.0</span>
+      </div>
+
+    </aside>
+
+    <main class="conteudo main-dashboard">
+
+      <header class="topbar">
+
+        <div>
+          <h2>Dashboard Executivo</h2>
+          <p class="subtitulo-dashboard">
+            Comparativo Xavier Online 2025 e 2026
+          </p>
+        </div>
+
+        <div class="topbar-right">
+
+          <span>26 de Junho de 2026</span>
+
+          <a href="importar.html" class="btn-nova">
+            Importar Planilha
+          </a>
+
+          <button class="btn-sair" onclick="logoutSistema()">
+            🚪 Sair
+          </button>
+
+        </div>
+
+      </header>
+
+      <section class="cards-executivos">
+
+        <div class="card-kpi azul">
+          <span>Demandas 2025</span>
+          <strong id="demandas2025">0</strong>
+          <small>Total de demandas</small>
+        </div>
+
+        <div class="card-kpi verde">
+          <span>Demandas 2026</span>
+          <strong id="demandas2026">0</strong>
+          <small>Total de demandas</small>
+        </div>
+
+        <div class="card-kpi roxo">
+          <span>Interações 2025</span>
+          <strong id="interacoes2025">0</strong>
+          <small>Total de interações</small>
+        </div>
+
+        <div class="card-kpi ciano">
+          <span>Interações 2026</span>
+          <strong id="interacoes2026">0</strong>
+          <small>Total de interações</small>
+        </div>
+
+      </section>
+
+      <section class="dashboard-bi-grid">
+
+        <div class="painel-bi painel-grande">
+
+          <div class="painel-topo">
+            <div>
+              <h3>Evolução Anual</h3>
+              <p>Comparativo consolidado por ano</p>
+            </div>
+
+            <span class="tag-bi">
+              2025 • 2026
+            </span>
+          </div>
+
+          <div id="evolucaoAnual" class="ranking-bi">
+            <p>Nenhum dado encontrado.</p>
+          </div>
+
+        </div>
+
+        <div class="painel-bi">
+
+          <div class="painel-topo">
+            <div>
+              <h3>Status das Demandas</h3>
+              <p>Distribuição por situação</p>
+            </div>
+          </div>
+
+          <div class="status-bi">
+
+            <div class="donut-fake">
+              <div>
+                <strong id="donutTotal">0</strong>
+                <span>TOTAL</span>
+              </div>
+            </div>
+
+            <div id="legendaStatus" class="legenda-status">
+              <p>Nenhum status encontrado.</p>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="painel-bi">
+
+          <div class="painel-topo">
+            <div>
+              <h3>Demandas por Secretaria</h3>
+              <p>Top 10 setores acionados</p>
+            </div>
+
+            <a href="admin.html">
+              📋 Demandas
+            </a>
+          </div>
+
+          <div id="rankingSecretarias" class="ranking-bi">
+            <p>Nenhum dado encontrado.</p>
+          </div>
+
+        </div>
+
+        <div class="painel-bi">
+
+          <div class="painel-topo">
+            <div>
+              <h3>Top Bairros</h3>
+              <p>Regiões com maior volume</p>
+            </div>
+          </div>
+
+          <div id="rankingBairros" class="ranking-bi">
+            <p>Nenhum dado encontrado.</p>
+          </div>
+
+        </div>
+
+        <div class="painel-bi painel-full">
+
+          <div class="painel-topo">
+            <div>
+              <h3>Evolução Mensal</h3>
+              <p>Distribuição mensal organizada por ano</p>
+            </div>
+
+            <span class="tag-bi">
+              2025 • 2026
+            </span>
+          </div>
+
+          <div id="evolucaoMensal" class="evolucao-mensal-bi">
+            <p>Nenhum dado encontrado.</p>
+          </div>
+
+        </div>
+
+        <div class="painel-bi painel-tabela painel-full">
+
+          <div class="painel-topo">
+            <div>
+              <h3>Últimas Demandas</h3>
+              <p>Registros mais recentes importados</p>
+            </div>
+
+            <a href="admin.html">
+              📋 Demandas
+            </a>
+          </div>
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Protocolo</th>
+                <th>Nome</th>
+                <th>Serviço</th>
+                <th>Secretaria</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody id="listaDemandas">
+              <tr>
+                <td colspan="5">
+                  Nenhuma solicitação encontrada
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/app.js"></script>
+
+  <script>
+    function logoutSistema() {
+      localStorage.removeItem("usuarioLogado");
+      window.location.href = "index.html";
+    }
+  </script>
+
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Demanda | Xavier Online</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="xavier-dashboard">
+
+  <div class="app-layout">
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
+
+        <div>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a href="dashboard.html">▣ Dashboard</a>
+        <a href="admin.html">📋 Demandas</a>
+        <a href="nova-demanda.html" class="active">➕ Nova Demanda</a>
+        <a href="protocolo.html">🔎 Protocolo</a>
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+        <a href="interacoes.html">💬 Interações</a>
+        <a href="importar.html">⬆ Importar Planilha</a>
+        <a href="exportar-excel.html">⬇ Exportar Excel</a>
+        <a href="exportar-pdf.html">📄 Exportar PDF</a>
+        <a href="secretarias.html">☷ Secretarias</a>
+        <a href="liderancas.html">👥 Lideranças</a>
+        <a href="configuracoes.html">⚙ Configurações</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Gestão territorial de demandas comunitárias.</p>
+        <span>Versão 1.0.0</span>
+      </div>
+
+    </aside>
+
+    <main class="conteudo main-dashboard">
+
+      <header class="topbar">
+
+        <div>
+          <h2>Nova Demanda</h2>
+          <p class="subtitulo-dashboard">
+            Cadastro de solicitações do Gabinete Eduardo Xavier
+          </p>
+        </div>
+
+        <div class="topbar-right">
+          <a href="admin.html" class="btn-nova">
+            Ver Demandas
+          </a>
+        </div>
+
+      </header>
+
+      <section class="painel">
+
+        <div class="painel-topo centralizado">
+          <div>
+            <h3>NOVA DEMANDA</h3>
+            <p>Preencha as informações para gerar um protocolo</p>
+          </div>
+        </div>
+
+        <form id="formNovaDemanda" class="form-grid">
+
+          <div class="form-item">
+            <label>Nome Completo</label>
+            <input type="text" id="nome" required>
+          </div>
+
+          <div class="form-item">
+            <label>Telefone</label>
+            <input type="text" id="telefone">
+          </div>
+
+          <div class="form-item">
+            <label>Bairro</label>
+            <input type="text" id="bairro">
+          </div>
+
+          <div class="form-item">
+            <label>Endereço</label>
+            <input type="text" id="endereco">
+          </div>
+
+          <div class="form-item">
+            <label>Serviço</label>
+            <input type="text" id="servico">
+          </div>
+
+          <div class="form-item">
+            <label>Secretaria</label>
+
+            <select id="secretaria">
+              <option>SESAP</option>
+              <option>SESURB</option>
+              <option>SETRANSP</option>
+              <option>SEDUC</option>
+              <option>SEOP</option>
+              <option>SEASP</option>
+              <option>GABINETE</option>
+            </select>
+
+          </div>
+
+          <div class="form-item descricao">
+            <label>Descrição da Demanda</label>
+            <textarea id="descricao" rows="6"></textarea>
+          </div>
+
+          <div class="form-item descricao">
+            <button type="submit" class="btn-nova">
+              Salvar Demanda
+            </button>
+          </div>
+
+        </form>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/nova-demanda.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

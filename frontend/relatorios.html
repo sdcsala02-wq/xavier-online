@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Legislativo | Xavier Online</title>
+  <link rel="stylesheet" href="css/relatorios.css">
+</head>
+
+<body>
+  <main class="poster">
+
+    <header class="topo">
+      <div class="logo-texto">
+        <div class="x-fake">X</div>
+
+        <div class="nome-logo">
+          <span>VEREADOR</span>
+          <strong>EDUARDO</strong>
+          <b>XAVIER</b>
+        </div>
+      </div>
+
+      <h2>Relatório de Atividades Legislativas</h2>
+
+      <div class="periodo">
+        SESSÃO NÃO CADASTRADA — BASE 2026
+      </div>
+    </header>
+
+    <section class="cards-proposicoes">
+      <div class="card-prop roxo">
+        <span>PROJETO DE LEI</span>
+        <div>
+          <strong id="totalProjetoLei">0</strong>
+          <small>PROJETO DE LEI</small>
+        </div>
+      </div>
+
+      <div class="card-prop verde">
+        <span>INDICAÇÕES</span>
+        <div>
+          <strong id="totalIndicacoes">0</strong>
+          <small>INDICAÇÕES</small>
+        </div>
+      </div>
+
+      <div class="card-prop roxo">
+        <span>REQUERIMENTOS</span>
+        <div>
+          <strong id="totalRequerimentos">0</strong>
+          <small>REQUERIMENTOS</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="secretarias">
+      <h3><span>Indicações por Secretaria</span></h3>
+
+      <div class="secretaria-grid">
+        <div class="pizza-box">
+          <div id="graficoPizza" class="grafico-pizza">
+            <span id="labelPizzaPrincipal" class="pizza-label principal">0</span>
+          </div>
+        </div>
+
+        <div id="listaSecretarias" class="lista-barras"></div>
+      </div>
+
+      <div class="total-box">
+        <span>📄</span>
+        <p>Total: <strong id="totalAtividades">0</strong> proposições</p>
+        <span>📊</span>
+      </div>
+    </section>
+
+    <section class="bairros">
+      <h3><span>Indicações por Bairro</span></h3>
+      <div id="listaBairros" class="bairros-grid"></div>
+    </section>
+
+    <footer class="rodape">
+      <div class="rodape-card">
+        <strong>+<span id="totalRodape">0</span></strong>
+        <small>Proposições apresentadas</small>
+      </div>
+
+      <div class="rodape-texto">
+        <strong>Trabalho, presença e compromisso</strong>
+      </div>
+
+      <div class="rodape-texto verde-texto">
+        <strong>Com todos os bairros de Praia Grande</strong>
+      </div>
+    </footer>
+
+    <div class="acoes">
+      <button onclick="window.print()">Imprimir PDF</button>
+      <a href="admin.html">Voltar</a>
+    </div>
+
+  </main>
+
+  <script src="js/relatorios.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

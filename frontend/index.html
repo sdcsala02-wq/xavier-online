@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Xavier Online 2027</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<script>
+  function abrirLoginTransparencia() {
+    document.getElementById("modalLogin").style.display = "flex";
+  }
+
+  function fecharLoginTransparencia() {
+    document.getElementById("modalLogin").style.display = "none";
+    document.getElementById("erroLogin").innerText = "";
+  }
+
+  function validarLoginTransparencia() {
+    const cpf = document.getElementById("loginCpf").value.trim();
+    const senha = document.getElementById("loginSenha").value.trim();
+    const erro = document.getElementById("erroLogin");
+
+    if (!cpf || !senha) {
+      erro.innerText = "Informe CPF e senha.";
+      return;
+    }
+
+    // Login provisório local
+    if (cpf === "00000000000" && senha === "admx") {
+      localStorage.setItem("usuarioLogado", "true");
+      window.location.href = "dashboard.html";
+    } else {
+      erro.innerText = "CPF ou senha inválidos.";
+    }
+  }
+</script>
+
+<body>
+
+  <div class="hero">
+
+    <div class="overlay"></div>
+
+    <div class="conteudo">
+
+      <div class="logo-x">
+        X
+      </div>
+
+      <h1>Xavier Online</h1>
+
+      <p>
+        Canal Oficial de Atendimento do Gabinete
+        do Vereador Eduardo Xavier
+      </p>
+
+      <div class="botoes">
+
+        <a href="cadastro.html" class="btn-principal">
+          Registrar Solicitação
+        </a>
+
+        <button class="btn-secundario" onclick="abrirLoginTransparencia()">
+          Painel de Transparência
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="modalLogin" class="modal-login">
+    <div class="login-box">
+      <button class="fechar-login" onclick="fecharLoginTransparencia()">✕</button>
+
+      <h2>Painel de Transparência</h2>
+      <p>Acesse com CPF e senha cadastrados.</p>
+
+      <label>CPF</label>
+      <input type="text" id="loginCpf" placeholder="Digite seu CPF">
+
+      <label>Senha</label>
+      <input type="password" id="loginSenha" placeholder="Digite sua senha">
+
+      <button class="btn-login" onclick="validarLoginTransparencia()">
+        Entrar
+      </button>
+
+      <small id="erroLogin"></small>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

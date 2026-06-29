@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Importar Planilha | Xavier Online</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    body {
+      background: #050714;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 50px;
+    }
+
+    .topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 50px;
+    }
+
+    h1 {
+      font-size: 72px;
+      margin: 0;
+    }
+
+    .subtitulo {
+      font-size: 18px;
+      color: #cfcfcf;
+      margin-top: 10px;
+    }
+
+    .card {
+      background: #111428;
+      border: 1px solid #25294a;
+      border-radius: 30px;
+      padding: 40px;
+      margin-top: 30px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 32px;
+    }
+
+    .acoes {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    input[type="file"] {
+      background: #1a1f3a;
+      color: white;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px;
+      min-width: 320px;
+    }
+
+    .btn {
+      background: #b7ff00;
+      color: #2b0050;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    #resultadoImportacao {
+      margin-top: 30px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .sucesso {
+      color: #b7ff00;
+    }
+
+    .erro {
+      color: #ff4d4d;
+    }
+
+    @media (max-width: 768px) {
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .acoes {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      input[type="file"] {
+        min-width: auto;
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="topo">
+      <div>
+        <h1>Importar Planilha</h1>
+        <div class="subtitulo">
+          Carregar dados históricos para o Xavier Online
+        </div>
+      </div>
+
+      <a href="admin.html" class="btn">
+        Voltar
+      </a>
+    </div>
+
+    <div class="card">
+
+      <h2>Enviar arquivo Excel</h2>
+
+      <div class="acoes">
+
+        <input type="file" id="arquivoExcel" accept=".xlsx,.xls">
+
+        <button class="btn" onclick="importarArquivo('demandas')">
+          Importar Demandas
+        </button>
+
+        <button class="btn" onclick="importarArquivo('atividades')">
+          Importar Atividades Legislativas
+        </button>
+
+      </div>
+
+      <div id="resultadoImportacao"></div>
+
+    </div>
+
+  </div>
+
+  <script src="js/importar.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

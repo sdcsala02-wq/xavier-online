@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protocolo | Xavier Online</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="xavier-dashboard">
+
+  <div class="app-layout">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
+        <div>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a href="dashboard.html">▣ Dashboard</a>
+        <a href="demandas-gabinete.html">📋 Demandas</a>
+        <a href="demandas-gabinete.html">➕ Nova Demanda</a>
+        <a href="protocolo.html" class="active">🔎 Protocolo</a>
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+        <a href="interacoes.html">💬 Interações</a>
+        <a href="importar.html">⬆ Importar Planilha</a>
+        <a href="exportar-excel.html">⬇ Exportar Excel</a>
+        <a href="exportar-pdf.html">📄 Exportar PDF</a>
+        <a href="secretarias.html">☷ Secretarias</a>
+        <a href="liderancas.html">👥 Lideranças</a>
+        <a href="configuracoes.html">⚙ Configurações</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Consulta e acompanhamento de protocolos.</p>
+        <span>Versão 1.0.0</span>
+      </div>
+    </aside>
+
+    <main class="conteudo main-dashboard">
+
+      <header class="topbar">
+        <div>
+          <h2>🔎 Consulta de Protocolo</h2>
+          <p class="subtitulo-dashboard">Acompanhamento individual das demandas registradas</p>
+        </div>
+      </header>
+
+      <section class="painel-bi painel-full" style="margin-top: 20px;">
+        <div class="painel-topo">
+          <div>
+            <h3>Pesquisar Protocolo</h3>
+            <p>Informe o número do protocolo para localizar a solicitação</p>
+          </div>
+        </div>
+
+        <div class="filtros-admin" style="grid-template-columns: 1fr auto;">
+          <input type="text" id="inputProtocolo" placeholder="Ex: XAV-2026-000001">
+          <button class="btn-nova" onclick="buscarProtocolo()">Buscar</button>
+        </div>
+      </section>
+
+      <section class="painel-bi painel-full" style="margin-top: 18px;">
+        <div class="painel-topo">
+          <div>
+            <h3>Resultado</h3>
+            <p>Dados da demanda localizada</p>
+          </div>
+        </div>
+
+        <div id="resultadoProtocolo">
+          <p>Nenhum protocolo pesquisado.</p>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:3000/api/demandas";
+
+    async function buscarProtocolo() {
+      const protocolo = document.getElementById("inputProtocolo").value.trim();
+      const resultado = document.getElementById("resultadoProtocolo");
+
+      if (!protocolo) {
+        resultado.innerHTML = "<p>Informe um protocolo para pesquisar.</p>";
+        return;
+      }
+
+      resultado.innerHTML = "<p>Buscando protocolo...</p>";
+
+      try {
+        const resposta = await fetch(API_URL);
+        const demandas = await resposta.json();
+
+        const demanda = demandas.find(item =>
+          String(item.protocolo || "").toLowerCase() === protocolo.toLowerCase()
+        );
+
+        if (!demanda) {
+          resultado.innerHTML = "<p>Protocolo não encontrado.</p>";
+          return;
+        }
+
+        resultado.innerHTML = `
+          <div class="relatorio-grid">
+            <div class="modal-item">
+              <strong>Protocolo</strong>
+              ${demanda.protocolo || "-"}
+            </div>
+
+            <div class="modal-item">
+              <strong>Status</strong>
+              ${demanda.status || "-"}
+            </div>
+
+            <div class="modal-item">
+              <strong>Nome</strong>
+              ${demanda.nome || "-"}
+            </div>
+
+            <div class="modal-item">
+              <strong>Telefone</strong>
+              ${demanda.telefone || "-"}
+            </div>
+
+            <div class="modal-item">
+              <strong>Bairro</strong>
+              ${demanda.bairro || "-"}
+            </div>
+
+            <div class="modal-item">
+              <strong>Secretaria</strong>
+              ${demanda.secretaria || "-"}
+            </div>
+
+            <div class="modal-item descricao">
+              <strong>Serviço</strong>
+              ${demanda.servico || "-"}
+            </div>
+
+            <div class="modal-item descricao">
+              <strong>Descrição</strong>
+              ${demanda.descricao || "-"}
+            </div>
+          </div>
+        `;
+
+      } catch (erro) {
+        console.error(erro);
+        resultado.innerHTML = "<p>Erro ao consultar o protocolo.</p>";
+      }
+    }
+  </script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa da Cidade | Xavier Online</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body class="xavier-dashboard">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brasao">🏛️</div>
+      <div>
+        <h1>XAVIER ONLINE</h1>
+        <span>PRAIA GRANDE - SP</span>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a href="dashboard.html">▣ Dashboard</a>
+      <a href="demandas-gabinete.html">
+        ➕ Nova Demanda
+      </a>
+      <a href="cadastro.html">⊞ Nova Demanda</a>
+      <a href="protocolo.html">⊕ Protocolo</a>
+      <a href="mapa.html" class="ativo">🗺 Mapa da Cidade</a>
+      <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+      <a href="http://localhost:3000/api/demandas/exportar/excel">
+        ⬇ Exportar Excel
+      </a>
+
+      <a href="http://localhost:3000/api/demandas/exportar/pdf">
+        📄 Exportar PDF
+      </a>
+      <a href="#">☷ Secretarias</a>
+      <a href="liderancas.html">👥 Lideranças</a>
+      <a href="#">⚙ Configurações</a>
+    </nav>
+
+    <div class="sidebar-info">
+      <strong>XAVIER ONLINE</strong>
+      <p>Mapa de demandas por bairro de Praia Grande.</p>
+      <small>Versão 1.0.0</small>
+    </div>
+  </aside>
+
+  <main class="main-dashboard">
+
+    <header class="topbar">
+      <div>
+        <h2>🗺 Mapa da Cidade</h2>
+      </div>
+
+      <div class="topbar-right">
+        <span>Demandas por bairro</span>
+        <a href="cadastro.html" class="btn-nova">+ Nova Demanda</a>
+      </div>
+    </header>
+
+    <section class="cards-modernos mapa-cards">
+      <div class="card-mod azul">
+        <h3>Total de Bairros</h3>
+        <strong id="totalBairros">0</strong>
+        <p>Bairros com registros</p>
+      </div>
+
+      <div class="card-mod verde">
+        <h3>Total de Demandas</h3>
+        <strong id="totalDemandasMapa">0</strong>
+        <p>Demandas cadastradas</p>
+      </div>
+
+      <div class="card-mod roxo">
+        <h3>Bairro Destaque</h3>
+        <strong id="bairroDestaque">-</strong>
+        <p>Maior volume de solicitações</p>
+      </div>
+
+      <div class="card-mod laranja">
+        <h3>Selecionado</h3>
+        <strong id="bairroSelecionado">-</strong>
+        <p id="infoBairroSelecionado">Bairro em análise</p>
+      </div>
+    </section>
+
+    <section class="mapa-layout">
+
+      <div class="painel mapa-painel">
+        <div class="painel-topo">
+          <h3>Mapa Visual de Praia Grande</h3>
+          <a href="#" onclick="limparSelecaoBairro()">Limpar seleção</a>
+        </div>
+
+        <div id="mapaLeaflet"></div>
+      </div>
+
+      <div class="painel ranking-painel">
+        <div class="painel-topo">
+          <h3>Ranking por Bairro</h3>
+          <a href="#">Ver dados</a>
+        </div>
+
+        <div class="lideranca-bairro-box">
+          <h3>Liderança Responsável</h3>
+
+          <div id="dadosLideranca">
+            <p>Selecione um bairro no mapa.</p>
+          </div>
+        </div>
+
+        <div id="rankingBairros" class="ranking-bairros"></div>
+        <div class="secretarias-bairro-box">
+          <h3>Secretarias no Bairro</h3>
+          <div id="secretariasDoBairro">
+            <p>Selecione um bairro no mapa.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="painel painel-tabela demandas-bairro">
+        <div class="painel-topo">
+          <h3 id="tituloDemandasBairro">Demandas do Bairro</h3>
+          <a href="admin.html">Ver todas</a>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Protocolo</th>
+              <th>Nome</th>
+              <th>Serviço</th>
+              <th>Secretaria</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="listaDemandasBairro">
+            <tr>
+              <td colspan="5">Clique em um bairro para visualizar as demandas.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- <script src="js/mapa.js"></script> -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/mapa-leaflet.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

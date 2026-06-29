@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demandas do Gabinete | Xavier Online</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
+    .cards-modernos {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .card-mod {
+      min-height: 128px;
+    }
+
+    .painel {
+      padding: 22px;
+      min-height: auto;
+    }
+
+    .filtros-admin {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .filtros-admin input {
+      height: 46px;
+      background: #0f172a;
+      color: white;
+      border: 1px solid rgba(148, 163, 184, .30);
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .filtros-admin input::placeholder {
+      color: #94a3b8;
+    }
+
+    .filtros-admin button {
+      height: 46px;
+      border-radius: 10px;
+      padding: 0 22px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-limpar {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid rgba(148, 163, 184, .30) !important;
+    }
+
+    .painel-tabela {
+      overflow-x: auto;
+    }
+
+    .painel-tabela table {
+      min-width: 1100px;
+    }
+
+    .painel-tabela th {
+      font-size: 13px;
+      padding: 14px 12px;
+    }
+
+    .painel-tabela td {
+      font-size: 14px;
+      padding: 14px 12px;
+    }
+
+    @media (max-width: 1400px) {
+      .filtros-admin {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .filtros-admin {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body class="xavier-dashboard">
+
+  <div class="app-layout">
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
+
+        <div>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
+        </div>
+      </div>
+
+      <nav class="menu">
+
+        <a href="dashboard.html">
+          ▣ Dashboard
+        </a>
+
+        <a href="demandas-gabinete.html" class="active">
+          📋 Demandas
+        </a>
+
+        <a href="demandas-gabinete.html">
+          ➕ Nova Demanda
+        </a>
+
+        <a href="protocolo.html">
+          🔎 Protocolo
+        </a>
+
+        <a href="mapa.html">
+          🗺️ Mapa da Cidade
+        </a>
+
+        <a href="relatorio-legislativo.html">
+          📊 Relatório Legislativo
+        </a>
+
+        <a href="interacoes.html">
+          💬 Interações
+        </a>
+
+        <a href="importar.html">
+          ⬆ Importar Planilha
+        </a>
+
+        <a href="#" onclick="exportarExcel(); return false;">
+          ⬇ Exportar Excel
+        </a>
+
+        <a href="#" onclick="exportarPDF(); return false;">
+          📄 Exportar PDF
+        </a>
+
+        <a href="secretarias.html">
+          ☷ Secretarias
+        </a>
+
+        <a href="liderancas.html">
+          👥 Lideranças
+        </a>
+
+        <a href="configuracoes.html">
+          ⚙ Configurações
+        </a>
+
+      </nav>
+
+      <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Consulta e controle das demandas do gabinete.</p>
+        <span>Versão 1.0.0</span>
+      </div>
+
+    </aside>
+
+    <main class="conteudo main-dashboard">
+
+      <header class="topbar">
+
+        <div>
+          <h2>Demandas do Gabinete</h2>
+        </div>
+
+        <div class="topbar-right">
+          <span>Consulta dos dados importados</span>
+        </div>
+
+      </header>
+
+      <section class="cards-modernos">
+
+        <div class="card-mod azul">
+          <h3>Total</h3>
+          <strong id="totalDemandasGabinete">0</strong>
+          <p>Demandas encontradas</p>
+        </div>
+
+        <div class="card-mod verde">
+          <h3>Bairros</h3>
+          <strong id="totalBairrosGabinete">0</strong>
+          <p>Bairros envolvidos</p>
+        </div>
+
+        <div class="card-mod roxo">
+          <h3>Secretarias</h3>
+          <strong id="totalSecretariasGabinete">0</strong>
+          <p>Setores envolvidos</p>
+        </div>
+
+        <div class="card-mod laranja">
+          <h3>Ano</h3>
+          <strong id="anoSelecionadoGabinete">Todos</strong>
+          <p>Filtro aplicado</p>
+        </div>
+
+      </section>
+
+      <section class="painel">
+
+        <div class="painel-topo">
+          <h3>Filtros</h3>
+        </div>
+
+        <div class="filtros-admin">
+
+          <input id="filtroBuscaGabinete" type="text" placeholder="Pesquisar nome, telefone, bairro ou demanda">
+
+          <input id="filtroBairroGabinete" type="text" placeholder="Bairro">
+
+          <input id="filtroSecretariaGabinete" type="text" placeholder="Secretaria">
+
+          <input id="filtroStatusGabinete" type="text" placeholder="Status">
+
+          <input id="filtroAnoGabinete" type="number" placeholder="Ano">
+
+          <input id="filtroMesGabinete" type="text" placeholder="Mês">
+
+          <button class="btn-nova" onclick="carregarDemandasGabinete()">
+            Filtrar
+          </button>
+
+          <button class="btn-limpar" onclick="limparFiltrosGabinete()">
+            Limpar
+          </button>
+
+        </div>
+
+      </section>
+
+      <section class="painel painel-tabela">
+
+        <div class="painel-topo">
+          <h3>Registros</h3>
+        </div>
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Bairro</th>
+              <th>Demanda</th>
+              <th>Secretaria</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="listaDemandasGabinete">
+            <tr>
+              <td colspan="7">
+                Carregando registros...
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/demandas-gabinete.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>
