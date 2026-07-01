@@ -334,7 +334,6 @@ router.get("/", async (req, res) => {
       LEFT JOIN cidadaos c ON c.id = dg.cidadao_id
       ${where}
       ORDER BY dg.data DESC NULLS LAST, dg.id DESC
-      LIMIT 500
       `,
       valores
     );

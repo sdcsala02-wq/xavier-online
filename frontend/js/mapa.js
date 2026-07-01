@@ -1,4 +1,4 @@
-const API_URL_MAPA = "http://localhost:3000/api/demandas";
+const API_URL_MAPA = "http://localhost:3000/api/demandas-gabinete";
 
 const bairrosPraiaGrande = [
   "Boqueirão",
@@ -12,7 +12,7 @@ const bairrosPraiaGrande = [
   "Real",
   "Solemar",
   "Flórida",
-  "Balneário Esmeralda",
+  "Esmeralda",
   "Ribeirópolis",
   "Samambaia",
   "Melvi",
@@ -20,7 +20,9 @@ const bairrosPraiaGrande = [
   "Sítio do Campo",
   "Anhanguera",
   "Antártica",
-  "Vila Sônia"
+  "Vila Sônia",
+  "Canto do Forte",
+  "Cidade das Crianças"
 ];
 
 let demandasMapa = [];
@@ -28,13 +30,15 @@ let resumoBairros = [];
 
 async function carregarMapaCidade() {
   try {
-    const respostaResumo = await fetch(`${API_URL_MAPA}/dashboard/resumo`);
+    const respostaResumo = await fetch(`${API_URL_MAPA}/resumo`);
     const resumo = await respostaResumo.json();
 
     const respostaDemandas = await fetch(API_URL_MAPA);
     demandasMapa = await respostaDemandas.json();
 
-    resumoBairros = resumo.porBairro || [];
+    resumoBairros = resumo.topBairros || resumo.porBairro || [];
+
+    console.log("BAIRROS DO BANCO:", resumoBairros.map(x => x.bairro));
 
     atualizarCardsMapa(resumoBairros, demandasMapa);
     montarMapaVisual(resumoBairros);
@@ -58,13 +62,14 @@ function atualizarCardsMapa(bairros, demandas) {
 
 function montarMapaVisual(bairrosComDados) {
   const container = document.getElementById("mapaVisual");
+  if (!container) return;
 
-  container.innerHTML = bairrosPraiaGrande.map((bairro, index) => {
+  container.innerHTML = bairrosPraiaGrande.map(bairro => {
     const encontrado = bairrosComDados.find(item =>
       normalizarTexto(item.bairro) === normalizarTexto(bairro)
     );
 
-    const total = encontrado ? Number(encontrado.total) : 0;
+    const total = encontrado ? Number(encontrado.total || 0) : 0;
     const classe = definirClasseIntensidade(total);
 
     return `
@@ -81,17 +86,18 @@ function montarMapaVisual(bairrosComDados) {
 
 function montarRankingBairros(bairros) {
   const container = document.getElementById("rankingBairros");
+  if (!container) return;
 
   if (!bairros.length) {
     container.innerHTML = "<p>Nenhum bairro com demanda cadastrada.</p>";
     return;
   }
 
-  const maior = Math.max(...bairros.map(item => Number(item.total)));
+  const maior = Math.max(...bairros.map(item => Number(item.total || 0)), 1);
 
   container.innerHTML = bairros.map(item => {
-    const total = Number(item.total);
-    const largura = maior ? (total / maior) * 100 : 0;
+    const total = Number(item.total || 0);
+    const largura = (total / maior) * 100;
 
     return `
       <div class="ranking-item" onclick="selecionarBairro('${item.bairro}')">
@@ -127,10 +133,12 @@ function selecionarBairro(bairro) {
   );
 
   montarTabelaDemandasBairro(filtradas);
+  montarSecretariasDoBairro(filtradas);
 }
 
 function montarTabelaDemandasBairro(demandas) {
   const tbody = document.getElementById("listaDemandasBairro");
+  if (!tbody) return;
 
   if (!demandas.length) {
     tbody.innerHTML = `
@@ -143,13 +151,39 @@ function montarTabelaDemandasBairro(demandas) {
 
   tbody.innerHTML = demandas.map(demanda => `
     <tr>
-      <td>${demanda.protocolo || "-"}</td>
+      <td>${demanda.codigo_origem || demanda.protocolo || demanda.id || "-"}</td>
       <td>${demanda.nome || "-"}</td>
-      <td>${demanda.servico || "-"}</td>
+      <td>${demanda.demanda || demanda.servico || "-"}</td>
       <td>${demanda.secretaria || "-"}</td>
       <td>${demanda.status || "-"}</td>
     </tr>
   `).join("");
+}
+
+function montarSecretariasDoBairro(demandas) {
+  const container = document.getElementById("secretariasDoBairro");
+  if (!container) return;
+
+  if (!demandas.length) {
+    container.innerHTML = "<p>Nenhuma demanda cadastrada neste bairro.</p>";
+    return;
+  }
+
+  const resumo = {};
+
+  demandas.forEach(demanda => {
+    const secretaria = demanda.secretaria || "NÃO INFORMADA";
+    resumo[secretaria] = (resumo[secretaria] || 0) + 1;
+  });
+
+  container.innerHTML = Object.entries(resumo)
+    .sort((a, b) => b[1] - a[1])
+    .map(([secretaria, total]) => `
+      <div class="secretaria-bairro-item">
+        <span>${secretaria}</span>
+        <strong>${total}</strong>
+      </div>
+    `).join("");
 }
 
 function limparSelecaoBairro() {
@@ -165,22 +199,39 @@ function limparSelecaoBairro() {
       <td colspan="5">Clique em um bairro para visualizar as demandas.</td>
     </tr>
   `;
+
+  const secretarias = document.getElementById("secretariasDoBairro");
+  if (secretarias) {
+    secretarias.innerHTML = "<p>Selecione um bairro no mapa.</p>";
+  }
 }
 
 function definirClasseIntensidade(total) {
-  if (total >= 20) return "nivel-5";
-  if (total >= 10) return "nivel-4";
-  if (total >= 5) return "nivel-3";
+  if (total >= 100) return "nivel-5";
+  if (total >= 50) return "nivel-4";
+  if (total >= 20) return "nivel-3";
   if (total >= 1) return "nivel-2";
   return "nivel-1";
 }
 
 function normalizarTexto(texto) {
-  return String(texto || "")
+  let valor = String(texto || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
+
+  const equivalencias = {
+    "balneario esmeralda": "esmeralda",
+    "esmeralda": "esmeralda",
+    "vila caicara": "caicara",
+    "caicara": "caicara",
+    "cidade da crianca": "cidade das criancas",
+    "cidade das criancas": "cidade das criancas",
+    "canto do forte": "canto do forte"
+  };
+
+  return equivalencias[valor] || valor;
 }
 
 function formatarNome(texto) {
@@ -188,5 +239,8 @@ function formatarNome(texto) {
     .toLowerCase()
     .replace(/\b\w/g, letra => letra.toUpperCase());
 }
+
+window.limparSelecaoBairro = limparSelecaoBairro;
+window.selecionarBairro = selecionarBairro;
 
 document.addEventListener("DOMContentLoaded", carregarMapaCidade);

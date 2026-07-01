@@ -1,25 +1,26 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const multer = require("multer");
+const XLSX = require("xlsx");
 
-/**
- * GET /api/interacoes/resumo
- * Retorna o resumo anual das interações mensais
- */
+const upload = multer({
+  storage: multer.memoryStorage()
+});
+
 router.get("/resumo", async (req, res) => {
   try {
     const totaisPorAno = await pool.query(`
       SELECT 
         ano,
-        SUM(quantidade)::int AS total
+        COALESCE(SUM(quantidade), 0)::int AS total
       FROM interacoes_mensais
       GROUP BY ano
       ORDER BY ano
     `);
 
     const totalGeral = await pool.query(`
-      SELECT 
-        COALESCE(SUM(quantidade), 0)::int AS total
+      SELECT COALESCE(SUM(quantidade), 0)::int AS total
       FROM interacoes_mensais
     `);
 
@@ -33,10 +34,6 @@ router.get("/resumo", async (req, res) => {
   }
 });
 
-/**
- * GET /api/interacoes/mensal
- * Retorna as interações agrupadas por ano e mês
- */
 router.get("/mensal", async (req, res) => {
   try {
     const resultado = await pool.query(`
@@ -45,24 +42,7 @@ router.get("/mensal", async (req, res) => {
         mes,
         quantidade::int AS total
       FROM interacoes_mensais
-      ORDER BY 
-        ano,
-        CASE mes
-          WHEN 'JANEIRO' THEN 1
-          WHEN 'FEVEREIRO' THEN 2
-          WHEN 'MARÇO' THEN 3
-          WHEN 'MARCO' THEN 3
-          WHEN 'ABRIL' THEN 4
-          WHEN 'MAIO' THEN 5
-          WHEN 'JUNHO' THEN 6
-          WHEN 'JULHO' THEN 7
-          WHEN 'AGOSTO' THEN 8
-          WHEN 'SETEMBRO' THEN 9
-          WHEN 'OUTUBRO' THEN 10
-          WHEN 'NOVEMBRO' THEN 11
-          WHEN 'DEZEMBRO' THEN 12
-          ELSE 99
-        END
+      ORDER BY ano, mes
     `);
 
     res.json(resultado.rows);
@@ -72,18 +52,13 @@ router.get("/mensal", async (req, res) => {
   }
 });
 
-/**
- * GET /api/interacoes/total/:ano
- * Retorna o total de interações de um ano específico
- */
 router.get("/total/:ano", async (req, res) => {
   try {
     const { ano } = req.params;
 
     const resultado = await pool.query(
       `
-      SELECT 
-        COALESCE(SUM(quantidade), 0)::int AS total
+      SELECT COALESCE(SUM(quantidade), 0)::int AS total
       FROM interacoes_mensais
       WHERE ano = $1
       `,
@@ -97,6 +72,88 @@ router.get("/total/:ano", async (req, res) => {
   } catch (error) {
     console.error("Erro ao buscar total de interações por ano:", error);
     res.status(500).json({ erro: "Erro ao buscar total de interações por ano." });
+  }
+});
+
+router.post("/importar", upload.single("arquivo"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ erro: "Nenhum arquivo enviado." });
+    }
+
+    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+    const sheet = workbook.Sheets["INTERAÇÕES"];
+
+    if (!sheet) {
+      return res.status(400).json({
+        erro: "A aba INTERAÇÕES não foi encontrada."
+      });
+    }
+
+    const linhas = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+    const meses = {
+      JANEIRO: 1,
+      FEVEREIRO: 2,
+      MARÇO: 3,
+      MARCO: 3,
+      ABRIL: 4,
+      MAIO: 5,
+      JUNHO: 6,
+      JULHO: 7,
+      AGOSTO: 8,
+      SETEMBRO: 9,
+      OUTUBRO: 10,
+      NOVEMBRO: 11,
+      DEZEMBRO: 12
+    };
+
+    await pool.query("TRUNCATE TABLE interacoes_mensais RESTART IDENTITY");
+
+    let totalImportado = 0;
+    let totalIgnorado = 0;
+
+    for (const linha of linhas) {
+      const ano = Number(linha["ANO"]);
+
+      const mesTexto = String(
+        linha["MÊS"] || linha["MES"] || ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const mes = meses[mesTexto];
+      const quantidade = Number(linha["QUANTIDADE"] || 0);
+
+      if (!ano || !mes) {
+        totalIgnorado++;
+        continue;
+      }
+
+      await pool.query(
+        `
+        INSERT INTO interacoes_mensais
+        (ano, mes, quantidade, total, origem)
+        VALUES ($1, $2, $3, $3, 'PLANILHA')
+        `,
+        [ano, mes, quantidade]
+      );
+
+      totalImportado++;
+    }
+
+    res.json({
+      mensagem: "Interações importadas com sucesso.",
+      totalImportado,
+      totalIgnorado
+    });
+  } catch (error) {
+    console.error("Erro ao importar interações:", error);
+
+    res.status(500).json({
+      erro: "Erro ao importar interações.",
+      detalhe: error.message
+    });
   }
 });
 

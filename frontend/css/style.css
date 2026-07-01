@@ -2266,3 +2266,401 @@ body.tela-sistema .card-protocolo {
 .celular-img:hover{
     transform: scale(1.03);
 }
+
+/* ==========================
+   RESPONSIVIDADE MOBILE
+========================== */
+
+/* ==========================================
+   RESPONSIVIDADE OFICIAL XAVIER ONLINE
+========================================== */
+
+.mobile-menu-btn {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+
+    body,
+    html {
+        overflow-x: hidden;
+    }
+
+    .mobile-menu-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+
+        position: fixed;
+        top: 12px;
+        left: 12px;
+
+        width: 48px;
+        height: 48px;
+
+        background: #2563eb;
+        color: #fff;
+
+        border: none;
+        border-radius: 10px;
+
+        font-size: 24px;
+        z-index: 10001;
+    }
+
+    .sidebar,
+    .xavier-dashboard .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -260px !important;
+
+        width: 260px !important;
+        min-width: 260px !important;
+        height: 100vh !important;
+
+        transition: left .3s ease;
+        z-index: 10000 !important;
+    }
+
+    .sidebar.active,
+    .xavier-dashboard .sidebar.active {
+        left: 0 !important;
+    }
+
+    .app-layout,
+    .xavier-dashboard .app-layout {
+        display: block !important;
+    }
+
+    .conteudo,
+    .main-dashboard,
+    .main-content,
+    .xavier-dashboard .conteudo,
+    .xavier-dashboard .main-dashboard {
+
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 70px 14px 20px !important;
+
+        box-sizing: border-box;
+    }
+
+    .cards-modernos,
+    .cards-executivos,
+    .dashboard-cards,
+    .stats-grid,
+    .cards-grid,
+    .mapa-cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    .dashboard-bi-grid,
+    .grid-dashboard,
+    .mapa-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    .topbar,
+    .dashboard-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px;
+    }
+
+    .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-nova,
+    button {
+        min-height: 44px;
+    }
+
+    #mapaLeaflet {
+        height: 320px !important;
+    }
+
+    .ranking-item {
+        grid-template-columns: 90px 1fr 40px !important;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+.mobile-menu-btn {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 1000;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 22px;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    z-index: 9999;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .app-layout {
+    display: block !important;
+  }
+
+  .main-content {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding: 15px !important;
+  }
+
+  .header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .dashboard-cards,
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .grafico-container,
+  .chart-container {
+    overflow-x: auto;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-size: 90%;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 10000;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body.xavier-dashboard .sidebar {
+    position: fixed !important;
+    left: -280px !important;
+    top: 0 !important;
+    width: 260px !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+  }
+
+  body.xavier-dashboard .sidebar.active {
+    left: 0 !important;
+  }
+
+  body.xavier-dashboard .app-layout {
+    display: block !important;
+  }
+
+  body.xavier-dashboard main,
+  body.xavier-dashboard .main-content,
+  body.xavier-dashboard .content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 70px 14px 20px !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body.xavier-dashboard .main-content {
+    margin-left: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding: 80px 16px 24px 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  body.xavier-dashboard .dashboard-header,
+  body.xavier-dashboard .topbar,
+  body.xavier-dashboard .header-dashboard {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  body.xavier-dashboard .dashboard-cards,
+  body.xavier-dashboard .stats-grid,
+  body.xavier-dashboard .cards-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  body.xavier-dashboard .card,
+  body.xavier-dashboard .stat-card,
+  body.xavier-dashboard .dashboard-card,
+  body.xavier-dashboard .chart-card,
+  body.xavier-dashboard .panel,
+  body.xavier-dashboard .box {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  body.xavier-dashboard h1 {
+    font-size: 22px !important;
+    line-height: 1.2 !important;
+  }
+
+  body.xavier-dashboard h2,
+  body.xavier-dashboard h3 {
+    font-size: 16px !important;
+  }
+
+  body.xavier-dashboard .btn,
+  body.xavier-dashboard button {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.ranking-bairros {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ranking-item {
+  display: grid;
+  grid-template-columns: 110px 1fr 45px;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ranking-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barra-ranking {
+  height: 10px;
+  background: #1f2a44;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barra-ranking b {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+
+.ranking-item strong {
+  text-align: right;
+  color: #ffffff;
+}
+
+#rankingBairros.ranking-bairros {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+#rankingBairros .ranking-item {
+  display: grid !important;
+  grid-template-columns: 80px 1fr 30px !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+#rankingBairros .ranking-item span {
+  font-size: 12px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#rankingBairros .ranking-item strong {
+  font-size: 11px !important;
+  text-align: right;
+  width: 30px;
+}
+
+#rankingBairros .barra-ranking {
+  display: block !important;
+  width: 100% !important;
+  height: 10px !important;
+  background: #1f2a44 !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+}
+
+#rankingBairros .barra-ranking b {
+  display: block !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, #2563eb, #38bdf8) !important;
+  border-radius: 999px !important;
+}
+
+@media (max-width: 768px) {
+
+  #rankingBairros .ranking-item {
+    grid-template-columns: 70px 1fr 28px !important;
+    gap: 6px !important;
+  }
+
+  #rankingBairros .ranking-item span {
+    font-size: 11px !important;
+  }
+
+  #rankingBairros .ranking-item strong {
+    font-size: 10px !important;
+  }
+
+  .ranking-bairros {
+    max-height: 280px !important;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+}

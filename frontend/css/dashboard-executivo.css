@@ -389,3 +389,111 @@
   text-align: left;
   justify-self: start;
 }
+
+/* ===========================
+   RESPONSIVO CELULAR
+=========================== */
+
+@media (max-width: 768px) {
+
+    .main-dashboard {
+        padding: 10px;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .topbar-right {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-novo,
+    .btn-sair {
+        flex: 1;
+    }
+
+    .cards-executivos {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .card-kpi {
+        min-width: 0;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .painel-bi,
+    .painel-full {
+        width: 100%;
+    }
+
+    .ranking-bi {
+        grid-template-columns: 1fr;
+    }
+
+    .evolucao-cards {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 768px) {
+  body.xavier-dashboard .main-dashboard {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 70px 12px 20px !important;
+  }
+
+  body.xavier-dashboard .cards-executivos {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  body.xavier-dashboard .card-kpi {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  body.xavier-dashboard .dashboard-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  body.xavier-dashboard .painel-bi,
+  body.xavier-dashboard .painel-full {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body.xavier-dashboard .topbar {
+    display: block !important;
+    text-align: center !important;
+  }
+
+  body.xavier-dashboard .topbar-right {
+    margin-top: 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}

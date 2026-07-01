@@ -6,10 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mapa da Cidade | Xavier Online</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 
 <body class="xavier-dashboard">
+
+  <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
 
   <aside class="sidebar">
     <div class="brand">
@@ -22,21 +24,14 @@
 
     <nav class="menu">
       <a href="dashboard.html">▣ Dashboard</a>
-      <a href="demandas-gabinete.html">
-        ➕ Nova Demanda
-      </a>
+      <a href="demandas-gabinete.html">➕ Nova Demanda</a>
       <a href="cadastro.html">⊞ Nova Demanda</a>
       <a href="protocolo.html">⊕ Protocolo</a>
       <a href="mapa.html" class="ativo">🗺 Mapa da Cidade</a>
       <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
-      <a href="http://localhost:3000/api/demandas/exportar/excel">
-        ⬇ Exportar Excel
-      </a>
-
-      <a href="http://localhost:3000/api/demandas/exportar/pdf">
-        📄 Exportar PDF
-      </a>
-      <a href="#">☷ Secretarias</a>
+      <a href="http://localhost:3000/api/demandas/exportar/excel">⬇ Exportar Excel</a>
+      <a href="http://localhost:3000/api/demandas/exportar/pdf">📄 Exportar PDF</a>
+      <a href="secretarias.html">☷ Secretarias</a>
       <a href="liderancas.html">👥 Lideranças</a>
       <a href="#">⚙ Configurações</a>
     </nav>
@@ -92,7 +87,7 @@
       <div class="painel mapa-painel">
         <div class="painel-topo">
           <h3>Mapa Visual de Praia Grande</h3>
-          <a href="#" onclick="limparSelecaoBairro()">Limpar seleção</a>
+          <a href="#" onclick="limparSelecaoBairro(); return false;">Limpar seleção</a>
         </div>
 
         <div id="mapaLeaflet"></div>
@@ -106,13 +101,13 @@
 
         <div class="lideranca-bairro-box">
           <h3>Liderança Responsável</h3>
-
           <div id="dadosLideranca">
             <p>Selecione um bairro no mapa.</p>
           </div>
         </div>
 
         <div id="rankingBairros" class="ranking-bairros"></div>
+
         <div class="secretarias-bairro-box">
           <h3>Secretarias no Bairro</h3>
           <div id="secretariasDoBairro">
@@ -150,10 +145,14 @@
 
   </main>
 
-  <!-- <script src="js/mapa.js"></script> -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/mapa-leaflet.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/mapa-leaflet.js?v=7"></script>
+
+  <script>
+    function toggleSidebar() {
+      document.querySelector(".sidebar").classList.toggle("active");
+    }
+  </script>
 
 </body>
 

@@ -13,7 +13,7 @@ async function importarArquivo(tipo) {
 
   const url =
     tipo === "atividades"
-      ? "http://localhost:3000/api/importar/atividades/importar"
+      ? "http://localhost:3000/api/interacoes/importar"
       : "http://localhost:3000/api/demandas-gabinete/importar";
 
   try {
