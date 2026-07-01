@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 // Frontend está fora da pasta backend
-const frontendPath = path.join(__dirname, "../frontend");
+const frontendPath = path.join(__dirname, "../front-end");
 
 console.log("Frontend path:", frontendPath);
 console.log(
