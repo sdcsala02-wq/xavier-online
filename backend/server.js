@@ -18,23 +18,14 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Servir arquivos do frontend
+// FRONTEND
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// Página inicial
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
-// Teste da API
-app.get("/api/status", (req, res) => {
-  res.json({
-    sistema: "Xavier Online",
-    status: "API funcionando"
-  });
-});
-
-// Rotas da API
+// APIs
 app.use("/api/demandas", demandasRoutes);
 app.use("/api/relatorios", relatoriosRoutes);
 app.use("/api/relatorios", dashboardRoutes);
@@ -43,10 +34,6 @@ app.use("/api/interacoes", interacoesRoutes);
 app.use("/api/cidadaos", cidadaosRoutes);
 app.use("/api/demandas-gabinete", demandasGabineteRoutes);
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Servidor Xavier Online rodando na porta ${PORT}`);
-});
-
-server.on("error", (error) => {
-  console.error("Erro ao iniciar servidor:", error);
 });
