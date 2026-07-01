@@ -6,8 +6,6 @@
   "scripts": {
     "start": "node server.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "chart.js": "^4.5.1",
     "cors": "^2.8.6",
