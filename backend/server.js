@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 require("dotenv").config();
 
@@ -17,14 +18,23 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Servir arquivos do frontend
+app.use(express.static(path.join(__dirname, "../frontend")));
 
+// Página inicial
 app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+});
+
+// Teste da API
+app.get("/api/status", (req, res) => {
   res.json({
     sistema: "Xavier Online",
     status: "API funcionando"
   });
 });
 
+// Rotas da API
 app.use("/api/demandas", demandasRoutes);
 app.use("/api/relatorios", relatoriosRoutes);
 app.use("/api/relatorios", dashboardRoutes);
