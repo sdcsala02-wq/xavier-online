@@ -19,24 +19,16 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Frontend está fora da pasta backend
-const frontendPath = path.resolve(__dirname, "../frontend");
+// Frontend dentro do backend/public
+const frontendPath = path.join(__dirname, "public");
 
 console.log("Frontend path:", frontendPath);
-console.log(
-  "Index existe:",
-  fs.existsSync(path.join(frontendPath, "index.html"))
-);
+console.log("Index existe:", fs.existsSync(path.join(frontendPath, "index.html")));
 
-// Servir arquivos estáticos
+// Servir frontend
 app.use(express.static(frontendPath));
 
-// Página inicial
-app.get("/", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
-
-// Status da API
+// Rotas da API
 app.get("/api/status", (req, res) => {
   res.json({
     sistema: "Xavier Online",
@@ -44,7 +36,6 @@ app.get("/api/status", (req, res) => {
   });
 });
 
-// Rotas da API
 app.use("/api/demandas", demandasRoutes);
 app.use("/api/relatorios", relatoriosRoutes);
 app.use("/api/relatorios", dashboardRoutes);
@@ -53,7 +44,12 @@ app.use("/api/interacoes", interacoesRoutes);
 app.use("/api/cidadaos", cidadaosRoutes);
 app.use("/api/demandas-gabinete", demandasGabineteRoutes);
 
-// Fallback para páginas HTML
+// Página inicial
+app.get("/", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+// Páginas HTML
 app.get("/:pagina", (req, res, next) => {
   const arquivo = path.join(frontendPath, req.params.pagina);
 
