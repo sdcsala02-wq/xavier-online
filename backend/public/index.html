@@ -109,28 +109,54 @@
       return resto === Number(cpf[10]);
     }
 
-    function validarLoginTransparencia() {
-      const cpf = document.getElementById("loginCpf").value.trim();
-      const senha = document.getElementById("loginSenha").value.trim();
-      const erro = document.getElementById("erroLogin");
+    async function validarLoginTransparencia() {
+  const cpf = document.getElementById("loginCpf").value.trim();
+  const senha = document.getElementById("loginSenha").value.trim();
+  const erro = document.getElementById("erroLogin");
 
-      if (!cpf || !senha) {
-        erro.innerText = "Informe CPF e senha.";
-        return;
-      }
+  erro.innerText = "";
 
-      if (!validarCPF(cpf)) {
-        erro.innerText = "CPF inválido.";
-        return;
-      }
+  if (!cpf || !senha) {
+    erro.innerText = "Informe CPF e senha.";
+    return;
+  }
 
-      if (cpf === "32531851844" && senha === "ERX2026") {
-        localStorage.setItem("usuarioLogado", "true");
-        window.location.href = "dashboard.html";
-      } else {
-        erro.innerText = "CPF ou senha inválidos.";
-      }
+  if (!validarCPF(cpf)) {
+    erro.innerText = "CPF inválido.";
+    return;
+  }
+
+  try {
+
+    const resposta = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        cpf: cpf.replace(/\D/g, ""),
+        senha: senha
+      })
+    });
+
+    const dados = await resposta.json();
+
+    if (!dados.ok) {
+      erro.innerText = dados.mensagem || "CPF ou senha inválidos.";
+      return;
     }
+
+    localStorage.setItem("usuarioLogado", "true");
+    localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+
+    window.location.href = "dashboard.html";
+
+  } catch (e) {
+    console.error(e);
+    erro.innerText = "Erro ao conectar com o servidor.";
+  }
+}
   </script>
 
   <script src="js/app.js"></script>

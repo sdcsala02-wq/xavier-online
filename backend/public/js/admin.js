@@ -1,13 +1,26 @@
-const API_ADMIN = "http://localhost:3000/api/demandas";
+const API_ADMIN = "/api/demandas-gabinete";
 
 let demandasAdmin = [];
+
+function normalizarStatus(status) {
+  const s = String(status || "").trim().toUpperCase();
+
+  if (!s) return "CONCLUÍDO";
+  if (s === "CONCLUIDO") return "CONCLUÍDO";
+
+  return s;
+}
 
 async function carregarAdmin() {
   const listaAdmin = document.getElementById("listaAdmin");
 
   try {
     const resposta = await fetch(API_ADMIN);
-    demandasAdmin = await resposta.json();
+    const dados = await resposta.json();
+
+    demandasAdmin = Array.isArray(dados)
+      ? dados
+      : dados.demandas || dados.registros || [];
 
     atualizarCards(demandasAdmin);
     renderizarTabela(demandasAdmin);
@@ -26,17 +39,20 @@ function atualizarCards(demandas) {
   document.getElementById("cardTotal").innerText = demandas.length;
 
   document.getElementById("cardRecebidas").innerText =
-    demandas.filter(d => d.status === "RECEBIDA").length;
+    demandas.filter(d => normalizarStatus(d.status) === "RECEBIDA").length;
 
   document.getElementById("cardAnalise").innerText =
-    demandas.filter(d => d.status === "EM ANÁLISE").length;
+    demandas.filter(d => normalizarStatus(d.status) === "EM ANÁLISE").length;
 
   document.getElementById("cardResolvidas").innerText =
-    demandas.filter(d => d.status === "RESOLVIDA").length;
+    demandas.filter(d => {
+      const status = normalizarStatus(d.status);
+      return status === "RESOLVIDA" || status === "CONCLUÍDO";
+    }).length;
 }
 
 function classeStatus(status) {
-  switch (status) {
+  switch (normalizarStatus(status)) {
     case "RECEBIDA":
       return "status-recebida";
     case "EM ANÁLISE":
@@ -46,6 +62,7 @@ function classeStatus(status) {
     case "EM EXECUÇÃO":
       return "status-execucao";
     case "RESOLVIDA":
+    case "CONCLUÍDO":
       return "status-resolvida";
     default:
       return "";
@@ -64,39 +81,44 @@ function renderizarTabela(demandas) {
     return;
   }
 
-  listaAdmin.innerHTML = demandas.map(d => `
-    <tr>
-      <td>
-        <a href="#" onclick="abrirModal(${d.id})" class="link-protocolo">
-          ${d.protocolo}
-        </a>
-      </td>
+  listaAdmin.innerHTML = demandas.map(d => {
+    const statusAtual = normalizarStatus(d.status);
 
-      <td>${d.nome || "-"}</td>
-      <td>${d.bairro || "-"}</td>
-      <td>${d.servico || "-"}</td>
-      <td>${d.secretaria || "-"}</td>
+    return `
+      <tr>
+        <td>
+          <a href="#" onclick="abrirModal(${d.id})" class="link-protocolo">
+            ${d.protocolo || d.id || "-"}
+          </a>
+        </td>
 
-      <td>
-        <select
-          class="status-select ${classeStatus(d.status)}"
-          onchange="atualizarStatus(${d.id}, this.value)"
-        >
-          <option value="RECEBIDA" ${d.status === "RECEBIDA" ? "selected" : ""}>RECEBIDA</option>
-          <option value="EM ANÁLISE" ${d.status === "EM ANÁLISE" ? "selected" : ""}>EM ANÁLISE</option>
-          <option value="ENCAMINHADA" ${d.status === "ENCAMINHADA" ? "selected" : ""}>ENCAMINHADA</option>
-          <option value="EM EXECUÇÃO" ${d.status === "EM EXECUÇÃO" ? "selected" : ""}>EM EXECUÇÃO</option>
-          <option value="RESOLVIDA" ${d.status === "RESOLVIDA" ? "selected" : ""}>RESOLVIDA</option>
-        </select>
-      </td>
+        <td>${d.nome || "-"}</td>
+        <td>${d.bairro || "-"}</td>
+        <td>${d.servico || d.demanda || "-"}</td>
+        <td>${d.secretaria || "-"}</td>
 
-      <td>
-        <button class="btn-editar" onclick="abrirModalEditar(${d.id})">
-          Editar
-        </button>
-      </td>
-    </tr>
-  `).join("");
+        <td>
+          <select
+            class="status-select ${classeStatus(statusAtual)}"
+            onchange="atualizarStatus(${d.id}, this.value)"
+          >
+            <option value="RECEBIDA" ${statusAtual === "RECEBIDA" ? "selected" : ""}>RECEBIDA</option>
+            <option value="EM ANÁLISE" ${statusAtual === "EM ANÁLISE" ? "selected" : ""}>EM ANÁLISE</option>
+            <option value="ENCAMINHADA" ${statusAtual === "ENCAMINHADA" ? "selected" : ""}>ENCAMINHADA</option>
+            <option value="EM EXECUÇÃO" ${statusAtual === "EM EXECUÇÃO" ? "selected" : ""}>EM EXECUÇÃO</option>
+            <option value="RESOLVIDA" ${statusAtual === "RESOLVIDA" ? "selected" : ""}>RESOLVIDA</option>
+            <option value="CONCLUÍDO" ${statusAtual === "CONCLUÍDO" ? "selected" : ""}>CONCLUÍDO</option>
+          </select>
+        </td>
+
+        <td>
+          <button class="btn-editar" onclick="abrirModalEditar(${d.id})">
+            Editar
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 
 function aplicarFiltros() {
@@ -106,14 +128,16 @@ function aplicarFiltros() {
   const filtradas = demandasAdmin.filter(d => {
     const textoBusca = `
       ${d.protocolo || ""}
+      ${d.id || ""}
       ${d.nome || ""}
       ${d.bairro || ""}
       ${d.servico || ""}
+      ${d.demanda || ""}
       ${d.secretaria || ""}
     `.toLowerCase();
 
     const bateBusca = textoBusca.includes(busca);
-    const bateStatus = !status || d.status === status;
+    const bateStatus = !status || normalizarStatus(d.status) === status;
 
     return bateBusca && bateStatus;
   });
@@ -123,32 +147,18 @@ function aplicarFiltros() {
 }
 
 async function atualizarStatus(id, status) {
-  try {
-    const resposta = await fetch(`${API_ADMIN}/${id}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ status })
-    });
+  const demanda = demandasAdmin.find(d => Number(d.id) === Number(id));
 
-    const dados = await resposta.json();
+  if (!demanda) return;
 
-    if (!resposta.ok) {
-      alert(dados.erro || "Erro ao atualizar status.");
-      return;
-    }
+  demanda.status = status;
 
-    await carregarAdmin();
-
-  } catch (error) {
-    console.error(error);
-    alert("Erro ao conectar com a API.");
-  }
+  renderizarTabela(demandasAdmin);
+  atualizarCards(demandasAdmin);
 }
 
 function abrirModal(id) {
-  const demanda = demandasAdmin.find(d => d.id === id);
+  const demanda = demandasAdmin.find(d => Number(d.id) === Number(id));
 
   if (!demanda) return;
 
@@ -156,12 +166,12 @@ function abrirModal(id) {
     <div class="modal-grid">
       <div class="modal-item">
         <strong>Protocolo</strong>
-        ${demanda.protocolo || "-"}
+        ${demanda.protocolo || demanda.id || "-"}
       </div>
 
       <div class="modal-item">
         <strong>Status</strong>
-        ${demanda.status || "-"}
+        ${normalizarStatus(demanda.status)}
       </div>
 
       <div class="modal-item">
@@ -186,7 +196,7 @@ function abrirModal(id) {
 
       <div class="modal-item">
         <strong>Serviço</strong>
-        ${demanda.servico || "-"}
+        ${demanda.servico || demanda.demanda || "-"}
       </div>
 
       <div class="modal-item">
@@ -196,7 +206,7 @@ function abrirModal(id) {
 
       <div class="modal-item descricao">
         <strong>Descrição</strong>
-        ${demanda.descricao || "-"}
+        ${demanda.descricao || demanda.observacao || "-"}
       </div>
     </div>
   `;
@@ -209,7 +219,7 @@ function fecharModal() {
 }
 
 function abrirModalEditar(id) {
-  const demanda = demandasAdmin.find(d => d.id === id);
+  const demanda = demandasAdmin.find(d => Number(d.id) === Number(id));
 
   if (!demanda) return;
 
@@ -218,10 +228,10 @@ function abrirModalEditar(id) {
   document.getElementById("editarTelefone").value = demanda.telefone || "";
   document.getElementById("editarBairro").value = demanda.bairro || "";
   document.getElementById("editarEndereco").value = demanda.endereco || "";
-  document.getElementById("editarServico").value = demanda.servico || "";
+  document.getElementById("editarServico").value = demanda.servico || demanda.demanda || "";
   document.getElementById("editarSecretaria").value = demanda.secretaria || "";
-  document.getElementById("editarStatus").value = demanda.status || "RECEBIDA";
-  document.getElementById("editarDescricao").value = demanda.descricao || "";
+  document.getElementById("editarStatus").value = normalizarStatus(demanda.status);
+  document.getElementById("editarDescricao").value = demanda.descricao || demanda.observacao || "";
 
   document.getElementById("modalEditarDemanda").style.display = "flex";
 }
@@ -258,7 +268,7 @@ async function salvarEdicaoDemanda(event) {
     const retorno = await resposta.json();
 
     if (!resposta.ok) {
-      alert(retorno.erro || "Erro ao editar demanda.");
+      alert(retorno.erro || retorno.mensagem || "Erro ao editar demanda.");
       return;
     }
 
