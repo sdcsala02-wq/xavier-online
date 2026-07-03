@@ -10,50 +10,15 @@
   <link rel="stylesheet" href="css/style.css">
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 </head>
-
-<script>
-  function abrirLoginTransparencia() {
-    document.getElementById("modalLogin").style.display = "flex";
-  }
-
-  function fecharLoginTransparencia() {
-    document.getElementById("modalLogin").style.display = "none";
-    document.getElementById("erroLogin").innerText = "";
-  }
-
-  function validarLoginTransparencia() {
-    const cpf = document.getElementById("loginCpf").value.trim();
-    const senha = document.getElementById("loginSenha").value.trim();
-    const erro = document.getElementById("erroLogin");
-
-    if (!cpf || !senha) {
-      erro.innerText = "Informe CPF e senha.";
-      return;
-    }
-
-    // Login provisório local
-    if (cpf === "00000000000" && senha === "ERX2026") {
-      localStorage.setItem("usuarioLogado", "true");
-      window.location.href = "dashboard.html";
-    } else {
-      erro.innerText = "CPF ou senha inválidos.";
-    }
-  }
-</script>
 
 <body>
 
   <div class="hero">
-
     <div class="overlay"></div>
 
-    <div class="conteudo">
-
-      <div class="logo-x">
-        X
-      </div>
+    <div class="conteudo centro-index">
+      <div class="logo-x">X</div>
 
       <h1>Xavier Online</h1>
 
@@ -63,7 +28,6 @@
       </p>
 
       <div class="botoes">
-
         <a href="cadastro.html" class="btn-principal">
           Registrar Solicitação
         </a>
@@ -71,11 +35,8 @@
         <button class="btn-secundario" onclick="abrirLoginTransparencia()">
           Painel de Transparência
         </button>
-
       </div>
-
     </div>
-
   </div>
 
   <div id="modalLogin" class="modal-login">
@@ -85,10 +46,10 @@
       <h2>Painel de Transparência</h2>
       <p>Acesse com CPF e senha cadastrados.</p>
 
-      <label>CPF</label>
-      <input type="text" id="loginCpf" placeholder="Digite seu CPF">
+      <label for="loginCpf">CPF</label>
+      <input type="text" id="loginCpf" maxlength="14" placeholder="000.000.000-00" required oninput="formatarCPF(this)">
 
-      <label>Senha</label>
+      <label for="loginSenha">Senha</label>
       <input type="password" id="loginSenha" placeholder="Digite sua senha">
 
       <button class="btn-login" onclick="validarLoginTransparencia()">
@@ -99,8 +60,81 @@
     </div>
   </div>
 
-  <script src="js/app.js"></script>
+  <script>
+    function abrirLoginTransparencia() {
+      document.getElementById("modalLogin").style.display = "flex";
+    }
 
+    function fecharLoginTransparencia() {
+      document.getElementById("modalLogin").style.display = "none";
+      document.getElementById("erroLogin").innerText = "";
+    }
+
+    function formatarCPF(input) {
+      let valor = input.value.replace(/\D/g, "");
+
+      valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+      valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+      valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+      input.value = valor;
+    }
+
+    function validarCPF(cpf) {
+      cpf = cpf.replace(/\D/g, "");
+
+      if (cpf.length !== 11) return false;
+      if (/^(\d)\1+$/.test(cpf)) return false;
+
+      let soma = 0;
+
+      for (let i = 0; i < 9; i++) {
+        soma += Number(cpf[i]) * (10 - i);
+      }
+
+      let resto = (soma * 10) % 11;
+      if (resto === 10) resto = 0;
+
+      if (resto !== Number(cpf[9])) return false;
+
+      soma = 0;
+
+      for (let i = 0; i < 10; i++) {
+        soma += Number(cpf[i]) * (11 - i);
+      }
+
+      resto = (soma * 10) % 11;
+      if (resto === 10) resto = 0;
+
+      return resto === Number(cpf[10]);
+    }
+
+    function validarLoginTransparencia() {
+      const cpf = document.getElementById("loginCpf").value.trim();
+      const senha = document.getElementById("loginSenha").value.trim();
+      const erro = document.getElementById("erroLogin");
+
+      if (!cpf || !senha) {
+        erro.innerText = "Informe CPF e senha.";
+        return;
+      }
+
+      if (!validarCPF(cpf)) {
+        erro.innerText = "CPF inválido.";
+        return;
+      }
+
+      if (cpf === "32531851844" && senha === "ERX2026") {
+        localStorage.setItem("usuarioLogado", "true");
+        window.location.href = "dashboard.html";
+      } else {
+        erro.innerText = "CPF ou senha inválidos.";
+      }
+    }
+  </script>
+
+  <script src="js/app.js"></script>
+ v 
 </body>
 
 </html>

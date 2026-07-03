@@ -23,7 +23,7 @@ async function carregarDashboard() {
     preencherTexto("demandas2026", demandas2026);
     preencherTexto("interacoes2025", interacoes2025);
     preencherTexto("interacoes2026", interacoes2026);
-    
+
     preencherTexto("donutTotal", demandas.total || 0);
 
     montarEvolucaoAnual([
@@ -286,6 +286,11 @@ function mostrarSecretaria() {
   const valor = servico.value;
 
   const mapaSecretarias = {
+
+    "IPTU": "SEFIN",
+    "Parcelamento": "SEFIN",
+    "Dívida Ativa": "SEFIN",
+
     "Limpeza Urbana": "SESURB",
     "Iluminação Pública": "SESURB",
     "Buraco na Rua": "SESURB",

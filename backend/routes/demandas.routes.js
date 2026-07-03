@@ -6,6 +6,11 @@ const PDFDocument = require("pdfkit");
 
 function definirSecretaria(servico) {
   const regras = {
+
+    "IPTU": "Finanças",
+    "Parcelamento": "Finanças",
+    "Dívida Ativa": "Finanças",
+
     "Limpeza Urbana": "SESURB",
     "Iluminação Pública": "SESURB",
     "Buraco na Rua": "SESURB",

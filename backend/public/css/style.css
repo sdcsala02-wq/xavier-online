@@ -2238,11 +2238,10 @@ body.tela-sistema .card-protocolo {
 /* FOTO DO VEREADOR */
 .foto-edu{
     position: absolute;
-
-    width: 230px;       /* aumenta/diminui o tamanho */
+    width: 190px;       /* aumenta/diminui o tamanho */
     bottom: -20px;      /* desce (use valores negativos) */
-    left: -10px;        /* move para direita/esquerda */
-
+    left: 10px;        /* move para direita/esquerda */
+ 
     opacity: 0.95;
     z-index: 1;
 
@@ -2662,5 +2661,596 @@ body.tela-sistema .card-protocolo {
     max-height: 280px !important;
     overflow-y: auto;
     padding-right: 4px;
+  }
+}
+
+/* ===== AJUSTE MOBILE - NOVA DEMANDA / CADASTRO ===== */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .main-content,
+  .content,
+  .page-content {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0 !important;
+    padding: 16px;
+  }
+
+  .form-container,
+  .cadastro-container,
+  .nova-demanda-container,
+  .card-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 18px !important;
+  }
+
+  .form-grid,
+  .grid-form,
+  form {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  textarea {
+    min-height: 120px;
+  }
+
+  .btn,
+  button,
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  h1, h2 {
+    font-size: 26px !important;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .actions,
+  .form-actions,
+  .botoes-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* =====================================================
+   CORREÇÃO MOBILE GERAL - XAVIER ONLINE
+   ===================================================== */
+
+@media (max-width: 768px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .main-content,
+  .content,
+  .page-content,
+  .dashboard-content,
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    padding: 16px !important;
+    box-sizing: border-box;
+  }
+
+  /* MENU MOBILE */
+  .sidebar {
+    position: fixed !important;
+    top: 64px !important;
+    left: -280px !important;
+    width: 260px !important;
+    height: calc(100vh - 64px) !important;
+    z-index: 9999 !important;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .sidebar.active {
+    left: 0 !important;
+  }
+
+  .mobile-menu-btn {
+    display: block !important;
+    width: calc(100% - 32px);
+    margin: 12px 16px;
+    height: 56px;
+    border-radius: 8px;
+    font-size: 28px;
+    background: #2f6df6;
+    color: #fff;
+    border: none;
+    z-index: 10000;
+  }
+
+  /* CARDS DO DASHBOARD */
+  .cards,
+  .cards-grid,
+  .dashboard-cards,
+  .kpi-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .card,
+  .kpi-card,
+  .dashboard-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* NOVA DEMANDA / CADASTRO */
+  .cadastro-page,
+  .nova-demanda-page,
+  .form-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 16px !important;
+    box-sizing: border-box;
+  }
+
+  .cadastro-container,
+  .nova-demanda-container,
+  .form-container,
+  .form-card,
+  .card-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 18px !important;
+    box-sizing: border-box;
+  }
+
+  form,
+  .form-grid,
+  .grid-form {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    width: 100% !important;
+  }
+
+  label {
+    width: 100%;
+    text-align: left;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    font-size: 16px !important;
+  }
+
+  textarea {
+    min-height: 120px !important;
+  }
+
+  .form-actions,
+  .actions,
+  .botoes-form {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100%;
+  }
+
+  button,
+  .btn,
+  .btn-primary,
+  .btn-secondary {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px;
+  }
+
+  .btn-ver-demandas,
+  .ver-demandas {
+    position: static !important;
+    width: 100% !important;
+    margin: 12px 0 !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-align: center;
+    line-height: 1.2;
+    word-break: normal;
+  }
+
+  h1 {
+    font-size: 28px !important;
+  }
+
+  h2 {
+    font-size: 22px !important;
+  }
+}
+
+/* =====================================================
+   AJUSTES FINAIS MOBILE - FORMULÁRIOS E RELATÓRIOS
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+  /* Corrige páginas de cadastro antigas */
+  body:has(.registro-container),
+  body:has(.cadastro-wrapper) {
+    overflow-x: hidden !important;
+  }
+
+  .registro-container,
+  .cadastro-wrapper,
+  .registro-card,
+  .solicitacao-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 16px !important;
+    transform: none !important;
+    left: auto !important;
+    right: auto !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+
+  .registro-container form,
+  .cadastro-wrapper form,
+  .registro-card form,
+  .solicitacao-card form {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Botão Ver Demandas */
+  .btn-ver-demandas,
+  a[href*="demandas"],
+  .ver-demandas {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 12px 0 20px 0 !important;
+    text-align: center !important;
+  }
+
+  /* Interações - botões exportação */
+  .export-buttons,
+  .botoes-exportacao,
+  .relatorio-actions,
+  .acoes-relatorio {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .export-buttons button,
+  .botoes-exportacao button,
+  .relatorio-actions button,
+  .acoes-relatorio button {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Power BI / Relatório Legislativo */
+  iframe,
+  .powerbi-frame,
+  .powerbi-container iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 75vh !important;
+  }
+
+  .powerbi-container,
+  .relatorio-container,
+  .bi-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+  }
+
+  .relatorio-header,
+  .top-menu,
+  .header-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .relatorio-header button,
+  .top-menu button,
+  .header-actions button,
+  .relatorio-header a,
+  .top-menu a,
+  .header-actions a {
+    width: 100% !important;
+  }
+}
+
+/* AJUSTE ESPECÍFICO MOBILE - CADASTRO.HTML */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden !important;
+  }
+
+  .cadastro-wrapper,
+  .cadastro-container,
+  .registro-container,
+  .registro-card,
+  .form-cadastro {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 16px !important;
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .cadastro-wrapper form,
+  .cadastro-container form,
+  .registro-container form,
+  .registro-card form,
+  .form-cadastro form {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .cadastro-wrapper input,
+  .cadastro-wrapper select,
+  .cadastro-wrapper textarea,
+  .cadastro-container input,
+  .cadastro-container select,
+  .cadastro-container textarea,
+  .registro-container input,
+  .registro-container select,
+  .registro-container textarea,
+  .registro-card input,
+  .registro-card select,
+  .registro-card textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* CENTRALIZAÇÃO DEFINITIVA DO INDEX */
+body:has(.hero) {
+  margin: 0;
+  overflow: hidden;
+}
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero .conteudo,
+.hero .conteudo.centro-index {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+
+  margin: 0 auto !important;
+  width: 100% !important;
+  max-width: 900px !important;
+
+  transform: translateY(-20px) !important;
+  text-align: center;
+  z-index: 2;
+}
+
+.hero .botoes {
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .hero .conteudo,
+  .hero .conteudo.centro-index {
+    max-width: 100% !important;
+    padding: 24px !important;
+    transform: translateY(-10px) !important;
+  }
+
+  .hero .conteudo h1 {
+    font-size: 42px !important;
+  }
+
+  .hero .conteudo p {
+    font-size: 16px !important;
+  }
+
+  .hero .botoes {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero .btn-principal,
+  .hero .btn-secundario {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* CORREÇÃO FINAL MOBILE - CADASTRO.HTML */
+@media (max-width: 768px) {
+
+  body.tela-sistema,
+  body.nova-demanda,
+  body {
+    overflow-x: hidden !important;
+  }
+
+  body.tela-sistema .conteudo,
+  body.tela-sistema .main-dashboard,
+  body.tela-sistema .main-content,
+  body.tela-sistema .page-content,
+  body.tela-sistema .content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 24px 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .sys-main,
+  .demanda-form-area,
+  .form-topo,
+  .form-grid,
+  .sys-form {
+    width: 100% !important;
+    max-width: 390px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-topo {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 18px !important;
+  }
+
+  .form-topo h2,
+  .form-topo h1,
+  .form-topo p {
+    text-align: center !important;
+  }
+
+  .sys-protocolo,
+  .card-protocolo,
+  .protocolo-card {
+    margin: 0 auto 18px auto !important;
+    max-width: 180px !important;
+    text-align: center !important;
+  }
+
+  .form-grid,
+  .sys-form {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    padding: 18px !important;
+    overflow: hidden !important;
+  }
+
+  .campo,
+  .field,
+  .form-item,
+  .span-2,
+  .span-3 {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  input,
+  select,
+  textarea,
+  button,
+  .btn-enviar {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .secretaria-destaque,
+  .secretaria-tecnica {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+  }
+
+  .acoes-form {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+} 
+
+/* CADASTRO DESKTOP - LAYOUT PROFISSIONAL */
+@media (min-width: 769px) {
+
+  body.tela-sistema .form-topo,
+  body.tela-sistema .form-grid,
+  body.tela-sistema .sys-form {
+    width: 100% !important;
+    max-width: 880px !important;
+  }
+
+  body.tela-sistema .form-grid {
+    padding: 22px 24px !important;
+    gap: 16px !important;
+
+    grid-template-columns:
+      1fr 1fr 1fr !important;
+  }
+
+  body.tela-sistema .campo textarea,
+  body.tela-sistema .field textarea {
+    min-height: 90px !important;
+  }
+
+  body.tela-sistema .sys-protocolo,
+  body.tela-sistema .card-protocolo {
+    margin-top: 6px;
+  }
+
+  body.tela-sistema .acoes-form {
+    margin-top: 10px;
   }
 }

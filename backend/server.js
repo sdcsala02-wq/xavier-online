@@ -5,6 +5,8 @@ const fs = require("fs");
 
 require("dotenv").config();
 
+const db = require("./db");
+
 const demandasRoutes = require("./routes/demandas.routes");
 const relatoriosRoutes = require("./routes/relatorios.routes");
 const dashboardRoutes = require("./routes/relatorios.dashboard.routes");
