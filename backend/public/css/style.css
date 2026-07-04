@@ -3856,3 +3856,40 @@ body.xavier-dashboard .eleitores-compacto .ranking-vazio {
   scrollbar-width: thin;
   scrollbar-color: #2563eb #0b1728;
 }
+
+/* INDEX MOBILE */
+
+@media (max-width: 600px) {
+
+  .hero-buttons,
+  .botoes {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 18px !important;
+
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 30px auto 0 auto !important;
+  }
+
+  .hero-buttons a,
+  .hero-buttons button,
+  .botoes a,
+  .botoes button {
+    width: 100% !important;
+    min-height: 58px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: 0 !important;
+    padding: 0 20px !important;
+
+    border-radius: 16px !important;
+    font-size: 18px !important;
+    box-sizing: border-box !important;
+  }
+}
