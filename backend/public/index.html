@@ -27,19 +27,19 @@
         do Vereador Eduardo Xavier
       </p>
 
-      <div class="botoes">
-        <a href="cadastro.html" class="btn-principal">
-          Registrar Solicitação
-        </a>
+      <a href="nova-demanda.html" class="btn-principal">
+        Registrar Solicitação
+      </a>
 
-        <button class="btn-secundario" onclick="abrirLoginTransparencia()">
-          Painel de Transparência
-        </button>
-      </div>
+      <button class="btn-secundario" onclick="abrirLoginTransparencia()">
+        Painel de Transparência
+      </button>
     </div>
+  </div>
   </div>
 
   <div id="modalLogin" class="modal-login">
+
     <div class="login-box">
       <button class="fechar-login" onclick="fecharLoginTransparencia()">✕</button>
 
@@ -47,10 +47,10 @@
       <p>Acesse com CPF e senha cadastrados.</p>
 
       <label for="loginCpf">CPF</label>
-      <input type="text" id="loginCpf" maxlength="14" placeholder="000.000.000-00" required oninput="formatarCPF(this)">
+      <input type="text" id="loginCpf" maxlength="14" placeholder="000.000.000-00" autocomplete="username" required oninput="formatarCPF(this)" onkeydown="entrarComEnter(event)">
 
       <label for="loginSenha">Senha</label>
-      <input type="password" id="loginSenha" placeholder="Digite sua senha">
+      <input type="password" id="loginSenha" placeholder="Digite sua senha" autocomplete="current-password" onkeydown="entrarComEnter(event)">
 
       <button class="btn-login" onclick="validarLoginTransparencia()">
         Entrar
@@ -58,20 +58,37 @@
 
       <small id="erroLogin"></small>
     </div>
+
   </div>
 
   <script>
     function abrirLoginTransparencia() {
       document.getElementById("modalLogin").style.display = "flex";
+
+      setTimeout(() => {
+        document.getElementById("loginCpf").focus();
+      }, 100);
     }
 
     function fecharLoginTransparencia() {
       document.getElementById("modalLogin").style.display = "none";
       document.getElementById("erroLogin").innerText = "";
+      document.getElementById("loginCpf").value = "";
+      document.getElementById("loginSenha").value = "";
+    }
+
+    function entrarComEnter(event) {
+      if (event.key === "Enter") {
+        validarLoginTransparencia();
+      }
+    }
+
+    function limparCPF(valor) {
+      return String(valor || "").replace(/\D/g, "");
     }
 
     function formatarCPF(input) {
-      let valor = input.value.replace(/\D/g, "");
+      let valor = limparCPF(input.value).slice(0, 11);
 
       valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
       valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
@@ -80,87 +97,107 @@
       input.value = valor;
     }
 
-    function validarCPF(cpf) {
-      cpf = cpf.replace(/\D/g, "");
+    function cpfTemOnzeNumeros(cpf) {
+      return limparCPF(cpf).length === 11;
+    }
 
-      if (cpf.length !== 11) return false;
-      if (/^(\d)\1+$/.test(cpf)) return false;
+    function redirecionarPorPerfil(perfil) {
+      const perfilNormalizado = String(perfil || "").toUpperCase();
 
-      let soma = 0;
-
-      for (let i = 0; i < 9; i++) {
-        soma += Number(cpf[i]) * (10 - i);
+      if (perfilNormalizado === "ADMIN") {
+        window.location.href = "dashboard.html";
+        return;
       }
 
-      let resto = (soma * 10) % 11;
-      if (resto === 10) resto = 0;
-
-      if (resto !== Number(cpf[9])) return false;
-
-      soma = 0;
-
-      for (let i = 0; i < 10; i++) {
-        soma += Number(cpf[i]) * (11 - i);
+      if (perfilNormalizado === "ASSESSOR") {
+        window.location.href = "dashboard.html";
+        return;
       }
 
-      resto = (soma * 10) % 11;
-      if (resto === 10) resto = 0;
+      if (perfilNormalizado === "LIDERANCA") {
+        window.location.href = "mapa.html";
+        return;
+      }
 
-      return resto === Number(cpf[10]);
+      if (perfilNormalizado === "CONSULTA") {
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      window.location.href = "dashboard.html";
     }
 
     async function validarLoginTransparencia() {
-  const cpf = document.getElementById("loginCpf").value.trim();
-  const senha = document.getElementById("loginSenha").value.trim();
-  const erro = document.getElementById("erroLogin");
+      const cpf = document.getElementById("loginCpf").value.trim();
+      const senha = document.getElementById("loginSenha").value.trim();
+      const erro = document.getElementById("erroLogin");
 
-  erro.innerText = "";
+      erro.innerText = "";
 
-  if (!cpf || !senha) {
-    erro.innerText = "Informe CPF e senha.";
-    return;
-  }
+      if (!cpf || !senha) {
+        erro.innerText = "Informe CPF e senha.";
+        return;
+      }
 
-  if (!validarCPF(cpf)) {
-    erro.innerText = "CPF inválido.";
-    return;
-  }
+      if (!cpfTemOnzeNumeros(cpf)) {
+        erro.innerText = "CPF inválido. Informe 11 números.";
+        return;
+      }
 
-  try {
+      try {
+        const resposta = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            cpf: limparCPF(cpf),
+            senha: senha
+          })
+        });
 
-    const resposta = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        cpf: cpf.replace(/\D/g, ""),
-        senha: senha
-      })
-    });
+        const dados = await resposta.json();
 
-    const dados = await resposta.json();
+        if (!resposta.ok || !dados.ok) {
+          erro.innerText = dados.mensagem || "CPF ou senha inválidos.";
+          return;
+        }
 
-    if (!dados.ok) {
-      erro.innerText = dados.mensagem || "CPF ou senha inválidos.";
-      return;
+        localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+
+        redirecionarPorPerfil(dados.usuario.perfil);
+
+      } catch (e) {
+        console.error(e);
+        erro.innerText = "Erro ao conectar com o servidor.";
+      }
     }
 
-    localStorage.setItem("usuarioLogado", "true");
-    localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+    async function verificarSessaoAtiva() {
+      try {
+        const resposta = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include"
+        });
 
-    window.location.href = "dashboard.html";
+        const dados = await resposta.json();
 
-  } catch (e) {
-    console.error(e);
-    erro.innerText = "Erro ao conectar com o servidor.";
-  }
-}
+        if (resposta.ok && dados.ok && dados.usuario) {
+          localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+          redirecionarPorPerfil(dados.usuario.perfil);
+        }
+
+      } catch (erro) {
+        localStorage.removeItem("usuario");
+      }
+    }
+
+    verificarSessaoAtiva();
   </script>
 
   <script src="js/app.js"></script>
- v 
+
 </body>
 
 </html>

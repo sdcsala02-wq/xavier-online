@@ -1,12 +1,141 @@
-const API_DEMANDAS = "http://localhost:3000/api/demandas-gabinete";
-const API_INTERACOES = "http://localhost:3000/api/interacoes";
+const API_DEMANDAS = "/api/demandas-gabinete";
+const API_INTERACOES = "/api/interacoes";
+
+let USUARIO_LOGADO = null;
+
+async function carregarUsuarioLogado() {
+  try {
+    const resposta = await fetch("/api/auth/me", {
+      method: "GET",
+      credentials: "include"
+    });
+
+    const dados = await resposta.json();
+
+    if (!resposta.ok || !dados.ok) {
+      localStorage.removeItem("usuario");
+      localStorage.removeItem("usuarioLogado");
+      window.location.href = "index.html";
+      return null;
+    }
+
+    USUARIO_LOGADO = dados.usuario;
+    localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+    localStorage.setItem("usuarioLogado", "true");
+
+    aplicarPermissoesMenu(dados.usuario.perfil);
+
+    return dados.usuario;
+
+  } catch (erro) {
+    console.error("Erro ao verificar usuário:", erro);
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("usuarioLogado");
+    window.location.href = "index.html";
+    return null;
+  }
+}
+
+function aplicarPermissoesMenu(perfil) {
+  const perfilNormalizado = String(perfil || "").toUpperCase();
+
+  const regras = {
+    ADMIN: [
+      "dashboard.html",
+      "demandas-gabinete.html",
+      "nova-demanda.html",
+      "protocolo.html",
+      "mapa.html",
+      "eleitores.html",
+      "relatorio-legislativo.html",
+      "interacoes.html",
+      "importar.html",
+      "secretarias.html",
+      "liderancas.html",
+      "configuracoes.html"
+    ],
+
+    ASSESSOR: [
+      "dashboard.html",
+      "demandas-gabinete.html",
+      "nova-demanda.html",
+      "protocolo.html",
+      "mapa.html",
+      "eleitores.html",
+      "relatorio-legislativo.html",
+      "interacoes.html",
+      "importar.html",
+      "secretarias.html",
+      "liderancas.html"
+    ],
+
+    LIDERANCA: [
+      "dashboard.html",
+      "demandas-gabinete.html",
+      "nova-demanda.html",
+      "protocolo.html",
+      "mapa.html",
+      "liderancas.html"
+    ],
+
+    CONSULTA: [
+      "dashboard.html",
+      "protocolo.html",
+      "mapa.html",
+      "relatorio-legislativo.html"
+    ]
+  };
+
+  const permitidos = regras[perfilNormalizado] || regras.CONSULTA;
+
+  document.querySelectorAll(".menu a").forEach(link => {
+    const href = link.getAttribute("href");
+
+    if (!href || href === "#" || href.startsWith("http")) return;
+
+    if (!permitidos.includes(href)) {
+      link.style.display = "none";
+    }
+  });
+}
+
+function marcarPaginaAtiva() {
+  const paginaAtual = window.location.pathname.split("/").pop();
+
+  document.querySelectorAll(".menu a").forEach(link => {
+    const href = link.getAttribute("href");
+
+    link.classList.remove("active");
+    link.classList.remove("ativo");
+
+    if (href === paginaAtual) {
+      link.classList.add("active");
+    }
+  });
+}
+
+async function logoutSistema() {
+  try {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+  } catch (erro) {
+    console.error("Erro ao sair:", erro);
+  }
+
+  localStorage.clear();
+  sessionStorage.clear();
+
+  window.location.replace("/index.html");
+}
 
 async function carregarDashboard() {
   try {
     const [resDemandas, resInteracoes, resLista] = await Promise.all([
-      fetch(`${API_DEMANDAS}/resumo`),
-      fetch(`${API_INTERACOES}/resumo`),
-      fetch(API_DEMANDAS)
+      fetch(`${API_DEMANDAS}/resumo`, { credentials: "include" }),
+      fetch(`${API_INTERACOES}/resumo`, { credentials: "include" }),
+      fetch(API_DEMANDAS, { credentials: "include" })
     ]);
 
     const demandas = await resDemandas.json();
@@ -44,7 +173,6 @@ async function carregarDashboard() {
 
 function totalAno(lista, ano) {
   if (!Array.isArray(lista)) return 0;
-
   const item = lista.find(i => Number(i.ano) === Number(ano));
   return Number(item?.total || 0);
 }
@@ -261,20 +389,12 @@ function limitarTexto(texto, limite = 40) {
   return valor.length <= limite ? valor : `${valor.substring(0, limite)}...`;
 }
 
-document.addEventListener("DOMContentLoaded", carregarDashboard);
-
 function exportarExcel() {
-  window.open(
-    "http://localhost:3000/api/demandas/exportar/excel",
-    "_blank"
-  );
+  window.open("/api/demandas/exportar/excel", "_blank");
 }
 
 function exportarPDF() {
-  window.open(
-    "http://localhost:3000/api/demandas/exportar/pdf",
-    "_blank"
-  );
+  window.open("/api/demandas/exportar/pdf", "_blank");
 }
 
 function mostrarSecretaria() {
@@ -286,7 +406,6 @@ function mostrarSecretaria() {
   const valor = servico.value;
 
   const mapaSecretarias = {
-
     "IPTU": "SEFIN",
     "Parcelamento": "SEFIN",
     "Dívida Ativa": "SEFIN",
@@ -315,3 +434,21 @@ function mostrarSecretaria() {
 
   secretariaPreview.innerText = mapaSecretarias[valor] || "---";
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const pagina = window.location.pathname.split("/").pop();
+
+  if (pagina !== "index.html" && pagina !== "") {
+    await carregarUsuarioLogado();
+  }
+
+  marcarPaginaAtiva();
+
+  if (
+    document.getElementById("demandas2025") ||
+    document.getElementById("rankingSecretarias") ||
+    document.getElementById("evolucaoMensal")
+  ) {
+    carregarDashboard();
+  }
+});

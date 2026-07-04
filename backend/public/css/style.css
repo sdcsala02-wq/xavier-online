@@ -2238,8 +2238,8 @@ body.tela-sistema .card-protocolo {
 /* FOTO DO VEREADOR */
 .foto-edu{
     position: absolute;
-    width: 190px;       /* aumenta/diminui o tamanho */
-    bottom: -20px;      /* desce (use valores negativos) */
+    width: 180px;       /* aumenta/diminui o tamanho */
+    bottom: -30px;      /* desce (use valores negativos) */
     left: 10px;        /* move para direita/esquerda */
  
     opacity: 0.95;
@@ -3678,4 +3678,181 @@ body.xavier-dashboard .eleitores-compacto .ranking-vazio {
   .botoes-eleitor button {
     width: 100%;
   }
+}
+
+/* MENU PADRÃO E MOBILE FINAL atualizado  */
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.menu a.active,
+.menu a:hover {
+  background: #1d4ed8;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    width: 48px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 !important;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    font-size: 26px;
+    z-index: 10001;
+  }
+
+  .sidebar,
+  .xavier-dashboard .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -270px !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    z-index: 10000 !important;
+    transition: left .3s ease;
+  }
+
+  .sidebar.active,
+  .xavier-dashboard .sidebar.active {
+    left: 0 !important;
+  }
+
+  .conteudo,
+  .main-dashboard,
+  .xavier-dashboard .conteudo,
+  .xavier-dashboard .main-dashboard {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 76px 14px 24px !important;
+  }
+
+  .topbar {
+    height: auto !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px;
+  }
+
+  .topbar-right {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .sidebar-phone {
+    display: none !important;
+  }
+
+  .sidebar-footer {
+    margin-top: 16px;
+  }
+}
+
+/* =====================================================
+   CORREÇÃO DEFINITIVA SIDEBAR - NÃO CORTAR MENU
+===================================================== */
+
+.sidebar,
+.xavier-dashboard .sidebar {
+  height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Menu pode rolar e não corta os itens */
+.menu {
+  flex: 1 1 auto !important;
+  overflow: visible !important;
+  margin-top: 12px !important;
+  gap: 4px !important;
+}
+
+.menu a {
+  padding: 8px 10px !important;
+  font-size: 13px !important;
+  line-height: 1.15 !important;
+}
+
+/* Reduz imagem do Eduardo */
+.sidebar-phone {
+  height: 145px !important;
+  margin: 6px 0 4px !important;
+  flex-shrink: 0 !important;
+}
+
+.foto-edu {
+  width: 130px !important;
+  bottom: -12px !important;
+  left: 28px !important;
+}
+
+.celular-img {
+  width: 82px !important;
+  bottom: -12px !important;
+  left: 34px !important;
+}
+
+/* Rodapé menor */
+.sidebar-footer {
+  margin-top: 6px !important;
+  padding: 8px 10px !important;
+  flex-shrink: 0 !important;
+}
+
+.sidebar-footer p {
+  font-size: 10px !important;
+  margin: 4px 0 !important;
+}
+
+.sidebar-footer span {
+  font-size: 10px !important;
+}
+
+/* Em tela baixa, esconde a imagem para priorizar o menu */
+@media (max-height: 780px) {
+  .sidebar-phone {
+    display: none !important;
+  }
+}
+
+/* BARRA DE ROLAGEM PADRÃO XAVIER */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b1728;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}
+
+.ranking-bairros,
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #2563eb #0b1728;
 }

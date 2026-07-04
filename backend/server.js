@@ -21,13 +21,12 @@ const eleitoresRoutes = require("./routes/eleitores.routes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || "xavier_online_segredo_temporario";
+const frontendPath = path.join(__dirname, "public");
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
-
-app.use(express.json());
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 function limparCPF(valor) {
@@ -35,8 +34,7 @@ function limparCPF(valor) {
 }
 
 function cpfValido(valor) {
-  const cpf = limparCPF(valor);
-  return cpf.length === 11;
+  return limparCPF(valor).length === 11;
 }
 
 function gerarToken(usuario) {
@@ -44,18 +42,17 @@ function gerarToken(usuario) {
     {
       id: usuario.id,
       nome: usuario.nome,
+      cpf: limparCPF(usuario.cpf),
       perfil: usuario.perfil
     },
-    process.env.JWT_SECRET || "xavier_online_segredo_temporario",
+    JWT_SECRET,
     { expiresIn: "8h" }
   );
 }
 
 function autenticar(req, res, next) {
   try {
-    const token =
-      req.cookies?.token ||
-      req.headers.authorization?.replace("Bearer ", "");
+    const token = req.cookies?.token || req.headers.authorization?.replace("Bearer ", "");
 
     if (!token) {
       return res.status(401).json({
@@ -64,12 +61,7 @@ function autenticar(req, res, next) {
       });
     }
 
-    const usuario = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "xavier_online_segredo_temporario"
-    );
-
-    req.usuario = usuario;
+    req.usuario = jwt.verify(token, JWT_SECRET);
     next();
   } catch (erro) {
     return res.status(401).json({
@@ -92,16 +84,64 @@ function autorizarPerfis(...perfisPermitidos) {
   };
 }
 
-// Frontend dentro do backend/public
-const frontendPath = path.join(__dirname, "public");
+function autenticarPagina(req, res, next) {
+  const paginasPublicas = [
+    "index.html",
+    "login.html",
+    "nova-demanda.html"
+  ];
+  const pagina = req.params.pagina || "index.html";
+
+  if (paginasPublicas.includes(pagina)) {
+    return next();
+  }
+
+  const token = req.cookies?.token;
+
+  if (!token) {
+    return res.redirect("/index.html");
+  }
+
+  try {
+    jwt.verify(token, JWT_SECRET);
+    return next();
+  } catch (erro) {
+    return res.redirect("/index.html");
+  }
+}
+
+function protegerPaginaPorPerfil(perfisPermitidos) {
+  return (req, res, next) => {
+    const token = req.cookies?.token;
+
+    if (!token) {
+      return res.redirect("/index.html");
+    }
+
+    try {
+      const usuario = jwt.verify(token, JWT_SECRET);
+
+      if (!perfisPermitidos.includes(usuario.perfil)) {
+        return res.status(403).send("Acesso negado.");
+      }
+
+      req.usuario = usuario;
+      return next();
+    } catch (erro) {
+      return res.redirect("/index.html");
+    }
+  };
+}
 
 console.log("Frontend path:", frontendPath);
 console.log("Index existe:", fs.existsSync(path.join(frontendPath, "index.html")));
 
-// Servir frontend
-app.use(express.static(frontendPath));
+app.use("/css", express.static(path.join(frontendPath, "css")));
+app.use("/js", express.static(path.join(frontendPath, "js")));
+app.use("/img", express.static(path.join(frontendPath, "img")));
+app.use("/assets", express.static(path.join(frontendPath, "assets")));
+app.use("/data", express.static(path.join(frontendPath, "data")));
 
-// Status da API
 app.get("/api/status", (req, res) => {
   res.json({
     sistema: "Xavier Online",
@@ -109,23 +149,10 @@ app.get("/api/status", (req, res) => {
   });
 });
 
-// Login somente por CPF
 app.post("/api/auth/login", async (req, res) => {
   try {
-
-    console.log("BODY RECEBIDO:");
-    console.log(req.body);
-
-    const { login, cpf, senha } = req.body;
-
+    const { cpf, login, senha } = req.body;
     const cpfRecebido = cpf || login;
-
-    console.log("CPF recebido:", cpfRecebido);
-    console.log("Senha recebida:", senha);
-
-    // resto do código...
-
-
     const cpfLimpo = limparCPF(cpfRecebido);
 
     if (!cpfValido(cpfLimpo)) {
@@ -135,16 +162,16 @@ app.post("/api/auth/login", async (req, res) => {
       });
     }
 
+    if (!senha) {
+      return res.status(400).json({
+        ok: false,
+        mensagem: "Informe a senha."
+      });
+    }
+
     const resultado = await db.query(
       `
-      SELECT 
-        id,
-        nome,
-        email,
-        cpf,
-        senha_hash,
-        perfil,
-        ativo
+      SELECT id, nome, email, cpf, senha_hash, perfil, ativo
       FROM usuarios
       WHERE REGEXP_REPLACE(COALESCE(cpf, ''), '[^0-9]', '', 'g') = $1
       LIMIT 1
@@ -183,6 +210,7 @@ app.post("/api/auth/login", async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
       maxAge: 8 * 60 * 60 * 1000
     });
 
@@ -192,7 +220,6 @@ app.post("/api/auth/login", async (req, res) => {
       usuario: {
         id: usuario.id,
         nome: usuario.nome,
-        email: usuario.email,
         cpf: usuario.cpf,
         perfil: usuario.perfil
       }
@@ -207,7 +234,6 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-// Verificar usuário logado
 app.get("/api/auth/me", autenticar, async (req, res) => {
   try {
     const resultado = await db.query(
@@ -241,9 +267,13 @@ app.get("/api/auth/me", autenticar, async (req, res) => {
   }
 });
 
-// Logout
 app.post("/api/auth/logout", (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/"
+  });
 
   return res.json({
     ok: true,
@@ -251,33 +281,65 @@ app.post("/api/auth/logout", (req, res) => {
   });
 });
 
-// Rotas da API
-app.use("/api/demandas", demandasRoutes);
-app.use("/api/relatorios", relatoriosRoutes);
-app.use("/api/relatorios", dashboardRoutes);
-app.use("/api/liderancas", liderancasRoutes);
-app.use("/api/interacoes", interacoesRoutes);
-app.use("/api/cidadaos", cidadaosRoutes);
-app.use("/api/demandas-gabinete", demandasGabineteRoutes);
-app.use("/api/eleitores", eleitoresRoutes);
+app.use("/api/demandas", autenticar, demandasRoutes);
+app.use("/api/relatorios", autenticar, relatoriosRoutes);
+app.use("/api/relatorios", autenticar, dashboardRoutes);
 
-// Página inicial
+app.use(
+  "/api/liderancas",
+  autenticar,
+  autorizarPerfis("ADMIN", "ASSESSOR"),
+  liderancasRoutes
+);
+
+app.use(
+  "/api/interacoes",
+  autenticar,
+  autorizarPerfis("ADMIN", "ASSESSOR", "ATENDENTE"),
+  interacoesRoutes
+);
+
+app.use("/api/cidadaos", autenticar, cidadaosRoutes);
+app.use("/api/demandas-gabinete", autenticar, demandasGabineteRoutes);
+
+app.use(
+  "/api/eleitores",
+  autenticar,
+  autorizarPerfis("ADMIN", "ASSESSOR"),
+  eleitoresRoutes
+);
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// Páginas HTML
-app.get("/:pagina", (req, res, next) => {
-  const arquivo = path.join(frontendPath, req.params.pagina);
+app.get("/index.html", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
 
-  if (fs.existsSync(arquivo)) {
+app.get("/configuracoes.html", protegerPaginaPorPerfil(["ADMIN"]), (req, res) => {
+  res.sendFile(path.join(frontendPath, "configuracoes.html"));
+});
+
+app.get("/importar.html", protegerPaginaPorPerfil(["ADMIN", "ASSESSOR"]), (req, res) => {
+  res.sendFile(path.join(frontendPath, "importar.html"));
+});
+
+app.get("/eleitores.html", protegerPaginaPorPerfil(["ADMIN", "ASSESSOR"]), (req, res) => {
+  res.sendFile(path.join(frontendPath, "eleitores.html"));
+});
+
+app.get("/:pagina", autenticarPagina, (req, res, next) => {
+  const pagina = req.params.pagina;
+  const arquivo = path.join(frontendPath, pagina);
+
+  if (fs.existsSync(arquivo) && pagina.endsWith(".html")) {
     return res.sendFile(arquivo);
   }
 
   next();
 });
 
-// Página não encontrada
 app.use((req, res) => {
   res.status(404).send("Não encontrado");
 });

@@ -6,12 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Executivo | Xavier Online</title>
 
-  <script>
-    if (localStorage.getItem("usuarioLogado") !== "true") {
-      window.location.href = "index.html";
-    }
-  </script>
-
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/dashboard-executivo.css">
 </head>
@@ -35,11 +29,11 @@
 
       <nav class="menu">
 
-        <a href="dashboard.html" class="active">
+        <a href="dashboard.html">
           ▣ Dashboard
         </a>
 
-        <a href="admin.html">
+        <a href="demandas-gabinete.html">
           📋 Demandas
         </a>
 
@@ -53,6 +47,10 @@
 
         <a href="mapa.html">
           🗺️ Mapa da Cidade
+        </a>
+
+        <a href="eleitores.html">
+          🗳️ Eleitores
         </a>
 
         <a href="relatorio-legislativo.html">
@@ -90,11 +88,8 @@
       </nav>
 
       <div class="sidebar-phone">
-
         <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
-
         <img class="celular-img" src="img/celular.png" alt="Xavier Online">
-
       </div>
 
       <div class="sidebar-footer">
@@ -124,7 +119,7 @@
             Importar Planilha
           </a>
 
-          <button class="btn-sair" onclick="logoutSistema()">
+          <button class="btn-sair" onclick="sairSistema()">
             🚪 Sair
           </button>
 
@@ -215,7 +210,7 @@
               <p>Top 10 setores acionados</p>
             </div>
 
-            <a href="admin.html">
+            <a href="demandas-gabinete.html">
               📋 Demandas
             </a>
           </div>
@@ -268,7 +263,7 @@
               <p>Registros mais recentes importados</p>
             </div>
 
-            <a href="admin.html">
+            <a href="demandas-gabinete.html">
               📋 Demandas
             </a>
           </div>
@@ -302,19 +297,44 @@
     </main>
 
   </div>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
 
   <script>
     function logoutSistema() {
       localStorage.removeItem("usuarioLogado");
       window.location.href = "index.html";
     }
+
+    function toggleSidebar() {
+      document.querySelector(".sidebar").classList.toggle("active");
+    }
+
+    const paginaAtual = window.location.pathname.split("/").pop();
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+    });
   </script>
 
-  <script src="js/app.js"></script>
-
   <script>
-    function toggleSidebar() {
-      document.querySelector('.sidebar').classList.toggle('active');
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
     }
   </script>
 

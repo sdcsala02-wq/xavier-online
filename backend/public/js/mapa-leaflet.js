@@ -1,4 +1,4 @@
-const API_URL_MAPA_REAL = "http://localhost:3000/api/demandas-gabinete";
+const API_URL_MAPA_REAL = "/api/demandas-gabinete";
 
 const mapa = L.map("mapaLeaflet", {
   zoomControl: true,
@@ -45,7 +45,9 @@ const BAIRROS_IGNORADOS = [
 async function carregarMapaReal() {
   try {
     const [demandasResp, geojsonResp] = await Promise.all([
-      fetch(API_URL_MAPA_REAL),
+      fetch(API_URL_MAPA_REAL, {
+        credentials: "include"
+      }),
       fetch("data/bairros-praia-grande.geojson")
     ]);
 
@@ -576,7 +578,11 @@ async function carregarLideranca(bairro) {
   if (!div) return;
 
   try {
-    const resposta = await fetch("http://localhost:3000/api/liderancas/resumo");
+    const resposta = await fetch("/api/liderancas/resumo",
+      {
+        credentials: "include"
+      }
+    );
     const lista = await resposta.json();
 
     const lideranca = lista.find(item =>

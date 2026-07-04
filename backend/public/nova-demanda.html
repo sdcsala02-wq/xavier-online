@@ -4,149 +4,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova Demanda | Xavier Online</title>
+  <title>Registrar Solicitação | Xavier Online</title>
 
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body class="xavier-dashboard">
 
-  <div class="app-layout">
+  <main class="conteudo main-dashboard" style="margin-left: 0; width: 100%;">
 
-    <aside class="sidebar">
+    <header class="topbar">
+      <div>
+        <h2>Registrar Solicitação</h2>
+        <p class="subtitulo-dashboard">
+          Atendimento do Gabinete Eduardo Xavier
+        </p>
+      </div>
 
-      <div class="brand">
-        <div class="brand-icon">🏛️</div>
+      <div class="topbar-right">
+        <a href="index.html" class="btn-nova">Voltar ao início</a>
+      </div>
+    </header>
+
+    <section class="painel">
+
+      <div class="painel-topo centralizado">
         <div>
-          <h2>XAVIER ONLINE</h2>
-          <span>PRAIA GRANDE - SP</span>
+          <h3>NOVA DEMANDA</h3>
+          <p>Preencha as informações para gerar um protocolo</p>
         </div>
       </div>
 
-      <nav class="menu">
-        <a href="dashboard.html">▣ Dashboard</a>
-        <a href="admin.html">📋 Demandas</a>
-        <a href="nova-demanda.html" class="active">➕ Nova Demanda</a>
-        <a href="protocolo.html">🔎 Protocolo</a>
-        <a href="mapa.html">🗺️ Mapa da Cidade</a>
-        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
-        <a href="interacoes.html">💬 Interações</a>
-        <a href="importar.html">⬆ Importar Planilha</a>
-        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
-        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
-        <a href="secretarias.html">☷ Secretarias</a>
-        <a href="liderancas.html">👥 Lideranças</a>
-        <a href="configuracoes.html">⚙ Configurações</a>
-      </nav>
+      <form id="formNovaDemanda" class="form-grid">
 
-      <div class="sidebar-footer">
-        <strong>XAVIER ONLINE</strong>
-        <p>Gestão territorial de demandas comunitárias.</p>
-        <span>Versão 1.0.0</span>
-      </div>
-
-    </aside>
-
-    <main class="conteudo main-dashboard">
-
-      <header class="topbar">
-        <div>
-          <h2>Nova Demanda</h2>
-          <p class="subtitulo-dashboard">
-            Cadastro de solicitações do Gabinete Eduardo Xavier
-          </p>
+        <div class="form-item">
+          <label>Nome Completo</label>
+          <input type="text" id="nome" required>
         </div>
 
-        <div class="topbar-right">
-          <a href="admin.html" class="btn-nova">Ver Demandas</a>
-        </div>
-      </header>
-
-      <section class="painel">
-
-        <div class="painel-topo centralizado">
-          <div>
-            <h3>NOVA DEMANDA</h3>
-            <p>Preencha as informações para gerar um protocolo</p>
-          </div>
+        <div class="form-item">
+          <label>Telefone</label>
+          <input type="text" id="telefone" placeholder="(13) 99999-9999">
         </div>
 
-        <form id="formNovaDemanda" class="form-grid">
+        <div class="form-item">
+          <label>Bairro</label>
+          <input type="text" id="bairro">
+        </div>
 
-          <div class="form-item">
-            <label>Nome Completo</label>
-            <input type="text" id="nome" required>
-          </div>
+        <div class="form-item">
+          <label>Endereço</label>
+          <input type="text" id="endereco">
+        </div>
 
-          <div class="form-item">
-            <label>Telefone</label>
-            <input type="text" id="telefone" placeholder="(13) 99999-9999">
-          </div>
+        <div class="form-item">
+          <label>Serviço</label>
+          <select id="servico" required>
+            <option value="">Selecione o serviço</option>
+            <option value="Obras Públicas">Obras Públicas</option>
+            <option value="Áreas Públicas">Áreas Públicas</option>
+            <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
+            <option value="Tapa Buraco">Tapa Buraco</option>
+            <option value="Iluminação Pública">Iluminação Pública</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Educação">Educação</option>
+            <option value="Segurança">Segurança</option>
+            <option value="Trânsito e Transporte">Trânsito e Transporte</option>
+            <option value="Agenda com Vereador">Agenda com Vereador</option>
+            <option value="Projetos e Melhorias">Projetos e Melhorias</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
 
-          <div class="form-item">
-            <label>Bairro</label>
-            <input type="text" id="bairro">
-          </div>
+        <div class="form-item">
+          <label>Secretaria</label>
+          <select id="secretaria" required>
+            <option value="">Selecione o serviço primeiro</option>
+            <option value="SESAP">SESAP</option>
+            <option value="SESURB">SESURB</option>
+            <option value="SETRANSP">SETRANSP</option>
+            <option value="SEDUC">SEDUC</option>
+            <option value="SEOP">SEOP</option>
+            <option value="SEASP">SEASP</option>
+            <option value="GABINETE">GABINETE</option>
+          </select>
+        </div>
 
-          <div class="form-item">
-            <label>Endereço</label>
-            <input type="text" id="endereco">
-          </div>
+        <div class="form-item descricao">
+          <label>Descrição da Demanda</label>
+          <textarea id="descricao" rows="6" required></textarea>
+        </div>
 
-          <div class="form-item">
-            <label>Serviço</label>
-            <select id="servico" required>
-              <option value="">Selecione o serviço</option>
-              <option value="Obras Públicas">Obras Públicas</option>
-              <option value="Áreas Públicas">Áreas Públicas</option>
-              <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
-              <option value="Tapa Buraco">Tapa Buraco</option>
-              <option value="Iluminação Pública">Iluminação Pública</option>
-              <option value="Saúde">Saúde</option>
-              <option value="Educação">Educação</option>
-              <option value="Segurança">Segurança</option>
-              <option value="Trânsito e Transporte">Trânsito e Transporte</option>
-              <option value="Agenda com Vereador">Agenda com Vereador</option>
-              <option value="Projetos e Melhorias">Projetos e Melhorias</option>
-              <option value="Outros">Outros</option>
-            </select>
-          </div>
+        <div class="form-item descricao">
+          <button type="submit" class="btn-nova">
+            Salvar Demanda
+          </button>
+        </div>
 
-          <div class="form-item">
-            <label>Secretaria</label>
-            <select id="secretaria" required>
-              <option value="">Selecione o serviço primeiro</option>
-              <option value="SESAP">SESAP</option>
-              <option value="SESURB">SESURB</option>
-              <option value="SETRANSP">SETRANSP</option>
-              <option value="SEDUC">SEDUC</option>
-              <option value="SEOP">SEOP</option>
-              <option value="SEASP">SEASP</option>
-              <option value="GABINETE">GABINETE</option>
-            </select>
-          </div>
+      </form>
 
-          <div class="form-item descricao">
-            <label>Descrição da Demanda</label>
-            <textarea id="descricao" rows="6" required></textarea>
-          </div>
+    </section>
 
-          <div class="form-item descricao">
-            <button type="submit" class="btn-nova">
-              Salvar Demanda
-            </button>
-          </div>
-
-        </form>
-
-      </section>
-
-    </main>
-
-  </div>
+  </main>
 
   <script src="js/nova-demanda.js"></script>
-  <script src="js/app.js"></script>
 
 </body>
 
