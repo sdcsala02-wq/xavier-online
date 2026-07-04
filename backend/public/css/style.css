@@ -3857,39 +3857,43 @@ body.xavier-dashboard .eleitores-compacto .ranking-vazio {
   scrollbar-color: #2563eb #0b1728;
 }
 
-/* INDEX MOBILE */
+//* INDEX MOBILE - VERSÃO FINAL */
+@media (max-width: 768px) {
 
-@media (max-width: 600px) {
-
-  .hero-buttons,
-  .botoes {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 18px !important;
-
-    width: 100% !important;
-    max-width: 320px !important;
-    margin: 30px auto 0 auto !important;
+  .hero .conteudo,
+  .hero .conteudo.centro-index {
+    max-width: 100% !important;
+    padding: 24px !important;
+    transform: translateY(0) !important;
   }
 
-  .hero-buttons a,
-  .hero-buttons button,
-  .botoes a,
-  .botoes button {
+  .logo-x {
+    width: 130px !important;
+    height: 130px !important;
+    font-size: 80px !important;
+    margin-bottom: 30px !important;
+  }
+
+  .hero .conteudo h1 {
+    font-size: 76px !important;
+    line-height: 1.05 !important;
+    margin-bottom: 24px !important;
+  }
+
+  .hero .conteudo p {
+    font-size: 26px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 40px !important;
+  }
+
+  .btn-principal,
+  .btn-secundario {
+    display: block !important;
     width: 100% !important;
-    min-height: 58px !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    margin: 0 !important;
-    padding: 0 20px !important;
-
-    border-radius: 16px !important;
-    font-size: 18px !important;
-    box-sizing: border-box !important;
+    max-width: 340px !important;
+    margin: 0 auto 16px auto !important;
+    padding: 18px 24px !important;
+    font-size: 22px !important;
+    border-radius: 18px !important;
   }
 }
