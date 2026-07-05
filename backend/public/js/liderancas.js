@@ -1,5 +1,5 @@
-const API_LIDERANCAS = "http://localhost:3000/api/liderancas";
-const API_DEMANDAS = "http://localhost:3000/api/demandas";
+const API_LIDERANCAS_XAVIER = "/api/liderancas";
+const API_DEMANDAS_LIDERANCAS_XAVIER = "/api/demandas";
 
 let liderancaEditandoId = null;
 
@@ -7,6 +7,39 @@ document.addEventListener("DOMContentLoaded", () => {
   carregarLiderancas();
   configurarFormularioLideranca();
 });
+
+function garantirArray(dados) {
+  if (Array.isArray(dados)) return dados;
+  if (Array.isArray(dados?.dados)) return dados.dados;
+  if (Array.isArray(dados?.liderancas)) return dados.liderancas;
+  if (Array.isArray(dados?.rows)) return dados.rows;
+  return [];
+}
+
+async function buscarJsonLiderancas(url, opcoes = {}) {
+  const resposta = await fetch(url, {
+    credentials: "include",
+    ...opcoes
+  });
+
+  const texto = await resposta.text();
+
+  let dados = null;
+
+  try {
+    dados = texto ? JSON.parse(texto) : null;
+  } catch {
+    dados = {
+      erro: texto || "Resposta inválida do servidor."
+    };
+  }
+
+  if (!resposta.ok) {
+    throw new Error(dados?.erro || dados?.mensagem || `Erro HTTP ${resposta.status}`);
+  }
+
+  return dados;
+}
 
 function configurarFormularioLideranca() {
   const form = document.getElementById("formLideranca");
@@ -30,25 +63,18 @@ function configurarFormularioLideranca() {
 
     try {
       const url = liderancaEditandoId
-        ? `${API_LIDERANCAS}/${liderancaEditandoId}`
-        : API_LIDERANCAS;
+        ? `${API_LIDERANCAS_XAVIER}/${liderancaEditandoId}`
+        : API_LIDERANCAS_XAVIER;
 
       const metodo = liderancaEditandoId ? "PUT" : "POST";
 
-      const resposta = await fetch(url, {
+      await buscarJsonLiderancas(url, {
         method: metodo,
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(dados)
       });
-
-      const retorno = await resposta.json();
-
-      if (!resposta.ok) {
-        alert(retorno.erro || "Erro ao salvar liderança.");
-        return;
-      }
 
       alert(
         liderancaEditandoId
@@ -61,18 +87,24 @@ function configurarFormularioLideranca() {
 
     } catch (error) {
       console.error(error);
-      alert("Erro ao conectar com a API.");
+      alert(error.message || "Erro ao conectar com a API.");
     }
   });
 }
 
 async function carregarLiderancas() {
   try {
-    const respLiderancas = await fetch(API_LIDERANCAS);
-    const liderancas = await respLiderancas.json();
+    const dadosLiderancas = await buscarJsonLiderancas(API_LIDERANCAS_XAVIER);
+    const liderancas = garantirArray(dadosLiderancas);
 
-    const respDemandas = await fetch(API_DEMANDAS);
-    const demandas = await respDemandas.json();
+    let demandas = [];
+
+    try {
+      const dadosDemandas = await buscarJsonLiderancas(API_DEMANDAS_LIDERANCAS_XAVIER);
+      demandas = garantirArray(dadosDemandas);
+    } catch (erroDemandas) {
+      console.warn("Não foi possível carregar demandas relacionadas:", erroDemandas);
+    }
 
     atualizarCards(liderancas, demandas);
     montarTabelaLiderancas(liderancas);
@@ -80,25 +112,39 @@ async function carregarLiderancas() {
 
   } catch (error) {
     console.error("Erro ao carregar lideranças:", error);
+
+    atualizarCards([], []);
+    montarTabelaLiderancas([]);
+    montarRankingLiderancas([]);
   }
 }
 
 function atualizarCards(liderancas, demandas) {
-  const bairros = new Set(liderancas.map(item => normalizar(item.bairro)));
+  const listaLiderancas = garantirArray(liderancas);
+  const listaDemandas = garantirArray(demandas);
 
-  const demandasRelacionadas = demandas.filter(demanda =>
+  const bairros = new Set(
+    listaLiderancas
+      .map(item => normalizar(item.bairro))
+      .filter(Boolean)
+  );
+
+  const demandasRelacionadas = listaDemandas.filter(demanda =>
     bairros.has(normalizar(demanda.bairro))
   );
 
-  document.getElementById("totalLiderancas").innerText = liderancas.length;
+  document.getElementById("totalLiderancas").innerText = listaLiderancas.length;
   document.getElementById("totalBairrosLiderancas").innerText = bairros.size;
   document.getElementById("totalDemandasLiderancas").innerText = demandasRelacionadas.length;
 }
 
 function montarTabelaLiderancas(liderancas) {
   const tbody = document.getElementById("listaLiderancas");
+  const lista = garantirArray(liderancas);
 
-  if (!liderancas.length) {
+  if (!tbody) return;
+
+  if (!lista.length) {
     tbody.innerHTML = `
       <tr>
         <td colspan="5">Nenhuma liderança cadastrada.</td>
@@ -107,7 +153,7 @@ function montarTabelaLiderancas(liderancas) {
     return;
   }
 
-  tbody.innerHTML = liderancas.map(item => `
+  tbody.innerHTML = lista.map(item => `
     <tr>
       <td>${item.bairro || "-"}</td>
       <td>${item.nome || "-"}</td>
@@ -169,6 +215,7 @@ function limparFormulario() {
   liderancaEditandoId = null;
 
   const form = document.getElementById("formLideranca");
+
   if (form) form.reset();
 
   const botao = document.querySelector("#formLideranca button[type='submit']");
@@ -186,21 +233,23 @@ function limparFormulario() {
 
 function montarRankingLiderancas(liderancas) {
   const container = document.getElementById("rankingLiderancas");
+  const listaLiderancas = garantirArray(liderancas);
 
-  if (!liderancas.length) {
+  if (!container) return;
+
+  if (!listaLiderancas.length) {
     container.innerHTML = "<p>Nenhuma liderança cadastrada.</p>";
     return;
   }
 
   const resumo = {};
 
-  liderancas.forEach(item => {
-    resumo[item.bairro] = (resumo[item.bairro] || 0) + 1;
+  listaLiderancas.forEach(item => {
+    const bairro = item.bairro || "Não informado";
+    resumo[bairro] = (resumo[bairro] || 0) + 1;
   });
 
-  const lista = Object.entries(resumo)
-    .sort((a, b) => b[1] - a[1]);
-
+  const lista = Object.entries(resumo).sort((a, b) => b[1] - a[1]);
   const maior = Math.max(...lista.map(item => item[1]));
 
   container.innerHTML = lista.map(([bairro, total]) => {
@@ -222,20 +271,15 @@ async function excluirLideranca(id) {
   if (!confirm("Deseja excluir esta liderança?")) return;
 
   try {
-    const resposta = await fetch(`${API_LIDERANCAS}/${id}`, {
+    await buscarJsonLiderancas(`${API_LIDERANCAS_XAVIER}/${id}`, {
       method: "DELETE"
     });
-
-    if (!resposta.ok) {
-      alert("Erro ao excluir liderança.");
-      return;
-    }
 
     carregarLiderancas();
 
   } catch (error) {
     console.error(error);
-    alert("Erro ao conectar com a API.");
+    alert(error.message || "Erro ao excluir liderança.");
   }
 }
 

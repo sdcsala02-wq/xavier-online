@@ -5,181 +5,352 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mapa da Cidade | Xavier Online</title>
+
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
+    .mapa-cards {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .mapa-layout {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 18px;
+    }
+
+    .mapa-painel {
+      min-height: 520px;
+    }
+
+    #mapaLeaflet {
+      width: 100%;
+      height: 460px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .ranking-painel {
+      min-height: 520px;
+    }
+
+    .demandas-bairro {
+      grid-column: 1 / -1;
+      overflow-x: auto;
+    }
+
+    .demandas-bairro table {
+      min-width: 900px;
+    }
+
+    @media (max-width: 1100px) {
+      .mapa-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .mapa-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .mapa-cards {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .mapa-layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      .painel {
+        padding: 16px;
+      }
+
+      #mapaLeaflet {
+        height: 420px;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+
+      .topbar-right {
+        margin-top: 14px;
+      }
+
+      .topbar-right .btn-nova {
+        width: 100%;
+      }
+
+      .demandas-bairro {
+        overflow-x: auto;
+      }
+    }
+  </style>
 </head>
 
 <body class="xavier-dashboard">
 
-  <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
 
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brasao">🏛️</div>
-      <div>
-        <h1>XAVIER ONLINE</h1>
-        <span>PRAIA GRANDE - SP</span>
+  <div class="app-layout">
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
+
+        <div>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
+        </div>
       </div>
-    </div>
 
-    <nav class="menu">
-      <a href="dashboard.html">▣ Dashboard</a>
+      <nav class="menu">
 
-      <a href="demandas-gabinete.html">
-        📋 Demandas
-      </a>
+        <a href="dashboard.html">▣ Dashboard</a>
 
-      <a href="nova-demanda.html">
-        ➕ Nova Demanda
-      </a>
+        <a href="demandas-gabinete.html">📋 Demandas</a>
 
-      <a href="protocolo.html">
-        🔎 Protocolo
-      </a>
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
 
-      <a href="mapa.html" class="ativo">
-        🗺️ Mapa da Cidade
-      </a>
+        <a href="protocolo.html">🔎 Protocolo</a>
 
-      <a href="eleitores.html">
-        🗳️ Eleitores
-      </a>
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
 
-      <a href="relatorio-legislativo.html">
-        📊 Relatório Legislativo
-      </a>
-      <a href="http://localhost:3000/api/demandas/exportar/excel">⬇ Exportar Excel</a>
-      <a href="http://localhost:3000/api/demandas/exportar/pdf">📄 Exportar PDF</a>
-      <a href="secretarias.html">☷ Secretarias</a>
-      <a href="liderancas.html">👥 Lideranças</a>
-      <a href="#">⚙ Configurações</a>
-    </nav>
+        <a href="eleitores.html">🗳️ Eleitores</a>
 
-    </nav>
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
 
-    <div class="sidebar-phone">
-      <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
-      <img class="celular-img" src="img/celular.png" alt="Xavier Online">
-    </div>
+        <a href="interacoes.html">💬 Interações</a>
 
-    <div class="sidebar-footer">
+        <a href="importar.html">⬆ Importar Planilha</a>
 
-      <div class="sidebar-info">
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
+        <a href="secretarias.html">☷ Secretarias</a>
+
+        <a href="liderancas.html">👥 Lideranças</a>
+
+        <a href="configuracoes.html">⚙ Configurações</a>
+
+      </nav>
+
+      <div class="sidebar-phone">
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+      </div>
+
+      <div class="sidebar-footer">
         <strong>XAVIER ONLINE</strong>
         <p>Mapa de demandas por bairro de Praia Grande.</p>
-        <small>Versão 1.0.0</small>
-      </div>
-  </aside>
-
-  <main class="main-dashboard">
-
-    <header class="topbar">
-      <div>
-        <h2>🗺 Mapa da Cidade</h2>
+        <span>Versão 1.0.0</span>
       </div>
 
-      <div class="topbar-right">
-        <span>Demandas por bairro</span>
-        <a href="cadastro.html" class="btn-nova">+ Nova Demanda</a>
-      </div>
-    </header>
+    </aside>
 
-    <section class="cards-modernos mapa-cards">
-      <div class="card-mod azul">
-        <h3>Total de Bairros</h3>
-        <strong id="totalBairros">0</strong>
-        <p>Bairros com registros</p>
-      </div>
+    <main class="conteudo main-dashboard">
 
-      <div class="card-mod verde">
-        <h3>Total de Demandas</h3>
-        <strong id="totalDemandasMapa">0</strong>
-        <p>Demandas cadastradas</p>
-      </div>
+      <header class="topbar dashboard-mobile-top">
 
-      <div class="card-mod roxo">
-        <h3>Bairro Destaque</h3>
-        <strong id="bairroDestaque">-</strong>
-        <p>Maior volume de solicitações</p>
-      </div>
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
 
-      <div class="card-mod laranja">
-        <h3>Selecionado</h3>
-        <strong id="bairroSelecionado">-</strong>
-        <p id="infoBairroSelecionado">Bairro em análise</p>
-      </div>
-    </section>
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
 
-    <section class="mapa-layout">
+      </header>
 
-      <div class="painel mapa-painel">
-        <div class="painel-topo">
-          <h3>Mapa Visual de Praia Grande</h3>
-          <a href="#" onclick="limparSelecaoBairro(); return false;">Limpar seleção</a>
+      <header class="topbar">
+
+        <div>
+          <h2>🗺 Mapa da Cidade</h2>
+          <p class="subtitulo-dashboard">
+            Demandas por bairro
+          </p>
         </div>
 
-        <div id="mapaLeaflet"></div>
-      </div>
-
-      <div class="painel ranking-painel">
-        <div class="painel-topo">
-          <h3>Ranking por Bairro</h3>
-          <a href="#">Ver dados</a>
+        <div class="topbar-right">
+          <a href="nova-demanda.html" class="btn-nova">+ Nova Demanda</a>
         </div>
 
-        <div class="lideranca-bairro-box">
-          <h3>Liderança Responsável</h3>
-          <div id="dadosLideranca">
-            <p>Selecione um bairro no mapa.</p>
+      </header>
+
+      <section class="cards-modernos mapa-cards">
+
+        <div class="card-mod azul">
+          <h3>Total de Bairros</h3>
+          <strong id="totalBairros">0</strong>
+          <p>Bairros com registros</p>
+        </div>
+
+        <div class="card-mod verde">
+          <h3>Total de Demandas</h3>
+          <strong id="totalDemandasMapa">0</strong>
+          <p>Demandas cadastradas</p>
+        </div>
+
+        <div class="card-mod roxo">
+          <h3>Bairro Destaque</h3>
+          <strong id="bairroDestaque">-</strong>
+          <p>Maior volume de solicitações</p>
+        </div>
+
+        <div class="card-mod laranja">
+          <h3>Selecionado</h3>
+          <strong id="bairroSelecionado">-</strong>
+          <p id="infoBairroSelecionado">Bairro em análise</p>
+        </div>
+
+      </section>
+
+      <section class="mapa-layout">
+
+        <div class="painel mapa-painel">
+
+          <div class="painel-topo">
+            <h3>Mapa Visual de Praia Grande</h3>
+            <a href="#" onclick="limparSelecaoBairro(); return false;">Limpar seleção</a>
           </div>
+
+          <div id="mapaLeaflet"></div>
+
         </div>
 
-        <div id="rankingBairros" class="ranking-bairros"></div>
+        <div class="painel ranking-painel">
 
-        <div class="secretarias-bairro-box">
-          <h3>Secretarias no Bairro</h3>
-          <div id="secretariasDoBairro">
-            <p>Selecione um bairro no mapa.</p>
+          <div class="painel-topo">
+            <h3>Ranking por Bairro</h3>
+            <a href="#">Ver dados</a>
           </div>
+
+          <div class="lideranca-bairro-box">
+            <h3>Liderança Responsável</h3>
+
+            <div id="dadosLideranca">
+              <p>Selecione um bairro no mapa.</p>
+            </div>
+          </div>
+
+          <div id="rankingBairros" class="ranking-bairros"></div>
+
+          <div class="secretarias-bairro-box">
+            <h3>Secretarias no Bairro</h3>
+
+            <div id="secretariasDoBairro">
+              <p>Selecione um bairro no mapa.</p>
+            </div>
+          </div>
+
         </div>
-      </div>
 
-      <div class="painel painel-tabela demandas-bairro">
-        <div class="painel-topo">
-          <h3 id="tituloDemandasBairro">Demandas do Bairro</h3>
-          <a href="admin.html">Ver todas</a>
+        <div class="painel painel-tabela demandas-bairro">
+
+          <div class="painel-topo">
+            <h3 id="tituloDemandasBairro">Demandas do Bairro</h3>
+            <a href="demandas-gabinete.html">Ver todas</a>
+          </div>
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Protocolo</th>
+                <th>Nome</th>
+                <th>Serviço</th>
+                <th>Secretaria</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody id="listaDemandasBairro">
+              <tr>
+                <td colspan="5">
+                  Clique em um bairro para visualizar as demandas.
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Protocolo</th>
-              <th>Nome</th>
-              <th>Serviço</th>
-              <th>Secretaria</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+      </section>
 
-          <tbody id="listaDemandasBairro">
-            <tr>
-              <td colspan="5">Clique em um bairro para visualizar as demandas.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    </main>
 
-    </section>
-
-  </main>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/mapa-leaflet.js?v=7"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
 
   <script>
     function toggleSidebar() {
-      document.querySelector(".sidebar").classList.toggle("active");
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
     }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
   </script>
 
 </body>

@@ -94,9 +94,34 @@
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+      }
+
+      .cards-modernos {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
       .filtros-admin {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+      }
+
+      .filtros-admin button {
+        width: 100%;
+      }
+
+      .painel {
+        padding: 16px;
+      }
+
+      .painel-tabela {
+        overflow-x: auto;
+      }
+
+      .painel-tabela table {
+        min-width: 1000px;
       }
     }
   </style>
@@ -104,7 +129,7 @@
 
 <body class="xavier-dashboard">
 
-  <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
 
   <div class="app-layout">
 
@@ -121,61 +146,33 @@
 
       <nav class="menu">
 
-        <a href="dashboard.html">
-          ▣ Dashboard
-        </a>
+        <a href="dashboard.html">▣ Dashboard</a>
 
-        <a href="demandas-gabinete.html">
-          📋 Demandas
-        </a>
+        <a href="demandas-gabinete.html">📋 Demandas</a>
 
-        <a href="nova-demanda.html">
-          ➕ Nova Demanda
-        </a>
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
 
-        <a href="protocolo.html">
-          🔎 Protocolo
-        </a>
+        <a href="protocolo.html">🔎 Protocolo</a>
 
-        <a href="mapa.html">
-          🗺️ Mapa da Cidade
-        </a>
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
 
-        <a href="eleitores.html">
-          🗳️ Eleitores
-        </a>
+        <a href="eleitores.html">🗳️ Eleitores</a>
 
-        <a href="relatorio-legislativo.html">
-          📊 Relatório Legislativo
-        </a>
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
 
-        <a href="interacoes.html">
-          💬 Interações
-        </a>
+        <a href="interacoes.html">💬 Interações</a>
 
-        <a href="importar.html">
-          ⬆ Importar Planilha
-        </a>
+        <a href="importar.html">⬆ Importar Planilha</a>
 
-        <a href="#" onclick="exportarExcel(); return false;">
-          ⬇ Exportar Excel
-        </a>
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
 
-        <a href="#" onclick="exportarPDF(); return false;">
-          📄 Exportar PDF
-        </a>
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
 
-        <a href="secretarias.html">
-          ☷ Secretarias
-        </a>
+        <a href="secretarias.html">☷ Secretarias</a>
 
-        <a href="liderancas.html">
-          👥 Lideranças
-        </a>
+        <a href="liderancas.html">👥 Lideranças</a>
 
-        <a href="configuracoes.html">
-          ⚙ Configurações
-        </a>
+        <a href="configuracoes.html">⚙ Configurações</a>
 
       </nav>
 
@@ -193,6 +190,18 @@
     </aside>
 
     <main class="conteudo main-dashboard">
+
+      <header class="topbar dashboard-mobile-top">
+
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
+
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
+
+      </header>
 
       <header class="topbar">
 
@@ -288,9 +297,7 @@
 
           <tbody id="listaDemandasGabinete">
             <tr>
-              <td colspan="7">
-                Carregando registros...
-              </td>
+              <td colspan="7">Carregando registros...</td>
             </tr>
           </tbody>
 
@@ -308,17 +315,49 @@
 
   <script>
     function toggleSidebar() {
-      document.querySelector(".sidebar").classList.toggle("active");
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
     }
 
-    const paginaAtual = window.location.pathname.split("/").pop();
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
 
     document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
       const href = link.getAttribute("href");
 
       if (href === paginaAtual) {
         link.classList.add("active");
       }
+
+      link.addEventListener("click", fecharSidebar);
     });
   </script>
 

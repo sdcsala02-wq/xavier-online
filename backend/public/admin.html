@@ -7,16 +7,111 @@
   <title>Demandas | Xavier Online</title>
 
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
+    .filtros-admin {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .filtros-admin input,
+    .filtros-admin select {
+      width: 100%;
+      height: 46px;
+      background: #0f172a;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, .25);
+      border-radius: 10px;
+      padding: 0 12px;
+      outline: none;
+      font-weight: 700;
+    }
+
+    .painel-tabela {
+      overflow-x: auto;
+    }
+
+    .painel-tabela table {
+      min-width: 1000px;
+    }
+
+    .modal-grid input,
+    .modal-grid select,
+    .modal-grid textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .modal-grid textarea {
+      min-height: 120px;
+    }
+
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .cards-modernos {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .filtros-admin {
+        grid-template-columns: 1fr !important;
+      }
+
+      .painel {
+        padding: 16px !important;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+
+      .topbar-right {
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .topbar-right .btn-nova {
+        width: 100%;
+      }
+
+      .modal-conteudo {
+        width: calc(100% - 24px) !important;
+        max-height: 88vh;
+        overflow-y: auto;
+      }
+
+      .modal-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
 </head>
 
-
 <body class="xavier-dashboard">
+
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
 
   <div class="app-layout">
 
     <aside class="sidebar">
+
       <div class="brand">
         <div class="brand-icon">🏛️</div>
+
         <div>
           <h2>XAVIER ONLINE</h2>
           <span>PRAIA GRANDE - SP</span>
@@ -24,44 +119,78 @@
       </div>
 
       <nav class="menu">
+
         <a href="dashboard.html">▣ Dashboard</a>
-        <a href="admin.html" class="active">📋 Demandas</a>
-        <a href="demandas-gabinete.html">➕ Nova Demanda</a>
+
+        <a href="admin.html">📋 Demandas</a>
+
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
+
         <a href="protocolo.html">🔎 Protocolo</a>
+
         <a href="mapa.html">🗺️ Mapa da Cidade</a>
+
+        <a href="eleitores.html">🗳️ Eleitores</a>
+
         <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+
         <a href="interacoes.html">💬 Interações</a>
+
         <a href="importar.html">⬆ Importar Planilha</a>
-        <a href="#" onclick="exportarExcel(); return false;">
-          ⬇ Exportar Excel
-        </a>
-        <a href="#" onclick="exportarPDF(); return false;">
-          📄 Exportar PDF
-        </a>
+
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
         <a href="secretarias.html">☷ Secretarias</a>
+
         <a href="liderancas.html">👥 Lideranças</a>
+
         <a href="configuracoes.html">⚙ Configurações</a>
+
       </nav>
+
+      <div class="sidebar-phone">
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+      </div>
 
       <div class="sidebar-footer">
         <strong>XAVIER ONLINE</strong>
-        <p>Gestão territorial de demandas comunitárias.</p>
+        <p>Gestão interna das demandas comunitárias.</p>
         <span>Versão 1.0.0</span>
       </div>
+
     </aside>
 
     <main class="conteudo main-dashboard">
 
+      <header class="topbar dashboard-mobile-top">
+
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
+
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
+
+      </header>
+
       <header class="topbar">
+
         <div>
           <h2>Demandas</h2>
-          <p class="subtitulo-dashboard">Gestão interna das demandas do Gabinete Eduardo Xavier</p>
+          <p class="subtitulo-dashboard">
+            Gestão interna das demandas do Gabinete Eduardo Xavier
+          </p>
         </div>
 
         <div class="topbar-right">
           <a href="dashboard.html" class="btn-nova">Dashboard</a>
           <a href="relatorio-legislativo.html" class="btn-nova">Relatório Legislativo</a>
         </div>
+
       </header>
 
       <section class="cards-modernos">
@@ -93,6 +222,7 @@
       </section>
 
       <section class="painel">
+
         <div class="painel-topo">
           <div>
             <h3>Filtros</h3>
@@ -100,7 +230,8 @@
           </div>
         </div>
 
-        <div class="filtros-admin" style="grid-template-columns: 1fr 220px;">
+        <div class="filtros-admin">
+
           <input type="text" id="filtroBusca" placeholder="Pesquisar protocolo ou nome...">
 
           <select id="filtroStatus">
@@ -111,7 +242,9 @@
             <option value="EM EXECUÇÃO">EM EXECUÇÃO</option>
             <option value="RESOLVIDA">RESOLVIDA</option>
           </select>
+
         </div>
+
       </section>
 
       <section class="painel painel-tabela">
@@ -124,6 +257,7 @@
         </div>
 
         <table>
+
           <thead>
             <tr>
               <th>Protocolo</th>
@@ -141,6 +275,7 @@
               <td colspan="7">Carregando demandas...</td>
             </tr>
           </tbody>
+
         </table>
 
       </section>
@@ -150,22 +285,33 @@
   </div>
 
   <div id="modalDemanda" class="modal">
+
     <div class="modal-conteudo">
+
       <div class="modal-topo">
         <h2>Detalhes da Demanda</h2>
-        <button onclick="fecharModal()">✕</button>
+
+        <button onclick="fecharModal()">
+          ✕
+        </button>
       </div>
 
       <div id="conteudoModal"></div>
+
     </div>
+
   </div>
 
   <div id="modalEditarDemanda" class="modal">
+
     <div class="modal-conteudo">
 
       <div class="modal-topo">
         <h2>Editar Demanda</h2>
-        <button onclick="fecharModalEditar()">✕</button>
+
+        <button onclick="fecharModalEditar()">
+          ✕
+        </button>
       </div>
 
       <form id="formEditarDemanda" class="modal-grid">
@@ -204,6 +350,7 @@
 
         <div class="modal-item">
           <strong>Status</strong>
+
           <select id="editarStatus">
             <option value="RECEBIDA">RECEBIDA</option>
             <option value="EM ANÁLISE">EM ANÁLISE</option>
@@ -227,11 +374,60 @@
       </form>
 
     </div>
+
   </div>
 
   <script src="js/admin.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
+    }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
+  </script>
 
 </body>
 

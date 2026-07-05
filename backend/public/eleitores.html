@@ -9,6 +9,10 @@
   <link rel="stylesheet" href="css/style.css">
 
   <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
     .eleitores-compacto .painel {
       padding: 18px 20px;
       min-height: auto;
@@ -165,16 +169,85 @@
       border: none;
       cursor: pointer;
     }
+
+    .painel-tabela {
+      overflow-x: auto;
+    }
+
+    .painel-tabela table {
+      min-width: 1200px;
+    }
+
+    @media (max-width: 1200px) {
+      .eleitores-compacto .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filtros-eleitores {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .ranking-grid-eleitores {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .eleitores-compacto .form-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .filtros-eleitores {
+        grid-template-columns: 1fr !important;
+      }
+
+      .ranking-grid-eleitores {
+        grid-template-columns: 1fr !important;
+      }
+
+      .cards-modernos {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .botoes-eleitor button,
+      .filtros-eleitores button {
+        width: 100%;
+      }
+
+      .painel {
+        padding: 16px !important;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+
+      .ranking-linha-eleitores {
+        grid-template-columns: 100px 1fr 40px !important;
+      }
+    }
   </style>
 </head>
 
 <body class="xavier-dashboard">
 
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
+
   <div class="app-layout">
 
     <aside class="sidebar">
+
       <div class="brand">
         <div class="brand-icon">🏛️</div>
+
         <div>
           <h2>XAVIER ONLINE</h2>
           <span>PRAIA GRANDE - SP</span>
@@ -182,21 +255,34 @@
       </div>
 
       <nav class="menu">
+
         <a href="dashboard.html">▣ Dashboard</a>
-        <a href="admin.html">📋 Demandas</a>
+
+        <a href="demandas-gabinete.html">📋 Demandas</a>
+
         <a href="nova-demanda.html">➕ Nova Demanda</a>
+
         <a href="protocolo.html">🔎 Protocolo</a>
+
         <a href="mapa.html">🗺️ Mapa da Cidade</a>
+
+        <a href="eleitores.html">🗳️ Eleitores</a>
+
         <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+
         <a href="interacoes.html">💬 Interações</a>
-        <a href="eleitores.html" class="active">🗳️ Eleitores</a>
+
         <a href="importar.html">⬆ Importar Planilha</a>
+
         <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
         <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
         <a href="secretarias.html">☷ Secretarias</a>
+
         <a href="liderancas.html">👥 Lideranças</a>
+
         <a href="configuracoes.html">⚙ Configurações</a>
-      </nav>
 
       </nav>
 
@@ -206,15 +292,26 @@
       </div>
 
       <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Gestão territorial e base eleitoral.</p>
+        <span>Versão 1.0.0</span>
+      </div>
 
-        <div class="sidebar-footer">
-          <strong>XAVIER ONLINE</strong>
-          <p>Gestão territorial e base eleitoral.</p>
-          <span>Versão 1.0.0</span>
-        </div>
     </aside>
 
     <main class="conteudo main-dashboard eleitores-compacto">
+
+      <header class="topbar dashboard-mobile-top">
+
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
+
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
+
+      </header>
 
       <header class="topbar">
         <div>
@@ -224,6 +321,7 @@
       </header>
 
       <section class="cards-modernos">
+
         <div class="card-mod azul">
           <h3>Total de Eleitores</h3>
           <strong id="cardEleitoresTotal">0</strong>
@@ -247,9 +345,11 @@
           <strong id="cardEleitoresSecoes">0</strong>
           <p>Seções cadastradas</p>
         </div>
+
       </section>
 
       <section class="painel">
+
         <div class="painel-topo">
           <div>
             <h3>Cadastrar Eleitor</h3>
@@ -258,18 +358,58 @@
         </div>
 
         <form id="formEleitor" class="form-grid">
+
           <input type="hidden" id="eleitorId">
 
-          <div class="form-item"><label>Nome Completo</label><input type="text" id="nome" required></div>
-          <div class="form-item"><label>Título de Eleitor</label><input type="text" id="titulo_eleitor"></div>
-          <div class="form-item"><label>Zona Eleitoral</label><input type="text" id="zona"></div>
-          <div class="form-item"><label>Seção Eleitoral</label><input type="text" id="secao"></div>
-          <div class="form-item"><label>Escola de Votação</label><input type="text" id="escola_votacao"></div>
-          <div class="form-item"><label>Telefone</label><input type="text" id="telefone"></div>
-          <div class="form-item"><label>Rua</label><input type="text" id="rua"></div>
-          <div class="form-item"><label>Número</label><input type="text" id="numero"></div>
-          <div class="form-item"><label>Complemento</label><input type="text" id="complemento"></div>
-          <div class="form-item"><label>Bairro</label><input type="text" id="bairro"></div>
+          <div class="form-item">
+            <label>Nome Completo</label>
+            <input type="text" id="nome" required>
+          </div>
+
+          <div class="form-item">
+            <label>Título de Eleitor</label>
+            <input type="text" id="titulo_eleitor">
+          </div>
+
+          <div class="form-item">
+            <label>Zona Eleitoral</label>
+            <input type="text" id="zona">
+          </div>
+
+          <div class="form-item">
+            <label>Seção Eleitoral</label>
+            <input type="text" id="secao">
+          </div>
+
+          <div class="form-item">
+            <label>Escola de Votação</label>
+            <input type="text" id="escola_votacao">
+          </div>
+
+          <div class="form-item">
+            <label>Telefone</label>
+            <input type="text" id="telefone">
+          </div>
+
+          <div class="form-item">
+            <label>Rua</label>
+            <input type="text" id="rua">
+          </div>
+
+          <div class="form-item">
+            <label>Número</label>
+            <input type="text" id="numero">
+          </div>
+
+          <div class="form-item">
+            <label>Complemento</label>
+            <input type="text" id="complemento">
+          </div>
+
+          <div class="form-item">
+            <label>Bairro</label>
+            <input type="text" id="bairro">
+          </div>
 
           <div class="form-item descricao">
             <label>Endereço Completo</label>
@@ -285,10 +425,13 @@
             <button type="submit" class="btn-nova" id="btnSalvarEleitor">Salvar</button>
             <button type="button" class="btn-secundario" onclick="limparFormularioEleitor()">Limpar</button>
           </div>
+
         </form>
+
       </section>
 
       <section class="painel">
+
         <div class="painel-topo">
           <div>
             <h3>Filtros Avançados</h3>
@@ -297,6 +440,7 @@
         </div>
 
         <div class="filtros-eleitores">
+
           <input type="text" id="filtroBusca" placeholder="Busca geral">
           <input type="text" id="filtroTitulo" placeholder="Título">
           <input type="text" id="filtroZona" placeholder="Zona">
@@ -309,10 +453,13 @@
 
           <button class="btn-nova" onclick="carregarEleitores()">Filtrar</button>
           <button class="btn-secundario" onclick="limparFiltrosEleitores()">Limpar Filtros</button>
+
         </div>
+
       </section>
 
       <section class="painel">
+
         <div class="painel-topo">
           <div>
             <h3>Rankings</h3>
@@ -321,25 +468,35 @@
         </div>
 
         <section class="cards-modernos">
+
           <div class="card-mod azul">
-            <h3>Bairros</h3><strong id="cardEleitoresBairros">0</strong>
+            <h3>Bairros</h3>
+            <strong id="cardEleitoresBairros">0</strong>
             <p>Bairros cadastrados</p>
           </div>
+
           <div class="card-mod verde">
-            <h3>Ruas</h3><strong id="cardEleitoresRuas">0</strong>
+            <h3>Ruas</h3>
+            <strong id="cardEleitoresRuas">0</strong>
             <p>Ruas cadastradas</p>
           </div>
+
           <div class="card-mod roxo">
-            <h3>Top Escola</h3><strong id="cardTopEscola">-</strong>
+            <h3>Top Escola</h3>
+            <strong id="cardTopEscola">-</strong>
             <p>Maior concentração</p>
           </div>
+
           <div class="card-mod laranja">
-            <h3>Top Bairro</h3><strong id="cardTopBairro">-</strong>
+            <h3>Top Bairro</h3>
+            <strong id="cardTopBairro">-</strong>
             <p>Maior concentração</p>
           </div>
+
         </section>
 
         <div class="ranking-grid-eleitores">
+
           <div class="ranking-box-eleitores">
             <h3>Ranking por Escola</h3>
             <div id="rankingEscolas" class="ranking-lista-eleitores">Carregando...</div>
@@ -359,10 +516,13 @@
             <h3>Ranking por Zona/Seção</h3>
             <div id="rankingSecoes" class="ranking-lista-eleitores">Carregando...</div>
           </div>
+
         </div>
+
       </section>
 
       <section class="painel painel-tabela">
+
         <div class="painel-topo">
           <div>
             <h3>Eleitores Cadastrados</h3>
@@ -371,6 +531,7 @@
         </div>
 
         <table>
+
           <thead>
             <tr>
               <th>Nome</th>
@@ -390,26 +551,35 @@
               <td colspan="9">Carregando eleitores...</td>
             </tr>
           </tbody>
+
         </table>
+
       </section>
 
     </main>
+
   </div>
 
   <script>
-    const API_ELEITORES = "http://localhost:3000/api/eleitores";
+    const API_ELEITORES = "/api/eleitores";
 
     document.addEventListener("DOMContentLoaded", () => {
       carregarResumo();
       carregarEleitores();
 
       const form = document.getElementById("formEleitor");
-      if (form) form.addEventListener("submit", salvarEleitor);
+
+      if (form) {
+        form.addEventListener("submit", salvarEleitor);
+      }
     });
 
     async function carregarResumo() {
       try {
-        const resposta = await fetch(`${API_ELEITORES}/resumo`);
+        const resposta = await fetch(`${API_ELEITORES}/resumo`, {
+          credentials: "include"
+        });
+
         const dados = await resposta.json();
 
         document.getElementById("cardEleitoresTotal").innerText = dados.total || 0;
@@ -449,6 +619,7 @@
 
     function renderRanking(id, lista, formatador) {
       const div = document.getElementById(id);
+
       if (!div) return;
 
       if (!lista || !lista.length) {
@@ -465,9 +636,11 @@
         return `
           <div class="ranking-linha-eleitores">
             <span title="${dados.nome}">${dados.nome}</span>
+
             <div class="barra-eleitores">
               <b style="width:${percentual}%"></b>
             </div>
+
             <strong>${dados.total}</strong>
           </div>
         `;
@@ -492,16 +665,21 @@
 
         Object.entries(filtros).forEach(([param, id]) => {
           const valor = document.getElementById(id)?.value?.trim();
-          if (valor) params.append(param, valor);
+
+          if (valor) {
+            params.append(param, valor);
+          }
         });
 
         const url = params.toString()
           ? `${API_ELEITORES}?${params.toString()}`
           : API_ELEITORES;
 
-        const resposta = await fetch(url);
-        const dados = await resposta.json();
+        const resposta = await fetch(url, {
+          credentials: "include"
+        });
 
+        const dados = await resposta.json();
         const tbody = document.getElementById("listaEleitores");
 
         if (!dados.length) {
@@ -528,6 +706,7 @@
 
       } catch (erro) {
         console.error("Erro ao carregar eleitores:", erro);
+
         document.getElementById("listaEleitores").innerHTML =
           `<tr><td colspan="9">Erro ao carregar eleitores.</td></tr>`;
       }
@@ -563,7 +742,10 @@
 
       const resposta = await fetch(url, {
         method: metodo,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
         body: JSON.stringify(dados)
       });
 
@@ -581,7 +763,10 @@
     }
 
     async function editarEleitor(id) {
-      const resposta = await fetch(API_ELEITORES);
+      const resposta = await fetch(API_ELEITORES, {
+        credentials: "include"
+      });
+
       const dados = await resposta.json();
       const eleitor = dados.find(e => Number(e.id) === Number(id));
 
@@ -603,14 +788,18 @@
 
       document.getElementById("btnSalvarEleitor").innerText = "Atualizar";
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
 
     async function excluirEleitor(id) {
       if (!confirm("Deseja excluir este eleitor?")) return;
 
       const resposta = await fetch(`${API_ELEITORES}/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        credentials: "include"
       });
 
       const dados = await resposta.json();
@@ -644,12 +833,62 @@
         "filtroTelefone"
       ].forEach(id => {
         const campo = document.getElementById(id);
-        if (campo) campo.value = "";
+
+        if (campo) {
+          campo.value = "";
+        }
       });
 
       carregarEleitores();
     }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
+    }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
   </script>
+
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 

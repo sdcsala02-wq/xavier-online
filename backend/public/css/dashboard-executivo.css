@@ -497,3 +497,401 @@
     gap: 8px !important;
   }
 }
+.dashboard-mobile-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px 0;
+  margin-bottom: -12px;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.btn-sair-discreto {
+  background: transparent;
+  border: none;
+  color: rgba(220, 230, 245, 0.62);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 4px;
+}
+
+.btn-sair-discreto:hover {
+  color: #ffffff;
+}
+
+.dashboard-title-area {
+  text-align: center;
+  padding: 0 18px;
+  margin: -35px auto 12px;
+}
+
+.dashboard-title-area h2 {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+
+.dashboard-title-area .subtitulo-dashboard {
+  color: #aebbd0;
+  font-size: 19px;
+  margin: 0 0 22px;
+}
+
+.dashboard-title-area span {
+  color: #aebbd0;
+  font-size: 14px;
+}
+
+.btn-nova,
+.btn-sair {
+  display: none !important;
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none !important;
+  }
+
+  .btn-sair-discreto {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  body.xavier-dashboard .main-dashboard {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 16px 12px 20px !important;
+  }
+
+  body.xavier-dashboard .dashboard-mobile-top {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-align: left !important;
+    padding: 8px 6px 18px !important;
+    width: 100% !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    max-width: 46px !important;
+    flex: 0 0 46px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 12px !important;
+    border: 1px solid rgba(59, 130, 246, 0.35) !important;
+    background: #1d4ed8 !important;
+    color: #ffffff !important;
+
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    cursor: pointer;
+  }
+
+  .btn-sair-discreto {
+    width: auto !important;
+    max-width: max-content !important;
+    flex: none !important;
+    margin-left: auto !important;
+  }
+
+  body.xavier-dashboard .cards-executivos {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  body.xavier-dashboard .card-kpi {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  body.xavier-dashboard .dashboard-bi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  body.xavier-dashboard .painel-bi,
+  body.xavier-dashboard .painel-full {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 768px) {
+  body.xavier-dashboard .topbar.dashboard-mobile-top {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 10px 12px 16px !important;
+    margin: 0 !important;
+  }
+
+  body.xavier-dashboard .topbar.dashboard-mobile-top .mobile-menu-btn {
+    display: inline-flex !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    flex: 0 0 44px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 10px !important;
+    border: 1px solid rgba(59, 130, 246, 0.35) !important;
+    background: #1d4ed8 !important;
+    color: #fff !important;
+
+    font-size: 25px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+
+    text-align: center !important;
+    box-shadow: none !important;
+  }
+
+  body.xavier-dashboard .topbar.dashboard-mobile-top .btn-sair-discreto {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body.menu-aberto {
+    overflow: hidden;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.72);
+    backdrop-filter: blur(4px);
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  body.xavier-dashboard .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -290px !important;
+    width: 270px !important;
+    height: 100vh !important;
+    z-index: 90 !important;
+    transition: left 0.28s ease !important;
+    overflow-y: auto !important;
+  }
+
+  body.xavier-dashboard .sidebar.active {
+    left: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body.xavier-dashboard .topbar.dashboard-mobile-top .mobile-menu-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    flex: 0 0 44px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 10px !important;
+    border: 1px solid rgba(59, 130, 246, 0.35) !important;
+    background: #1d4ed8 !important;
+    color: #ffffff !important;
+
+    font-size: 25px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+
+    text-align: center !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body.xavier-dashboard .topbar.dashboard-mobile-top {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  body.xavier-dashboard .topbar.dashboard-mobile-top .mobile-menu-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    flex: 0 0 44px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 10px !important;
+    background: #1d4ed8 !important;
+    color: #fff !important;
+    font-size: 25px !important;
+    box-shadow: none !important;
+  }
+}
+
+/* CORREÇÃO FINAL DO BOTÃO MENU MOBILE */
+@media (max-width: 768px) {
+  body.xavier-dashboard .topbar.dashboard-mobile-top {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 8px 14px 8px !important;
+    margin: 0 0 -20px 0 !important;
+    width: 100% !important;
+  }
+
+  body.xavier-dashboard .topbar.dashboard-mobile-top .mobile-menu-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 42px !important;
+    height: 38px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+    flex: 0 0 42px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 8px !important;
+    border: 1px solid rgba(148, 163, 184, 0.35) !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    color: #ffffff !important;
+
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+
+    box-shadow: none !important;
+    cursor: pointer !important;
+  }
+
+  body.xavier-dashboard .topbar.dashboard-mobile-top .btn-sair-discreto {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
+  }
+}
+
+/* CORREÇÃO DO BOTÃO FECHAR NO LOGIN MOBILE */
+@media (max-width: 768px) {
+  .login-card .close-btn,
+  .login-card .btn-fechar,
+  .login-modal .close-btn,
+  .login-modal .btn-fechar,
+  .modal-login .close-btn,
+  .modal-login .btn-fechar {
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border-radius: 10px !important;
+    border: none !important;
+
+    background: #ef4444 !important;
+    color: #ffffff !important;
+
+    font-size: 22px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    cursor: pointer !important;
+    z-index: 20 !important;
+  }
+}
+
+/* Correção botão fechar do login */
+.fechar-login {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #ef4444;
+  color: #ffffff;
+
+  font-size: 20px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  z-index: 10;
+}
+
+.login-box {
+  position: relative;
+}

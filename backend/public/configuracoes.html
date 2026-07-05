@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Importar Planilha | Xavier Online</title>
+  <title>Configurações | Xavier Online</title>
 
   <link rel="stylesheet" href="css/style.css">
 
@@ -13,72 +13,66 @@
       padding: 24px 28px 40px;
     }
 
-    .importar-area {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .card-importacao {
-      background: linear-gradient(145deg, #0f172a, #111827);
-      border: 1px solid rgba(148, 163, 184, .20);
-      border-radius: 22px;
-      padding: 32px;
-      margin-top: 24px;
-      box-shadow: 0 18px 35px rgba(0, 0, 0, .22);
-    }
-
-    .card-importacao h3 {
-      color: #ffffff;
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .card-importacao p {
-      color: #94a3b8;
-      margin-bottom: 22px;
-    }
-
-    .acoes-importacao {
+    .config-grid {
       display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 14px;
-      align-items: center;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 22px;
     }
 
-    .acoes-importacao input[type="file"] {
+    .config-card {
+      background: linear-gradient(145deg, #0f172a, #111827);
+      border: 1px solid rgba(148, 163, 184, .18);
+      border-radius: 18px;
+      padding: 22px;
+      min-height: 180px;
+    }
+
+    .config-card h3 {
+      color: #fff;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .config-card p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .config-card .btn-nova,
+    .config-card .btn-secundario {
       width: 100%;
-      height: 48px;
+      margin-top: 8px;
+    }
+
+    .status-sistema {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .status-item {
       background: #0f172a;
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 184, .28);
-      border-radius: 12px;
-      padding: 10px;
+      border: 1px solid rgba(148, 163, 184, .18);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .status-item strong {
+      display: block;
+      color: #38bdf8;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .status-item span {
+      color: #cbd5e1;
+      font-size: 13px;
       font-weight: 700;
-    }
-
-    .acoes-importacao button {
-      height: 48px;
-      border-radius: 12px;
-      padding: 0 22px;
-      border: none;
-      cursor: pointer;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    #resultadoImportacao {
-      margin-top: 24px;
-      font-size: 16px;
-      font-weight: 800;
-      color: #e5e7eb;
-    }
-
-    .sucesso {
-      color: #22c55e !important;
-    }
-
-    .erro {
-      color: #ef4444 !important;
     }
 
     @media (max-width: 768px) {
@@ -88,30 +82,20 @@
         width: 100% !important;
       }
 
+      .cards-modernos,
+      .config-grid,
+      .status-sistema {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .painel {
+        padding: 16px !important;
+      }
+
       .topbar:not(.dashboard-mobile-top) {
         display: block;
         text-align: center;
-      }
-
-      .topbar-right {
-        margin-top: 14px;
-      }
-
-      .topbar-right .btn-nova {
-        width: 100%;
-      }
-
-      .card-importacao {
-        padding: 20px;
-        border-radius: 18px;
-      }
-
-      .acoes-importacao {
-        grid-template-columns: 1fr !important;
-      }
-
-      .acoes-importacao button {
-        width: 100%;
       }
     }
   </style>
@@ -173,7 +157,7 @@
 
       <div class="sidebar-footer">
         <strong>XAVIER ONLINE</strong>
-        <p>Importação de planilhas e atualização de dados.</p>
+        <p>Configurações gerais do sistema.</p>
         <span>Versão 1.0.0</span>
       </div>
 
@@ -196,41 +180,109 @@
       <header class="topbar">
 
         <div>
-          <h2>Importar Planilha</h2>
+          <h2>⚙ Configurações</h2>
           <p class="subtitulo-dashboard">
-            Carregar dados históricos para o Xavier Online
+            Administração, segurança e manutenção do Xavier Online
           </p>
-        </div>
-
-        <div class="topbar-right">
-          <a href="dashboard.html" class="btn-nova">Voltar</a>
         </div>
 
       </header>
 
-      <section class="importar-area">
+      <section class="cards-modernos">
 
-        <div class="card-importacao">
+        <div class="card-mod azul">
+          <h3>Sistema</h3>
+          <strong>Online</strong>
+          <p>Aplicação em operação</p>
+        </div>
 
-          <h3>Enviar arquivo Excel</h3>
-          <p>Selecione uma planilha nos formatos .xlsx ou .xls.</p>
+        <div class="card-mod verde">
+          <h3>Banco</h3>
+          <strong>Ativo</strong>
+          <p>Conexão configurada</p>
+        </div>
 
-          <div class="acoes-importacao">
+        <div class="card-mod roxo">
+          <h3>Usuários</h3>
+          <strong>Admin</strong>
+          <p>Acesso restrito</p>
+        </div>
 
-            <input type="file" id="arquivoExcel" accept=".xlsx,.xls">
+        <div class="card-mod laranja">
+          <h3>Versão</h3>
+          <strong>1.0</strong>
+          <p>Xavier Online</p>
+        </div>
 
-            <button class="btn-nova" onclick="importarArquivo('demandas')">
-              Importar Demandas
-            </button>
+      </section>
 
-            <button class="btn-nova" onclick="importarArquivo('atividades')">
-              Importar Interações
-            </button>
+      <section class="painel">
 
+        <div class="painel-topo">
+          <div>
+            <h3>Status do Sistema</h3>
+            <p>Resumo operacional da plataforma</p>
+          </div>
+        </div>
+
+        <div class="status-sistema">
+
+          <div class="status-item">
+            <strong>OK</strong>
+            <span>Frontend</span>
           </div>
 
-          <div id="resultadoImportacao"></div>
+          <div class="status-item">
+            <strong>OK</strong>
+            <span>Backend</span>
+          </div>
 
+          <div class="status-item">
+            <strong>OK</strong>
+            <span>Autenticação</span>
+          </div>
+
+          <div class="status-item">
+            <strong>OK</strong>
+            <span>Menu Mobile</span>
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="config-grid">
+
+        <div class="config-card">
+          <h3>Importação de Dados</h3>
+          <p>
+            Acesse a área de importação para atualizar demandas, interações e dados históricos do sistema.
+          </p>
+          <a href="importar.html" class="btn-nova">Abrir Importação</a>
+        </div>
+
+        <div class="config-card">
+          <h3>Demandas do Gabinete</h3>
+          <p>
+            Consulte, filtre e acompanhe as demandas registradas no Xavier Online.
+          </p>
+          <a href="demandas-gabinete.html" class="btn-nova">Abrir Demandas</a>
+        </div>
+
+        <div class="config-card">
+          <h3>Base Eleitoral</h3>
+          <p>
+            Gerencie eleitores, zonas, seções, escolas, bairros e rankings territoriais.
+          </p>
+          <a href="eleitores.html" class="btn-nova">Abrir Eleitores</a>
+        </div>
+
+        <div class="config-card">
+          <h3>Mapa da Cidade</h3>
+          <p>
+            Visualize demandas e informações territoriais por bairro no mapa.
+          </p>
+          <a href="mapa.html" class="btn-nova">Abrir Mapa</a>
         </div>
 
       </section>
@@ -239,7 +291,6 @@
 
   </div>
 
-  <script src="js/importar.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 

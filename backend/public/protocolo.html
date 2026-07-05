@@ -7,15 +7,82 @@
   <title>Protocolo | Xavier Online</title>
 
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
+    .consulta-protocolo {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .consulta-protocolo input {
+      height: 46px;
+      background: #0f172a;
+      color: #ffffff;
+      border: 1px solid rgba(148, 163, 184, .30);
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .consulta-protocolo input::placeholder {
+      color: #94a3b8;
+    }
+
+    .resultado-protocolo {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .consulta-protocolo {
+        grid-template-columns: 1fr !important;
+      }
+
+      .consulta-protocolo button {
+        width: 100%;
+      }
+
+      .painel-bi {
+        padding: 16px;
+      }
+
+      .relatorio-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 
 <body class="xavier-dashboard">
 
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
+
   <div class="app-layout">
 
     <aside class="sidebar">
+
       <div class="brand">
         <div class="brand-icon">🏛️</div>
+
         <div>
           <h2>XAVIER ONLINE</h2>
           <span>PRAIA GRANDE - SP</span>
@@ -23,25 +90,34 @@
       </div>
 
       <nav class="menu">
+
         <a href="dashboard.html">▣ Dashboard</a>
+
         <a href="demandas-gabinete.html">📋 Demandas</a>
+
         <a href="nova-demanda.html">➕ Nova Demanda</a>
-        <a href="protocolo.html" class="active">🔎 Protocolo</a>
+
+        <a href="protocolo.html">🔎 Protocolo</a>
+
         <a href="mapa.html">🗺️ Mapa da Cidade</a>
+
         <a href="eleitores.html">🗳️ Eleitores</a>
+
         <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+
         <a href="interacoes.html">💬 Interações</a>
+
         <a href="importar.html">⬆ Importar Planilha</a>
-        <a href="#" onclick="exportarExcel(); return false;">
-          ⬇ Exportar Excel
-        </a>
-        <a href="#" onclick="exportarPDF(); return false;">
-          📄 Exportar PDF
-        </a>
+
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
         <a href="secretarias.html">☷ Secretarias</a>
+
         <a href="liderancas.html">👥 Lideranças</a>
+
         <a href="configuracoes.html">⚙ Configurações</a>
-      </nav>
 
       </nav>
 
@@ -51,24 +127,40 @@
       </div>
 
       <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Consulta e acompanhamento de protocolos.</p>
+        <span>Versão 1.0.0</span>
+      </div>
 
-        <div class="sidebar-footer">
-          <strong>XAVIER ONLINE</strong>
-          <p>Consulta e acompanhamento de protocolos.</p>
-          <span>Versão 1.0.0</span>
-        </div>
     </aside>
 
     <main class="conteudo main-dashboard">
 
+      <header class="topbar dashboard-mobile-top">
+
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
+
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
+
+      </header>
+
       <header class="topbar">
+
         <div>
           <h2>🔎 Consulta de Protocolo</h2>
-          <p class="subtitulo-dashboard">Acompanhamento individual das demandas registradas</p>
+          <p class="subtitulo-dashboard">
+            Acompanhamento individual das demandas registradas
+          </p>
         </div>
+
       </header>
 
       <section class="painel-bi painel-full" style="margin-top: 20px;">
+
         <div class="painel-topo">
           <div>
             <h3>Pesquisar Protocolo</h3>
@@ -76,13 +168,18 @@
           </div>
         </div>
 
-        <div class="filtros-admin" style="grid-template-columns: 1fr auto;">
+        <div class="consulta-protocolo">
           <input type="text" id="inputProtocolo" placeholder="Ex: XAV-2026-000001">
-          <button class="btn-nova" onclick="buscarProtocolo()">Buscar</button>
+
+          <button class="btn-nova" onclick="buscarProtocolo()">
+            Buscar
+          </button>
         </div>
+
       </section>
 
       <section class="painel-bi painel-full" style="margin-top: 18px;">
+
         <div class="painel-topo">
           <div>
             <h3>Resultado</h3>
@@ -90,9 +187,10 @@
           </div>
         </div>
 
-        <div id="resultadoProtocolo">
+        <div id="resultadoProtocolo" class="resultado-protocolo">
           <p>Nenhum protocolo pesquisado.</p>
         </div>
+
       </section>
 
     </main>
@@ -100,7 +198,7 @@
   </div>
 
   <script>
-    const API_URL = "http://localhost:3000/api/demandas";
+    const API_URL = "/api/demandas";
 
     async function buscarProtocolo() {
       const protocolo = document.getElementById("inputProtocolo").value.trim();
@@ -114,7 +212,10 @@
       resultado.innerHTML = "<p>Buscando protocolo...</p>";
 
       try {
-        const resposta = await fetch(API_URL);
+        const resposta = await fetch(API_URL, {
+          credentials: "include"
+        });
+
         const demandas = await resposta.json();
 
         const demanda = demandas.find(item =>
@@ -175,6 +276,52 @@
         resultado.innerHTML = "<p>Erro ao consultar o protocolo.</p>";
       }
     }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
+    }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
   </script>
 
   <script src="js/auth.js"></script>

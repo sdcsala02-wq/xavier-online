@@ -7,107 +7,311 @@
   <title>Registrar Solicitação | Xavier Online</title>
 
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .form-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-item.descricao {
+      grid-column: 1 / -1;
+    }
+
+    .form-item input,
+    .form-item select,
+    .form-item textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .btn-voltar-inicio {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      background: #1e293b;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-weight: 800;
+      border: 1px solid rgba(148, 163, 184, .30);
+    }
+
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+      }
+
+      .painel {
+        padding: 16px;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+
+      .topbar-right {
+        margin-top: 14px;
+      }
+
+      .btn-voltar-inicio,
+      .btn-nova {
+        width: 100%;
+      }
+
+      .form-item textarea {
+        min-height: 140px;
+      }
+    }
+  </style>
 </head>
 
 <body class="xavier-dashboard">
 
-  <main class="conteudo main-dashboard" style="margin-left: 0; width: 100%;">
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
 
-    <header class="topbar">
-      <div>
-        <h2>Registrar Solicitação</h2>
-        <p class="subtitulo-dashboard">
-          Atendimento do Gabinete Eduardo Xavier
-        </p>
-      </div>
+  <div class="app-layout">
 
-      <div class="topbar-right">
-        <a href="index.html" class="btn-nova">Voltar ao início</a>
-      </div>
-    </header>
+    <aside class="sidebar">
 
-    <section class="painel">
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
 
-      <div class="painel-topo centralizado">
         <div>
-          <h3>NOVA DEMANDA</h3>
-          <p>Preencha as informações para gerar um protocolo</p>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
         </div>
       </div>
 
-      <form id="formNovaDemanda" class="form-grid">
+      <nav class="menu">
 
-        <div class="form-item">
-          <label>Nome Completo</label>
-          <input type="text" id="nome" required>
+        <a href="dashboard.html">▣ Dashboard</a>
+
+        <a href="demandas-gabinete.html">📋 Demandas</a>
+
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
+
+        <a href="protocolo.html">🔎 Protocolo</a>
+
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
+
+        <a href="eleitores.html">🗳️ Eleitores</a>
+
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+
+        <a href="interacoes.html">💬 Interações</a>
+
+        <a href="importar.html">⬆ Importar Planilha</a>
+
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
+        <a href="secretarias.html">☷ Secretarias</a>
+
+        <a href="liderancas.html">👥 Lideranças</a>
+
+        <a href="configuracoes.html">⚙ Configurações</a>
+
+      </nav>
+
+      <div class="sidebar-phone">
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+      </div>
+
+      <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Registro de novas demandas comunitárias.</p>
+        <span>Versão 1.0.0</span>
+      </div>
+
+    </aside>
+
+    <main class="conteudo main-dashboard">
+
+      <header class="topbar dashboard-mobile-top">
+
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
+
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
+
+      </header>
+
+      <header class="topbar">
+
+        <div>
+          <h2>Registrar Solicitação</h2>
+          <p class="subtitulo-dashboard">
+            Atendimento do Gabinete Eduardo Xavier
+          </p>
         </div>
 
-        <div class="form-item">
-          <label>Telefone</label>
-          <input type="text" id="telefone" placeholder="(13) 99999-9999">
+        <div class="topbar-right">
+          <a href="index.html" class="btn-voltar-inicio">Voltar ao início</a>
         </div>
 
-        <div class="form-item">
-          <label>Bairro</label>
-          <input type="text" id="bairro">
+      </header>
+
+      <section class="painel">
+
+        <div class="painel-topo centralizado">
+          <div>
+            <h3>NOVA DEMANDA</h3>
+            <p>Preencha as informações para gerar um protocolo</p>
+          </div>
         </div>
 
-        <div class="form-item">
-          <label>Endereço</label>
-          <input type="text" id="endereco">
-        </div>
+        <form id="formNovaDemanda" class="form-grid">
 
-        <div class="form-item">
-          <label>Serviço</label>
-          <select id="servico" required>
-            <option value="">Selecione o serviço</option>
-            <option value="Obras Públicas">Obras Públicas</option>
-            <option value="Áreas Públicas">Áreas Públicas</option>
-            <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
-            <option value="Tapa Buraco">Tapa Buraco</option>
-            <option value="Iluminação Pública">Iluminação Pública</option>
-            <option value="Saúde">Saúde</option>
-            <option value="Educação">Educação</option>
-            <option value="Segurança">Segurança</option>
-            <option value="Trânsito e Transporte">Trânsito e Transporte</option>
-            <option value="Agenda com Vereador">Agenda com Vereador</option>
-            <option value="Projetos e Melhorias">Projetos e Melhorias</option>
-            <option value="Outros">Outros</option>
-          </select>
-        </div>
+          <div class="form-item">
+            <label>Nome Completo</label>
+            <input type="text" id="nome" required>
+          </div>
 
-        <div class="form-item">
-          <label>Secretaria</label>
-          <select id="secretaria" required>
-            <option value="">Selecione o serviço primeiro</option>
-            <option value="SESAP">SESAP</option>
-            <option value="SESURB">SESURB</option>
-            <option value="SETRANSP">SETRANSP</option>
-            <option value="SEDUC">SEDUC</option>
-            <option value="SEOP">SEOP</option>
-            <option value="SEASP">SEASP</option>
-            <option value="GABINETE">GABINETE</option>
-          </select>
-        </div>
+          <div class="form-item">
+            <label>Telefone</label>
+            <input type="text" id="telefone" placeholder="(13) 99999-9999">
+          </div>
 
-        <div class="form-item descricao">
-          <label>Descrição da Demanda</label>
-          <textarea id="descricao" rows="6" required></textarea>
-        </div>
+          <div class="form-item">
+            <label>Bairro</label>
+            <input type="text" id="bairro">
+          </div>
 
-        <div class="form-item descricao">
-          <button type="submit" class="btn-nova">
-            Salvar Demanda
-          </button>
-        </div>
+          <div class="form-item">
+            <label>Endereço</label>
+            <input type="text" id="endereco">
+          </div>
 
-      </form>
+          <div class="form-item">
+            <label>Serviço</label>
+            <select id="servico" required>
+              <option value="">Selecione o serviço</option>
+              <option value="Obras Públicas">Obras Públicas</option>
+              <option value="Áreas Públicas">Áreas Públicas</option>
+              <option value="Limpeza e Manutenção">Limpeza e Manutenção</option>
+              <option value="Tapa Buraco">Tapa Buraco</option>
+              <option value="Iluminação Pública">Iluminação Pública</option>
+              <option value="Saúde">Saúde</option>
+              <option value="Educação">Educação</option>
+              <option value="Segurança">Segurança</option>
+              <option value="Trânsito e Transporte">Trânsito e Transporte</option>
+              <option value="Agenda com Vereador">Agenda com Vereador</option>
+              <option value="Projetos e Melhorias">Projetos e Melhorias</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
 
-    </section>
+          <div class="form-item">
+            <label>Secretaria</label>
+            <select id="secretaria" required>
+              <option value="">Selecione o serviço primeiro</option>
+              <option value="SESAP">SESAP</option>
+              <option value="SESURB">SESURB</option>
+              <option value="SETRANSP">SETRANSP</option>
+              <option value="SEDUC">SEDUC</option>
+              <option value="SEOP">SEOP</option>
+              <option value="SEASP">SEASP</option>
+              <option value="GABINETE">GABINETE</option>
+            </select>
+          </div>
 
-  </main>
+          <div class="form-item descricao">
+            <label>Descrição da Demanda</label>
+            <textarea id="descricao" rows="6" required></textarea>
+          </div>
+
+          <div class="form-item descricao">
+            <button type="submit" class="btn-nova">
+              Salvar Demanda
+            </button>
+          </div>
+
+        </form>
+
+      </section>
+
+    </main>
+
+  </div>
 
   <script src="js/nova-demanda.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
+    }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
+  </script>
 
 </body>
 

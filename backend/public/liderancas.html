@@ -5,166 +5,331 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lideranças | Xavier Online</title>
+
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
+    .liderancas-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .liderancas-layout .painel-tabela {
+      grid-column: 1 / -1;
+      overflow-x: auto;
+    }
+
+    .liderancas-layout table {
+      min-width: 900px;
+    }
+
+    .form-lideranca {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .campo input,
+    .campo textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .campo textarea {
+      min-height: 120px;
+    }
+
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .cards-modernos {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .liderancas-layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      .painel {
+        padding: 16px !important;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+
+      .btn-nova {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body class="xavier-dashboard">
 
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brasao">🏛️</div>
-      <div>
-        <h1>XAVIER ONLINE</h1>
-        <span>PRAIA GRANDE - SP</span>
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
+
+  <div class="app-layout">
+
+    <aside class="sidebar">
+
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
+
+        <div>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
+        </div>
       </div>
-    </div>
 
-    <nav class="menu">
-      <a href="dashboard.html">▣ Dashboard</a>
-      <a href="admin.html">☑ Demandas</a>
-      <a href="cadastro.html">⊞ Nova Demanda</a>
-      <a href="protocolo.html">⊕ Protocolo</a>
-      <a href="mapa.html">🗺 Mapa da Cidade</a>
-      <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+      <nav class="menu">
 
-      <a href="interacoes.html">🔁 Interações</a>
+        <a href="dashboard.html">▣ Dashboard</a>
 
-      <a href="http://localhost:3000/api/demandas/exportar/excel">⬇ Exportar Excel</a>
-      <a href="http://localhost:3000/api/demandas/exportar/pdf">📄 Exportar PDF</a>
-      <a href="#">☷ Secretarias</a>
-      <a href="liderancas.html" class="ativo">👥 Lideranças</a>
-      <a href="#">⚙ Configurações</a>
-    </nav>
+        <a href="demandas-gabinete.html">📋 Demandas</a>
 
-    </nav>
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
 
-    <div class="sidebar-phone">
-      <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
-      <img class="celular-img" src="img/celular.png" alt="Xavier Online">
-    </div>
+        <a href="protocolo.html">🔎 Protocolo</a>
 
-    <div class="sidebar-footer">
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
 
-      <div class="sidebar-info">
+        <a href="eleitores.html">🗳️ Eleitores</a>
+
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+
+        <a href="interacoes.html">💬 Interações</a>
+
+        <a href="importar.html">⬆ Importar Planilha</a>
+
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
+        <a href="secretarias.html">☷ Secretarias</a>
+
+        <a href="liderancas.html">👥 Lideranças</a>
+
+        <a href="configuracoes.html">⚙ Configurações</a>
+
+      </nav>
+
+      <div class="sidebar-phone">
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+      </div>
+
+      <div class="sidebar-footer">
         <strong>XAVIER ONLINE</strong>
         <p>Gestão territorial de lideranças comunitárias.</p>
-        <small>Versão 1.0.0</small>
-      </div>
-  </aside>
-
-  <main class="main-dashboard">
-
-    <header class="topbar">
-      <div>
-        <h2>👥 Lideranças</h2>
+        <span>Versão 1.0.0</span>
       </div>
 
-      <div class="topbar-right">
-        <span>Cadastro e acompanhamento por bairro</span>
-      </div>
-    </header>
+    </aside>
 
-    <section class="cards-modernos">
-      <div class="card-mod azul">
-        <h3>Total de Lideranças</h3>
-        <strong id="totalLiderancas">0</strong>
-        <p>Registros ativos</p>
-      </div>
+    <main class="conteudo main-dashboard">
 
-      <div class="card-mod verde">
-        <h3>Bairros Atendidos</h3>
-        <strong id="totalBairrosLiderancas">0</strong>
-        <p>Bairros com liderança</p>
-      </div>
+      <header class="topbar dashboard-mobile-top">
 
-      <div class="card-mod roxo">
-        <h3>Demandas Relacionadas</h3>
-        <strong id="totalDemandasLiderancas">0</strong>
-        <p>Demandas nos bairros</p>
-      </div>
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
 
-      <div class="card-mod laranja">
-        <h3>Status</h3>
-        <strong>Ativo</strong>
-        <p>Controle em operação</p>
-      </div>
-    </section>
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
 
-    <section class="liderancas-layout">
+      </header>
 
-      <div class="painel">
-        <div class="painel-topo">
-          <h3>Cadastrar Liderança</h3>
+      <header class="topbar">
+        <div>
+          <h2>👥 Lideranças</h2>
+          <p class="subtitulo-dashboard">
+            Cadastro e acompanhamento por bairro
+          </p>
+        </div>
+      </header>
+
+      <section class="cards-modernos">
+
+        <div class="card-mod azul">
+          <h3>Total de Lideranças</h3>
+          <strong id="totalLiderancas">0</strong>
+          <p>Registros ativos</p>
         </div>
 
-        <form id="formLideranca" class="form-lideranca">
-          <div class="campo">
-            <label>Bairro</label>
-            <input type="text" id="bairro" placeholder="Ex: Boqueirão" required>
-          </div>
-
-          <div class="campo">
-            <label>Nome da Liderança</label>
-            <input type="text" id="nome" placeholder="Nome completo" required>
-          </div>
-
-          <div class="campo">
-            <label>Telefone</label>
-            <input type="text" id="telefone" placeholder="(13) 99999-9999">
-          </div>
-
-          <div class="campo">
-            <label>Observação</label>
-            <textarea id="observacao" placeholder="Observações sobre a liderança"></textarea>
-          </div>
-
-          <button type="submit" class="btn-nova">
-            Salvar Liderança
-          </button>
-        </form>
-      </div>
-
-      <div class="painel">
-        <div class="painel-topo">
-          <h3>Ranking por Bairro</h3>
+        <div class="card-mod verde">
+          <h3>Bairros Atendidos</h3>
+          <strong id="totalBairrosLiderancas">0</strong>
+          <p>Bairros com liderança</p>
         </div>
 
-        <div id="rankingLiderancas" class="ranking-bairros">
-          <p>Carregando...</p>
-        </div>
-      </div>
-
-      <div class="painel painel-tabela demandas-bairro">
-        <div class="painel-topo">
-          <h3>Lideranças Cadastradas</h3>
+        <div class="card-mod roxo">
+          <h3>Demandas Relacionadas</h3>
+          <strong id="totalDemandasLiderancas">0</strong>
+          <p>Demandas nos bairros</p>
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Bairro</th>
-              <th>Liderança</th>
-              <th>Telefone</th>
-              <th>Observação</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
+        <div class="card-mod laranja">
+          <h3>Status</h3>
+          <strong>Ativo</strong>
+          <p>Controle em operação</p>
+        </div>
 
-          <tbody id="listaLiderancas">
-            <tr>
-              <td colspan="5">Carregando lideranças...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      </section>
 
-    </section>
+      <section class="liderancas-layout">
 
-  </main>
+        <div class="painel">
+
+          <div class="painel-topo">
+            <h3>Cadastrar Liderança</h3>
+          </div>
+
+          <form id="formLideranca" class="form-lideranca">
+
+            <div class="campo">
+              <label>Bairro</label>
+              <input type="text" id="bairro" placeholder="Ex: Boqueirão" required>
+            </div>
+
+            <div class="campo">
+              <label>Nome da Liderança</label>
+              <input type="text" id="nome" placeholder="Nome completo" required>
+            </div>
+
+            <div class="campo">
+              <label>Telefone</label>
+              <input type="text" id="telefone" placeholder="(13) 99999-9999">
+            </div>
+
+            <div class="campo">
+              <label>Observação</label>
+              <textarea id="observacao" placeholder="Observações sobre a liderança"></textarea>
+            </div>
+
+            <button type="submit" class="btn-nova">
+              Salvar Liderança
+            </button>
+
+          </form>
+
+        </div>
+
+        <div class="painel">
+
+          <div class="painel-topo">
+            <h3>Ranking por Bairro</h3>
+          </div>
+
+          <div id="rankingLiderancas" class="ranking-bairros">
+            <p>Carregando...</p>
+          </div>
+
+        </div>
+
+        <div class="painel painel-tabela demandas-bairro">
+
+          <div class="painel-topo">
+            <h3>Lideranças Cadastradas</h3>
+          </div>
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Bairro</th>
+                <th>Liderança</th>
+                <th>Telefone</th>
+                <th>Observação</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody id="listaLiderancas">
+              <tr>
+                <td colspan="5">Carregando lideranças...</td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
 
   <script src="js/liderancas.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
+    }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
+  </script>
 
 </body>
 

@@ -5,174 +5,375 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interações | Xavier Online</title>
+
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .main-dashboard {
+      padding: 24px 28px 40px;
+    }
+
+    .filtros-interacoes {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .filtros-interacoes input,
+    .filtros-interacoes select {
+      width: 100%;
+      height: 44px;
+      background: #0f172a;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, .25);
+      border-radius: 10px;
+      padding: 0 12px;
+      outline: none;
+      font-weight: 700;
+    }
+
+    .filtros-interacoes button {
+      height: 44px;
+      border-radius: 10px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+    }
+
+    .acoes-interacoes {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .painel-tabela {
+      overflow-x: auto;
+    }
+
+    .painel-tabela table {
+      min-width: 1200px;
+    }
+
+    @media (max-width: 1200px) {
+      .filtros-interacoes {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .cards-modernos {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .filtros-interacoes {
+        grid-template-columns: 1fr !important;
+      }
+
+      .filtros-interacoes button,
+      .acoes-interacoes .btn-nova,
+      .btn-limpar {
+        width: 100%;
+      }
+
+      .acoes-interacoes {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .painel {
+        padding: 16px !important;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 
 <body class="xavier-dashboard">
 
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brasao">🏛️</div>
-      <div>
-        <h1>XAVIER ONLINE</h1>
-        <span>PRAIA GRANDE - SP</span>
-      </div>
-    </div>
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
 
-    <nav class="menu">
-      <a href="dashboard.html">▣ Dashboard</a>
-      <a href="admin.html">☑ Demandas</a>
-      <a href="cadastro.html">⊞ Nova Demanda</a>
-      <a href="protocolo.html">⊕ Protocolo</a>
-      <a href="mapa.html">🗺 Mapa da Cidade</a>
-      <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
-      <a href="interacoes.html" class="ativo">🔁 Interações</a>
-      <a href="http://localhost:3000/api/demandas/exportar/excel">⬇ Exportar Excel</a>
-      <a href="http://localhost:3000/api/demandas/exportar/pdf">📄 Exportar PDF</a>
-      <a href="#">☷ Secretarias</a>
-      <a href="liderancas.html">👥 Lideranças</a>
-      <a href="#">⚙ Configurações</a>
-    </nav>
+  <div class="app-layout">
 
-    <div class="sidebar-info">
-      <strong>XAVIER ONLINE</strong>
-      <p>Painel de interações do gabinete.</p>
-      <small>Versão 1.0.0</small>
-    </div>
-  </aside>
+    <aside class="sidebar">
 
-  <main class="main-dashboard">
-
-    <header class="topbar">
-      <div>
-        <h2>🔁 Interações do Gabinete</h2>
-      </div>
-
-      <div class="topbar-right">
-        <span>Filtros, relatórios e exportações</span>
-      </div>
-    </header>
-
-    <section class="cards-modernos">
-      <div class="card-mod azul">
-        <h3>Total de Interações</h3>
-        <strong id="totalInteracoes">0</strong>
-        <p>Registros encontrados</p>
-      </div>
-
-      <div class="card-mod verde">
-        <h3>Ano Selecionado</h3>
-        <strong id="anoSelecionadoCard">Todos</strong>
-        <p>Filtro aplicado</p>
-      </div>
-
-      <div class="card-mod roxo">
-        <h3>Bairros</h3>
-        <strong id="totalBairrosInteracoes">0</strong>
-        <p>Bairros com interações</p>
-      </div>
-
-      <div class="card-mod laranja">
-        <h3>Secretarias</h3>
-        <strong id="totalSecretariasInteracoes">0</strong>
-        <p>Setores envolvidos</p>
-      </div>
-    </section>
-
-    <section class="painel">
-      <div class="painel-topo">
-        <h3>Filtros</h3>
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
 
         <div>
-          <button class="btn-nova" onclick="exportarExcelInteracoes()">⬇ Excel</button>
-          <button class="btn-nova" onclick="exportarPdfInteracoes()">📄 PDF</button>
-          <button class="btn-nova" onclick="window.print()">🖨 Imprimir</button>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
         </div>
       </div>
 
-      <div class="filtros-interacoes">
-        <select id="filtroAno">
-          <option value="">Todos os anos</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-        </select>
+      <nav class="menu">
 
-        <select id="filtroMes">
-          <option value="">Todos os meses</option>
-          <option value="JANEIRO">Janeiro</option>
-          <option value="FEVEREIRO">Fevereiro</option>
-          <option value="MARÇO">Março</option>
-          <option value="ABRIL">Abril</option>
-          <option value="MAIO">Maio</option>
-          <option value="JUNHO">Junho</option>
-          <option value="JULHO">Julho</option>
-          <option value="AGOSTO">Agosto</option>
-          <option value="SETEMBRO">Setembro</option>
-          <option value="OUTUBRO">Outubro</option>
-          <option value="NOVEMBRO">Novembro</option>
-          <option value="DEZEMBRO">Dezembro</option>
-        </select>
+        <a href="dashboard.html">▣ Dashboard</a>
 
-        <input type="file" id="arquivoExcel" accept=".xlsx,.xls" style="display:none">
+        <a href="demandas-gabinete.html">📋 Demandas</a>
 
-        <button class="btn-nova" onclick="document.getElementById('arquivoExcel').click()">
-          📥 Importar Excel
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
+
+        <a href="protocolo.html">🔎 Protocolo</a>
+
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
+
+        <a href="eleitores.html">🗳️ Eleitores</a>
+
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
+
+        <a href="interacoes.html">💬 Interações</a>
+
+        <a href="importar.html">⬆ Importar Planilha</a>
+
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
+        <a href="secretarias.html">☷ Secretarias</a>
+
+        <a href="liderancas.html">👥 Lideranças</a>
+
+        <a href="configuracoes.html">⚙ Configurações</a>
+
+      </nav>
+
+      <div class="sidebar-phone">
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+      </div>
+
+      <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Painel de interações do gabinete.</p>
+        <span>Versão 1.0.0</span>
+      </div>
+
+    </aside>
+
+    <main class="conteudo main-dashboard">
+
+      <header class="topbar dashboard-mobile-top">
+
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
         </button>
 
-        <input type="text" id="filtroBairro" placeholder="Bairro">
-        <input type="text" id="filtroSecretaria" placeholder="Secretaria">
-        <input type="text" id="filtroStatus" placeholder="Status">
-        <input type="text" id="filtroContato" placeholder="Contato">
-        <input type="text" id="filtroNome" placeholder="Nome">
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
 
-        <button class="btn-nova" onclick="carregarInteracoes()">Filtrar</button>
-        <button class="btn-limpar" onclick="limparFiltrosInteracoes()">Limpar</button>
-      </div>
-    </section>
+      </header>
 
-    <section class="painel">
-      <div class="painel-topo">
-        <h3>Resumo por Ano</h3>
-      </div>
+      <header class="topbar">
 
-      <div id="resumoAnoInteracoes" class="ranking-bairros">
-        Carregando...
-      </div>
-    </section>
+        <div>
+          <h2>💬 Interações do Gabinete</h2>
+          <p class="subtitulo-dashboard">
+            Filtros, relatórios e exportações
+          </p>
+        </div>
 
-    <section class="painel painel-tabela">
-      <div class="painel-topo">
-        <h3>Registros de Interações</h3>
-      </div>
+      </header>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Hora</th>
-            <th>Nome</th>
-            <th>Telefone</th>
-            <th>Bairro</th>
-            <th>Demanda</th>
-            <th>Secretaria</th>
-            <th>Status</th>
-            <th>Contato</th>
-          </tr>
-        </thead>
+      <section class="cards-modernos">
 
-        <tbody id="listaInteracoes">
-          <tr>
-            <td colspan="9">Carregando interações...</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+        <div class="card-mod azul">
+          <h3>Total de Interações</h3>
+          <strong id="totalInteracoes">0</strong>
+          <p>Registros encontrados</p>
+        </div>
 
-  </main>
+        <div class="card-mod verde">
+          <h3>Ano Selecionado</h3>
+          <strong id="anoSelecionadoCard">Todos</strong>
+          <p>Filtro aplicado</p>
+        </div>
+
+        <div class="card-mod roxo">
+          <h3>Bairros</h3>
+          <strong id="totalBairrosInteracoes">0</strong>
+          <p>Bairros com interações</p>
+        </div>
+
+        <div class="card-mod laranja">
+          <h3>Secretarias</h3>
+          <strong id="totalSecretariasInteracoes">0</strong>
+          <p>Setores envolvidos</p>
+        </div>
+
+      </section>
+
+      <section class="painel">
+
+        <div class="painel-topo">
+
+          <div>
+            <h3>Filtros</h3>
+          </div>
+
+          <div class="acoes-interacoes">
+            <button class="btn-nova" onclick="exportarExcelInteracoes()">⬇ Excel</button>
+            <button class="btn-nova" onclick="exportarPdfInteracoes()">📄 PDF</button>
+            <button class="btn-nova" onclick="window.print()">🖨 Imprimir</button>
+          </div>
+
+        </div>
+
+        <div class="filtros-interacoes">
+
+          <select id="filtroAno">
+            <option value="">Todos os anos</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </select>
+
+          <select id="filtroMes">
+            <option value="">Todos os meses</option>
+            <option value="JANEIRO">Janeiro</option>
+            <option value="FEVEREIRO">Fevereiro</option>
+            <option value="MARÇO">Março</option>
+            <option value="ABRIL">Abril</option>
+            <option value="MAIO">Maio</option>
+            <option value="JUNHO">Junho</option>
+            <option value="JULHO">Julho</option>
+            <option value="AGOSTO">Agosto</option>
+            <option value="SETEMBRO">Setembro</option>
+            <option value="OUTUBRO">Outubro</option>
+            <option value="NOVEMBRO">Novembro</option>
+            <option value="DEZEMBRO">Dezembro</option>
+          </select>
+
+          <input type="file" id="arquivoExcel" accept=".xlsx,.xls" style="display:none">
+
+          <button class="btn-nova" onclick="document.getElementById('arquivoExcel').click()">
+            📥 Importar Excel
+          </button>
+
+          <input type="text" id="filtroBairro" placeholder="Bairro">
+          <input type="text" id="filtroSecretaria" placeholder="Secretaria">
+          <input type="text" id="filtroStatus" placeholder="Status">
+          <input type="text" id="filtroContato" placeholder="Contato">
+          <input type="text" id="filtroNome" placeholder="Nome">
+
+          <button class="btn-nova" onclick="carregarInteracoes()">Filtrar</button>
+          <button class="btn-limpar" onclick="limparFiltrosInteracoes()">Limpar</button>
+
+        </div>
+
+      </section>
+
+      <section class="painel">
+
+        <div class="painel-topo">
+          <h3>Resumo por Ano</h3>
+        </div>
+
+        <div id="resumoAnoInteracoes" class="ranking-bairros">
+          Carregando...
+        </div>
+
+      </section>
+
+      <section class="painel painel-tabela">
+
+        <div class="painel-topo">
+          <h3>Registros de Interações</h3>
+        </div>
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Bairro</th>
+              <th>Demanda</th>
+              <th>Secretaria</th>
+              <th>Status</th>
+              <th>Contato</th>
+            </tr>
+          </thead>
+
+          <tbody id="listaInteracoes">
+            <tr>
+              <td colspan="9">Carregando interações...</td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </section>
+
+    </main>
+
+  </div>
 
   <script src="js/interacoes.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
+    }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
+  </script>
 
 </body>
 

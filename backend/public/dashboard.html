@@ -12,7 +12,7 @@
 
 <body class="xavier-dashboard">
 
-  <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
 
   <div class="app-layout">
 
@@ -29,61 +29,33 @@
 
       <nav class="menu">
 
-        <a href="dashboard.html">
-          ▣ Dashboard
-        </a>
+        <a href="dashboard.html">▣ Dashboard</a>
 
-        <a href="demandas-gabinete.html">
-          📋 Demandas
-        </a>
+        <a href="demandas-gabinete.html">📋 Demandas</a>
 
-        <a href="nova-demanda.html">
-          ➕ Nova Demanda
-        </a>
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
 
-        <a href="protocolo.html">
-          🔎 Protocolo
-        </a>
+        <a href="protocolo.html">🔎 Protocolo</a>
 
-        <a href="mapa.html">
-          🗺️ Mapa da Cidade
-        </a>
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
 
-        <a href="eleitores.html">
-          🗳️ Eleitores
-        </a>
+        <a href="eleitores.html">🗳️ Eleitores</a>
 
-        <a href="relatorio-legislativo.html">
-          📊 Relatório Legislativo
-        </a>
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
 
-        <a href="interacoes.html">
-          💬 Interações
-        </a>
+        <a href="interacoes.html">💬 Interações</a>
 
-        <a href="importar.html">
-          ⬆ Importar Planilha
-        </a>
+        <a href="importar.html">⬆ Importar Planilha</a>
 
-        <a href="#" onclick="exportarExcel(); return false;">
-          ⬇ Exportar Excel
-        </a>
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
 
-        <a href="#" onclick="exportarPDF(); return false;">
-          📄 Exportar PDF
-        </a>
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
 
-        <a href="secretarias.html">
-          ☷ Secretarias
-        </a>
+        <a href="secretarias.html">☷ Secretarias</a>
 
-        <a href="liderancas.html">
-          👥 Lideranças
-        </a>
+        <a href="liderancas.html">👥 Lideranças</a>
 
-        <a href="configuracoes.html">
-          ⚙ Configurações
-        </a>
+        <a href="configuracoes.html">⚙ Configurações</a>
 
       </nav>
 
@@ -102,30 +74,25 @@
 
     <main class="conteudo main-dashboard">
 
-      <header class="topbar">
+      <header class="topbar dashboard-mobile-top">
 
-        <div>
-          <h2>Dashboard Executivo</h2>
-          <p class="subtitulo-dashboard">
-            Comparativo Xavier Online 2025 e 2026
-          </p>
-        </div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
 
-        <div class="topbar-right">
-
-          <span>26 de Junho de 2026</span>
-
-          <a href="importar.html" class="btn-nova">
-            Importar Planilha
-          </a>
-
-          <button class="btn-sair" onclick="sairSistema()">
-            🚪 Sair
-          </button>
-
-        </div>
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
 
       </header>
+
+      <section class="dashboard-title-area">
+        <h2>Dashboard Executivo</h2>
+
+        <p class="subtitulo-dashboard">
+          Comparativo Xavier Online 2025 e 2026
+        </p>
+
+        <span id="dataAtualDashboard"></span>
+      </section>
 
       <section class="cards-executivos">
 
@@ -165,9 +132,7 @@
               <p>Comparativo consolidado por ano</p>
             </div>
 
-            <span class="tag-bi">
-              2025 • 2026
-            </span>
+            <span class="tag-bi">2025 • 2026</span>
           </div>
 
           <div id="evolucaoAnual" class="ranking-bi">
@@ -210,9 +175,7 @@
               <p>Top 10 setores acionados</p>
             </div>
 
-            <a href="demandas-gabinete.html">
-              📋 Demandas
-            </a>
+            <a href="demandas-gabinete.html">📋 Demandas</a>
           </div>
 
           <div id="rankingSecretarias" class="ranking-bi">
@@ -244,9 +207,7 @@
               <p>Distribuição mensal organizada por ano</p>
             </div>
 
-            <span class="tag-bi">
-              2025 • 2026
-            </span>
+            <span class="tag-bi">2025 • 2026</span>
           </div>
 
           <div id="evolucaoMensal" class="evolucao-mensal-bi">
@@ -263,13 +224,10 @@
               <p>Registros mais recentes importados</p>
             </div>
 
-            <a href="demandas-gabinete.html">
-              📋 Demandas
-            </a>
+            <a href="demandas-gabinete.html">📋 Demandas</a>
           </div>
 
           <table>
-
             <thead>
               <tr>
                 <th>Protocolo</th>
@@ -282,12 +240,9 @@
 
             <tbody id="listaDemandas">
               <tr>
-                <td colspan="5">
-                  Nenhuma solicitação encontrada
-                </td>
+                <td colspan="5">Nenhuma solicitação encontrada</td>
               </tr>
             </tbody>
-
           </table>
 
         </div>
@@ -297,31 +252,34 @@
     </main>
 
   </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 
   <script>
-    function logoutSistema() {
-      localStorage.removeItem("usuarioLogado");
-      window.location.href = "index.html";
-    }
-
     function toggleSidebar() {
-      document.querySelector(".sidebar").classList.toggle("active");
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
     }
 
-    const paginaAtual = window.location.pathname.split("/").pop();
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
 
-    document.querySelectorAll(".menu a").forEach(link => {
-      const href = link.getAttribute("href");
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
 
-      if (href === paginaAtual) {
-        link.classList.add("active");
-      }
-    });
-  </script>
+      document.body.classList.remove("menu-aberto");
+    }
 
-  <script>
     async function sairSistema() {
       try {
         await fetch("/api/auth/logout", {
@@ -334,7 +292,32 @@
 
       localStorage.clear();
       sessionStorage.clear();
+
       window.location.href = "/index.html";
+    }
+
+    const paginaAtual = window.location.pathname.split("/").pop() || "dashboard.html";
+
+    document.querySelectorAll(".menu a").forEach(link => {
+      const href = link.getAttribute("href");
+
+      if (href === paginaAtual) {
+        link.classList.add("active");
+      }
+
+      link.addEventListener("click", fecharSidebar);
+    });
+
+    const dataElemento = document.getElementById("dataAtualDashboard");
+
+    if (dataElemento) {
+      const dataAtual = new Date().toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      });
+
+      dataElemento.textContent = dataAtual;
     }
   </script>
 
