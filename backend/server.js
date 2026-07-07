@@ -29,6 +29,14 @@ const frontendPath = path.join(__dirname, "public");
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  console.log("======================================");
+  console.log(`${req.method} ${req.originalUrl}`);
+  console.log("Headers:");
+  console.log(req.headers);
+  console.log("======================================");
+  next();
+});
 app.use(cookieParser());
 
 
