@@ -5,10 +5,12 @@ const fs = require("fs");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const webhookRoutes = require("./routes/webhook.routes");
 
 require("dotenv").config();
 
 const db = require("./db");
+const { enviarTextoWhatsApp, normalizarTelefoneBR } = require("./services/whatsapp.service");
 
 const demandasRoutes = require("./routes/demandas.routes");
 const relatoriosRoutes = require("./routes/relatorios.routes");
@@ -28,6 +30,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 
 function limparCPF(valor) {
   return String(valor || "").replace(/\D/g, "");
@@ -90,6 +93,7 @@ function autenticarPagina(req, res, next) {
     "login.html",
     "nova-demanda.html"
   ];
+
   const pagina = req.params.pagina || "index.html";
 
   if (paginasPublicas.includes(pagina)) {
@@ -141,6 +145,9 @@ app.use("/js", express.static(path.join(frontendPath, "js")));
 app.use("/img", express.static(path.join(frontendPath, "img")));
 app.use("/assets", express.static(path.join(frontendPath, "assets")));
 app.use("/data", express.static(path.join(frontendPath, "data")));
+
+app.use("/api/webhook", webhookRoutes);
+
 
 app.get("/api/status", (req, res) => {
   res.json({
@@ -279,6 +286,134 @@ app.post("/api/auth/logout", (req, res) => {
     ok: true,
     mensagem: "Logout realizado com sucesso."
   });
+});
+
+/* ROTA PÚBLICA SEGURA - NOVA SOLICITAÇÃO */
+app.post("/api/publico/nova-demanda", async (req, res) => {
+  try {
+    const { nome, telefone, bairro, endereco, servico, secretaria, descricao } = req.body;
+
+    if (!nome || !servico || !secretaria || !descricao) {
+      return res.status(400).json({
+        ok: false,
+        mensagem: "Preencha nome, serviço, secretaria e descrição."
+      });
+    }
+
+    const agora = new Date();
+    const ano = agora.getFullYear();
+    const mes = agora.getMonth() + 1;
+
+    const ultimo = await db.query(
+      `
+      SELECT COUNT(*)::int AS total
+      FROM solicitacoes_publicas
+      WHERE ano = $1
+      `,
+      [ano]
+    );
+
+    const numero = ultimo.rows[0].total + 1;
+    const protocolo = `XAV-${ano}-${String(numero).padStart(6, "0")}`;
+
+    const resultado = await db.query(
+      `
+      INSERT INTO solicitacoes_publicas
+      (
+        protocolo,
+        ano,
+        mes,
+        solicitante,
+        telefone,
+        bairro,
+        endereco,
+        servico,
+        secretaria,
+        descricao,
+        status,
+        origem,
+        criado_em
+      )
+      VALUES
+      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'RECEBIDA', 'SITE_PUBLICO', NOW())
+      RETURNING *
+      `,
+      [
+        protocolo,
+        ano,
+        mes,
+        nome.trim(),
+        telefone || "",
+        bairro || "",
+        endereco || "",
+        servico,
+        secretaria,
+        descricao.trim()
+      ]
+    );
+
+    const mensagemCidadao = `Olá, ${nome.trim()}.
+
+Sua solicitação foi registrada no Xavier Online.
+
+Protocolo: ${protocolo}
+Serviço: ${servico}
+Secretaria responsável: ${secretaria}
+Status: RECEBIDA
+
+Guarde este protocolo para acompanhar o atendimento.`;
+
+    const mensagemGabinete = `Nova demanda recebida pelo Xavier Online.
+
+Protocolo: ${protocolo}
+Nome: ${nome.trim()}
+Telefone: ${telefone || "-"}
+Bairro: ${bairro || "-"}
+Endereço: ${endereco || "-"}
+Serviço: ${servico}
+Secretaria: ${secretaria}
+
+Descrição:
+${descricao.trim()}`;
+
+    let whatsappCidadao = false;
+    let whatsappGabinete = false;
+
+    try {
+      if (telefone) {
+        await enviarTextoWhatsApp(normalizarTelefoneBR(telefone), mensagemCidadao);
+        whatsappCidadao = true;
+      }
+    } catch (erroWhatsCidadao) {
+      console.error("Erro ao enviar WhatsApp para cidadão:", erroWhatsCidadao.message);
+    }
+
+    try {
+      await enviarTextoWhatsApp(process.env.WHATSAPP_GABINETE, mensagemGabinete);
+      whatsappGabinete = true;
+    } catch (erroWhatsGabinete) {
+      console.error("Erro ao enviar WhatsApp para gabinete:", erroWhatsGabinete.message);
+    }
+
+    return res.status(201).json({
+      ok: true,
+      mensagem: "Solicitação cadastrada com sucesso.",
+      demanda: resultado.rows[0],
+      whatsapp: {
+        cidadao: whatsappCidadao,
+        gabinete: whatsappGabinete
+      }
+    });
+
+  } catch (erro) {
+    console.error("Erro ao cadastrar solicitação pública:", erro);
+
+    return res.status(500).json({
+      ok: false,
+      mensagem: "Erro ao cadastrar solicitação pública.",
+      erro: erro.message
+    });
+  }
 });
 
 app.use("/api/demandas", autenticar, demandasRoutes);

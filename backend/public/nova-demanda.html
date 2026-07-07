@@ -93,7 +93,7 @@
 
   <div class="app-layout">
 
-    <aside class="sidebar">
+    <aside class="sidebar sidebar-publica">
 
       <div class="brand">
         <div class="brand-icon">🏛️</div>
@@ -103,38 +103,6 @@
           <span>PRAIA GRANDE - SP</span>
         </div>
       </div>
-
-      <nav class="menu">
-
-        <a href="dashboard.html">▣ Dashboard</a>
-
-        <a href="demandas-gabinete.html">📋 Demandas</a>
-
-        <a href="nova-demanda.html">➕ Nova Demanda</a>
-
-        <a href="protocolo.html">🔎 Protocolo</a>
-
-        <a href="mapa.html">🗺️ Mapa da Cidade</a>
-
-        <a href="eleitores.html">🗳️ Eleitores</a>
-
-        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
-
-        <a href="interacoes.html">💬 Interações</a>
-
-        <a href="importar.html">⬆ Importar Planilha</a>
-
-        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
-
-        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
-
-        <a href="secretarias.html">☷ Secretarias</a>
-
-        <a href="liderancas.html">👥 Lideranças</a>
-
-        <a href="configuracoes.html">⚙ Configurações</a>
-
-      </nav>
 
       <div class="sidebar-phone">
         <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
@@ -172,9 +140,9 @@
           </p>
         </div>
 
-        <div class="topbar-right">
+        <!--<div class="topbar-right">
           <a href="index.html" class="btn-voltar-inicio">Voltar ao início</a>
-        </div>
+        </div> -->
 
       </header>
 
@@ -229,17 +197,9 @@
           </div>
 
           <div class="form-item">
-            <label>Secretaria</label>
-            <select id="secretaria" required>
-              <option value="">Selecione o serviço primeiro</option>
-              <option value="SESAP">SESAP</option>
-              <option value="SESURB">SESURB</option>
-              <option value="SETRANSP">SETRANSP</option>
-              <option value="SEDUC">SEDUC</option>
-              <option value="SEOP">SEOP</option>
-              <option value="SEASP">SEASP</option>
-              <option value="GABINETE">GABINETE</option>
-            </select>
+            <label>Secretaria Responsável</label>
+
+            <input type="text" id="secretaria" readonly placeholder="Selecione um serviço">
           </div>
 
           <div class="form-item descricao">
@@ -262,8 +222,8 @@
   </div>
 
   <script src="js/nova-demanda.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/app.js"></script>
+  <!--<script src="js/auth.js"></script> -->
+  <!--<script src="js/app.js"></script> -->
 
   <script>
     function toggleSidebar() {
@@ -311,6 +271,67 @@
 
       link.addEventListener("click", fecharSidebar);
     });
+  </script>
+
+  <script>
+    const mapaSecretarias = {
+      "Obras Públicas": "SESURB",
+      "Áreas Públicas": "SESURB",
+      "Limpeza e Manutenção": "SESURB",
+      "Tapa Buraco": "SESURB",
+      "Iluminação Pública": "SESURB",
+      "Saúde": "SESAP",
+      "Educação": "SEDUC",
+      "Segurança": "SEOP",
+      "Trânsito e Transporte": "SETRANSP",
+      "Agenda com Vereador": "GABINETE",
+      "Projetos e Melhorias": "GABINETE",
+      "Outros": "GABINETE"
+    };
+
+    const campoServico = document.getElementById("servico");
+    const campoSecretaria = document.getElementById("secretaria");
+
+    if (campoServico && campoSecretaria) {
+      campoServico.addEventListener("change", () => {
+        campoSecretaria.value = mapaSecretarias[campoServico.value] || "";
+      });
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
+    }
+
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
+    }
+
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } catch (erro) {
+        console.error("Erro ao sair:", erro);
+      }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+    }
   </script>
 
 </body>

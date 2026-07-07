@@ -2075,6 +2075,18 @@ body.xavier-dashboard {
   font-size: 14px;
 }
 
+#servico,
+#secretaria {
+  text-align: center;
+  text-align-last: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.form-item label {
+  text-align: center;
+}
+
 .form-item textarea {
   resize: vertical;
 }

@@ -1,4 +1,4 @@
-const API_NOVA_DEMANDA = "/api/demandas";
+const API_NOVA_DEMANDA = "/api/publico/nova-demanda";
 
 const secretariasPorServico = {
   "Obras Públicas": "SESURB",
@@ -6,36 +6,58 @@ const secretariasPorServico = {
   "Limpeza e Manutenção": "SESURB",
   "Tapa Buraco": "SESURB",
   "Iluminação Pública": "SESURB",
-
   "Saúde": "SESAP",
-
   "Educação": "SEDUC",
-
   "Segurança": "SEASP",
-
   "Trânsito e Transporte": "SETRANSP",
-
   "Agenda com Vereador": "GABINETE",
-
   "Projetos e Melhorias": "SESURB",
-
   "Outros": "GABINETE"
 };
 
 function atualizarSecretariaAutomatica() {
-  const servico = document.getElementById("servico").value;
+  const servico = document.getElementById("servico");
   const secretaria = document.getElementById("secretaria");
 
-  secretaria.value = secretariasPorServico[servico] || "GABINETE";
+  if (!servico || !secretaria) return;
+
+  secretaria.value = secretariasPorServico[servico.value] || "";
 }
 
 function limparFormularioNovaDemanda() {
-  document.getElementById("formNovaDemanda").reset();
-  document.getElementById("secretaria").value = "";
+  const form = document.getElementById("formNovaDemanda");
+
+  if (form) form.reset();
+
+  const secretaria = document.getElementById("secretaria");
+  if (secretaria) secretaria.value = "";
+}
+
+function abrirWhatsAppDemanda(dados, protocolo) {
+  const telefoneDestino = "5513996015888";
+
+  const mensagem = `Nova demanda Xavier Online
+
+Protocolo: ${protocolo}
+Nome: ${dados.nome}
+Telefone: ${dados.telefone}
+Bairro: ${dados.bairro}
+Endereço: ${dados.endereco}
+Serviço: ${dados.servico}
+Secretaria: ${dados.secretaria}
+
+Descrição:
+${dados.descricao}`;
+
+  const url = `https://wa.me/${telefoneDestino}?text=${encodeURIComponent(mensagem)}`;
+
+  //window.open(url, "_blank");
 }
 
 async function salvarNovaDemanda(event) {
   event.preventDefault();
+
+  atualizarSecretariaAutomatica();
 
   const dados = {
     nome: document.getElementById("nome").value.trim(),
@@ -47,7 +69,7 @@ async function salvarNovaDemanda(event) {
     descricao: document.getElementById("descricao").value.trim()
   };
 
-  if (!dados.nome || !dados.servico || !dados.descricao) {
+  if (!dados.nome || !dados.servico || !dados.secretaria || !dados.descricao) {
     alert("Preencha nome, serviço e descrição da demanda.");
     return;
   }
@@ -64,13 +86,43 @@ async function salvarNovaDemanda(event) {
     const retorno = await resposta.json();
 
     if (!resposta.ok) {
-      alert(retorno.erro || retorno.mensagem || "Erro ao salvar demanda.");
+      alert(retorno.mensagem || retorno.erro || "Erro ao salvar demanda.");
       return;
     }
 
-    alert(`Demanda cadastrada com sucesso!\nProtocolo: ${retorno.demanda?.protocolo || "-"}`);
+    const protocolo = retorno.demanda?.protocolo || "-";
+
+    alert(`Demanda cadastrada com sucesso!\nProtocolo: ${protocolo}`);
+
+    //abrirWhatsAppDemanda(dados, protocolo);
+    //abrirWhatsAppCidadao(dados, protocolo);
 
     limparFormularioNovaDemanda();
+
+    function abrirWhatsAppCidadao(dados, protocolo) {
+      const telefoneLimpo = dados.telefone.replace(/\D/g, "");
+
+      if (!telefoneLimpo) return;
+
+      const telefoneCidadao = telefoneLimpo.startsWith("55")
+        ? telefoneLimpo
+        : `55${telefoneLimpo}`;
+
+      const mensagem = `Olá, ${dados.nome}.
+
+Sua solicitação foi registrada no Xavier Online.
+
+Protocolo: ${protocolo}
+Serviço: ${dados.servico}
+Secretaria responsável: ${dados.secretaria}
+Status: RECEBIDA
+
+Guarde este protocolo para acompanhar o atendimento.`;
+
+      const url = `https://wa.me/${telefoneCidadao}?text=${encodeURIComponent(mensagem)}`;
+
+     // window.open(url, "_blank");
+    }
 
   } catch (error) {
     console.error("Erro ao salvar demanda:", error);
