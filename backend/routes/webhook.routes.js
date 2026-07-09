@@ -2,37 +2,51 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  verificarWebhook,
-  receberWebhook
+    verificarWebhook
 } = require("../services/whatsapp.service");
 
+const {
+    processarMensagemWhatsApp
+} = require("../services/atendimento.service");
 
 // =====================================
 // VERIFICAÇÃO DO WEBHOOK META
 // =====================================
-
 router.get("/", verificarWebhook);
-
 
 // =====================================
 // RECEBIMENTO DE EVENTOS WHATSAPP
 // =====================================
+router.post("/", async (req, res) => {
+    try {
+        console.log("📩 WEBHOOK WHATSAPP RECEBIDO");
+        console.log(JSON.stringify(req.body, null, 2));
 
-router.post("/", (req, res) => {
+        const entry = req.body.entry?.[0];
+        const change = entry?.changes?.[0];
+        const value = change?.value;
+        const message = value?.messages?.[0];
 
-    console.log("=================================");
-    console.log("📩 WEBHOOK WHATSAPP RECEBIDO");
-    console.log("=================================");
+        if (!message) {
+            return res.sendStatus(200);
+        }
 
-    console.log(
-        JSON.stringify(req.body, null, 2)
-    );
+        const telefone = message.from;
+        const texto = message.text?.body || "";
 
+        if (telefone && texto) {
+            await processarMensagemWhatsApp({
+                telefone,
+                mensagem: texto
+            });
+        }
 
-    // Encaminha para o serviço principal
-    receberWebhook(req, res);
+        return res.sendStatus(200);
 
+    } catch (erro) {
+        console.error("Erro no webhook WhatsApp:", erro);
+        return res.sendStatus(200);
+    }
 });
-
 
 module.exports = router;

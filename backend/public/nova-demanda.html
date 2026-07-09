@@ -318,6 +318,34 @@
     });
   </script>
 
+  <div id="modalSucessoDemanda" class="modal-sucesso-demanda" style="display:none;">
+  <div class="modal-sucesso-card">
+    <h2>✔️ Solicitação registrada</h2>
+
+    <p>Seu protocolo é:</p>
+
+    <div id="protocoloGerado" class="protocolo-destaque"></div>
+
+    <hr>
+
+    <p>📲 Acompanhe sua solicitação pelo WhatsApp</p>
+    <a id="btnAbrirWhatsApp" class="btn-primary" target="_blank">
+      Abrir WhatsApp
+    </a>
+
+    <hr>
+
+    <p>🌐 Acompanhar pelo portal</p>
+    <a id="btnConsultarProtocolo" class="btn-secondary">
+      Consultar protocolo
+    </a>
+
+    <button onclick="novaSolicitacao()" class="btn-secondary">
+      Nova solicitação
+    </button>
+  </div>
+</div>
+
 </body>
 
 </html>

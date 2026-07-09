@@ -92,12 +92,12 @@ async function salvarNovaDemanda(event) {
 
     const protocolo = retorno.demanda?.protocolo || "-";
 
-    alert(`Demanda cadastrada com sucesso!\nProtocolo: ${protocolo}`);
+    exibirModalSucesso(protocolo);
 
     //abrirWhatsAppDemanda(dados, protocolo);
     //abrirWhatsAppCidadao(dados, protocolo);
 
-    limparFormularioNovaDemanda();
+    //limparFormularioNovaDemanda();
 
     function abrirWhatsAppCidadao(dados, protocolo) {
       const telefoneLimpo = dados.telefone.replace(/\D/g, "");
@@ -121,7 +121,7 @@ Guarde este protocolo para acompanhar o atendimento.`;
 
       const url = `https://wa.me/${telefoneCidadao}?text=${encodeURIComponent(mensagem)}`;
 
-     // window.open(url, "_blank");
+      // window.open(url, "_blank");
     }
 
   } catch (error) {
@@ -142,3 +142,21 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", salvarNovaDemanda);
   }
 });
+
+function exibirModalSucesso(protocolo) {
+  const numeroXavier = "5513996924317";
+  const mensagem = `Olá, quero acompanhar meu protocolo ${protocolo}`;
+  const linkWhatsApp = `https://wa.me/${numeroXavier}?text=${encodeURIComponent(mensagem)}`;
+
+  document.getElementById("protocoloGerado").textContent = protocolo;
+  document.getElementById("btnAbrirWhatsApp").href = linkWhatsApp;
+  document.getElementById("btnConsultarProtocolo").href =
+    `protocolo.html?protocolo=${encodeURIComponent(protocolo)}`;
+
+  document.getElementById("modalSucessoDemanda").style.display = "flex";
+}
+
+function novaSolicitacao() {
+  document.getElementById("modalSucessoDemanda").style.display = "none";
+  limparFormularioNovaDemanda();
+}

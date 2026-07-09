@@ -1,0 +1,97 @@
+const db = require("../db");
+const {
+  enviarTextoWhatsApp,
+  normalizarTelefoneBR
+} = require("./whatsapp.service");
+
+async function processarMensagemWhatsApp({ telefone, mensagem }) {
+  try {
+    const telefoneNormalizado = normalizarTelefoneBR(telefone);
+    const texto = String(mensagem || "").trim();
+
+    if (!telefoneNormalizado || !texto) return;
+
+    console.log("Mensagem recebida no atendimento:", {
+      telefone: telefoneNormalizado,
+      texto
+    });
+
+    const protocolo = extrairProtocolo(texto);
+
+    if (protocolo) {
+      await responderPorProtocolo(telefoneNormalizado, protocolo);
+      return;
+    }
+
+    await enviarTextoWhatsApp(
+      telefoneNormalizado,
+      `Olá! Sou o Xavier Online.
+
+Para acompanhar sua solicitação, envie o número do protocolo.
+
+Exemplo:
+XAV-2026-000034`
+    );
+
+  } catch (erro) {
+    console.error(
+      "Erro no atendimento automático:",
+      erro.response?.data || erro.message
+    );
+  }
+}
+
+function extrairProtocolo(texto) {
+  const encontrado = texto.match(/XAV-\d{4}-\d{6}/i);
+  return encontrado ? encontrado[0].toUpperCase() : null;
+}
+
+async function responderPorProtocolo(telefone, protocolo) {
+  const resultado = await db.query(
+    `
+    SELECT
+      protocolo,
+      solicitante,
+      servico,
+      secretaria,
+      descricao,
+      status,
+      criado_em
+    FROM solicitacoes_publicas
+    WHERE protocolo = $1
+    LIMIT 1
+    `,
+    [protocolo]
+  );
+
+  if (resultado.rows.length === 0) {
+    await enviarTextoWhatsApp(
+      telefone,
+      `Não encontrei o protocolo ${protocolo}.
+
+Verifique se digitou corretamente.`
+    );
+    return;
+  }
+
+  const s = resultado.rows[0];
+
+  await enviarTextoWhatsApp(
+    telefone,
+    `📋 Xavier Online
+
+Protocolo: ${s.protocolo}
+
+Solicitante: ${s.solicitante || "-"}
+Serviço: ${s.servico || "-"}
+Secretaria: ${s.secretaria || "-"}
+Status: ${s.status || "RECEBIDA"}
+
+Descrição:
+${s.descricao || "Não informada"}`
+  );
+}
+
+module.exports = {
+  processarMensagemWhatsApp
+};
