@@ -44,6 +44,12 @@ function limparCPF(valor) {
   return String(valor || "").replace(/\D/g, "");
 }
 
+function somenteNumeros(valor) {
+  return String(valor || "")
+    .replace(/\D/g, "");
+}
+
+
 function cpfValido(valor) {
   return limparCPF(valor).length === 11;
 }
@@ -296,21 +302,145 @@ app.post("/api/auth/logout", (req, res) => {
   });
 });
 
+
+
 /* ROTA PÚBLICA SEGURA - NOVA SOLICITAÇÃO */
 app.post("/api/publico/nova-demanda", async (req, res) => {
-  try {
-    const { nome, telefone, bairro, endereco, servico, secretaria, descricao } = req.body;
 
-    if (!nome || !servico || !secretaria || !descricao) {
+  try {
+
+    const {
+      nome,
+      telefone,
+      bairro,
+      endereco,
+      servico,
+      secretaria,
+      descricao
+    } = req.body;
+
+    if (
+      !nome ||
+      !telefone ||
+      !bairro ||
+      !endereco ||
+      !servico ||
+      !secretaria
+    ) {
+
       return res.status(400).json({
         ok: false,
-        mensagem: "Preencha nome, serviço, secretaria e descrição."
+        mensagem: "Preencha todos os campos obrigatórios: nome, telefone, bairro, endereço, serviço e secretaria."
       });
+
+    }
+
+
+    // ======================================
+    // CRIAR OU LOCALIZAR CIDADÃO - CRM
+    // ======================================
+
+    const telefoneLimpo = normalizarTelefoneBR(telefone);
+
+    let cidadaoId = null;
+
+
+    if (telefoneLimpo) {
+
+      const buscaCidadao = await db.query(
+        `
+        SELECT id
+        FROM cidadaos
+        WHERE telefone = $1
+        OR whatsapp = $1
+        LIMIT 1
+        `,
+        [
+          telefoneLimpo
+        ]
+      );
+
+
+      if (buscaCidadao.rows.length > 0) {
+
+        cidadaoId = buscaCidadao.rows[0].id;
+
+
+        await db.query(
+          `
+          UPDATE cidadaos
+          SET
+            nome = $1,
+            bairro = $2,
+            endereco = $3,
+            whatsapp = $4,
+            atualizado_em = NOW()
+          WHERE id = $5
+          `,
+          [
+            nome.trim(),
+            bairro || "",
+            endereco || "",
+            telefoneLimpo,
+            cidadaoId
+          ]
+        );
+
+
+        console.log(
+          "Cidadão atualizado:",
+          cidadaoId
+        );
+
+
+      } else {
+
+
+        const novoCidadao = await db.query(
+          `
+          INSERT INTO cidadaos
+          (
+            nome,
+            telefone,
+            whatsapp,
+            bairro,
+            endereco,
+            criado_em,
+            atualizado_em
+          )
+          VALUES
+          ($1,$2,$3,$4,$5,NOW(),NOW())
+          RETURNING id
+          `,
+          [
+            nome.trim(),
+            telefoneLimpo,
+            telefoneLimpo,
+            bairro || "",
+            endereco || ""
+          ]
+        );
+
+
+        cidadaoId = novoCidadao.rows[0].id;
+
+
+        console.log(
+          "Novo cidadão criado:",
+          cidadaoId
+        );
+
+      }
+
     }
 
     const agora = new Date();
+
     const ano = agora.getFullYear();
+
     const mes = agora.getMonth() + 1;
+
+
 
     const ultimo = await db.query(
       `
@@ -321,13 +451,54 @@ app.post("/api/publico/nova-demanda", async (req, res) => {
       [ano]
     );
 
+
     const numero = ultimo.rows[0].total + 1;
-    const protocolo = `XAV-${ano}-${String(numero).padStart(6, "0")}`;
+
+
+    const protocolo =
+      `XAV-${ano}-${String(numero).padStart(6, "0")}`;
+
+    // ======================================
+    // GRAVAR HISTÓRICO DO CIDADÃO
+    // ======================================
+
+    if (cidadaoId) {
+
+      await db.query(
+        `
+    INSERT INTO historico_cidadaos
+    (
+      cidadao_id,
+      tipo,
+      descricao,
+      usuario
+    )
+    VALUES
+    ($1,$2,$3,$4)
+    `,
+        [
+          cidadaoId,
+          "PROTOCOLO",
+          `Novo protocolo criado: ${protocolo}. Serviço: ${servico}`,
+          "SISTEMA XAVIER ONLINE"
+        ]
+      );
+
+      console.log(
+        "Histórico criado para cidadão:",
+        cidadaoId
+      );
+
+    }
+
+
 
     const resultado = await db.query(
+
       `
       INSERT INTO solicitacoes_publicas
       (
+        cidadao_id,
         protocolo,
         ano,
         mes,
@@ -342,87 +513,295 @@ app.post("/api/publico/nova-demanda", async (req, res) => {
         origem,
         criado_em
       )
+        
       VALUES
-      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'RECEBIDA', 'SITE_PUBLICO', NOW())
+	(
+	$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,
+	'RECEBIDA',
+	'SITE_PUBLICO',
+	NOW()
+	)
+
       RETURNING *
       `,
+
       [
+        cidadaoId,
         protocolo,
         ano,
         mes,
         nome.trim(),
-        telefone || "",
+        telefoneLimpo,
         bairro || "",
         endereco || "",
         servico,
         secretaria,
-        descricao.trim()
+        descricao ? descricao.trim() : ""
       ]
+
     );
 
-    const mensagemCidadao = `Olá, ${nome.trim()}.
+    // ======================================
+    // TENTAR ADICIONAR TAMBÉM AO GABINETE
+    // Sem travar o cadastro/WhatsApp se a tabela estiver diferente
+    // ======================================
+    try {
+      const colunasBanco = await db.query(`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_name = 'demandas_gabinete'
+  `);
 
-Sua solicitação foi registrada no Xavier Online.
+      const colunasExistentes = colunasBanco.rows.map(c => c.column_name);
+
+      const dadosGabinete = {
+        protocolo,
+        cidadao_id: cidadaoId,
+        ano,
+        data: new Date(),
+        mes: String(mes),
+        solicitante: nome.trim(),
+        telefone: telefoneLimpo,
+        bairro: bairro || "",
+        endereco: endereco || "",
+        servico,
+        secretaria,
+        descricao: descricao ? descricao.trim() : "",
+        demanda: descricao ? descricao.trim() : "",
+        status: "RECEBIDA",
+        origem: "SITE_PUBLICO",
+        inf_origem: "SITE_PUBLICO",
+        criado_em: new Date()
+      };
+
+      const colunasParaInserir = Object.keys(dadosGabinete)
+        .filter(coluna => colunasExistentes.includes(coluna));
+
+      const valores = colunasParaInserir.map(coluna => dadosGabinete[coluna]);
+
+      const parametros = colunasParaInserir
+        .map((_, index) => `$${index + 1}`)
+        .join(", ");
+
+      if (colunasParaInserir.length > 0) {
+        await db.query(
+          `
+      INSERT INTO demandas_gabinete
+      (${colunasParaInserir.join(", ")})
+      VALUES (${parametros})
+      `,
+          valores
+        );
+
+        console.log("Demanda adicionada em demandas_gabinete:", protocolo);
+      }
+
+    } catch (erroGabinete) {
+      console.error("Falha ao adicionar em demandas_gabinete:", erroGabinete.message);
+    }
+
+    // ================================
+    // MENSAGENS WHATSAPP XAVIER ONLINE
+    // ================================
+
+
+    const mensagemCidadao = `
+
+Olá, ${nome.trim()}.
+
+
+Sua solicitação foi registrada com sucesso no Xavier Online.
+
+
+📌 Protocolo: ${protocolo}
+
+🏥 Serviço: ${servico}
+
+🏢 Secretaria responsável: ${secretaria}
+
+📍 Bairro: ${bairro || "-"}
+
+
+Status atual: RECEBIDA
+
+
+Guarde este protocolo para acompanhar sua solicitação.
+
+
+Xavier Online - Atendimento ao cidadão.
+
+`;
+
+
+
+    const mensagemGabinete = `
+
+🚨 NOVA DEMANDA - XAVIER ONLINE
+
 
 Protocolo: ${protocolo}
-Serviço: ${servico}
-Secretaria responsável: ${secretaria}
-Status: RECEBIDA
 
-Guarde este protocolo para acompanhar o atendimento.`;
+Solicitante:
+${nome.trim()}
 
-    const mensagemGabinete = `Nova demanda recebida pelo Xavier Online.
+Telefone:
+${telefoneLimpo || "-"}
 
-Protocolo: ${protocolo}
-Nome: ${nome.trim()}
-Telefone: ${telefone || "-"}
-Bairro: ${bairro || "-"}
-Endereço: ${endereco || "-"}
-Serviço: ${servico}
-Secretaria: ${secretaria}
+Bairro:
+${bairro || "-"}
+
+Endereço:
+${endereco || "-"}
+
+Serviço:
+${servico}
+
+Secretaria:
+${secretaria}
 
 Descrição:
-${descricao.trim()}`;
+
+${descricao ? descricao.trim() : "Não informado"}
+
+`;
+
+
 
     let whatsappCidadao = false;
+
     let whatsappGabinete = false;
 
-    try {
-      if (telefone) {
-        await enviarTextoWhatsApp(normalizarTelefoneBR(telefone), mensagemCidadao);
-        whatsappCidadao = true;
-      }
-    } catch (erroWhatsCidadao) {
-      console.error("Erro ao enviar WhatsApp para cidadão:", erroWhatsCidadao.message);
-    }
+
+
+    // ENVIO PARA CIDADÃO
 
     try {
-      await enviarTextoWhatsApp(process.env.WHATSAPP_GABINETE, mensagemGabinete);
-      whatsappGabinete = true;
-    } catch (erroWhatsGabinete) {
-      console.error("Erro ao enviar WhatsApp para gabinete:", erroWhatsGabinete.message);
+
+      await enviarTextoWhatsApp(
+        telefoneLimpo,
+        mensagemCidadao
+      );
+
+      whatsappCidadao = true;
+
+      console.log(
+        "WhatsApp cidadão enviado:",
+        protocolo
+      );
+
     }
+
+
+    catch (erro) {
+
+      console.error(
+        "Falha WhatsApp cidadão:",
+        erro.message
+      );
+
+    }
+
+
+
+    // ENVIO PARA GABINETE
+
+    try {
+
+
+      if (process.env.WHATSAPP_GABINETE) {
+
+
+        await enviarTextoWhatsApp(
+
+          process.env.WHATSAPP_GABINETE,
+
+          mensagemGabinete
+
+        );
+
+
+        whatsappGabinete = true;
+
+
+        console.log(
+          "WhatsApp gabinete enviado:",
+          protocolo
+        );
+
+
+      }
+
+
+    } catch (erro) {
+
+      console.error(
+        "Falha WhatsApp gabinete:",
+        erro.message
+      );
+
+    }
+
+
+
 
     return res.status(201).json({
+
       ok: true,
-      mensagem: "Solicitação cadastrada com sucesso.",
-      demanda: resultado.rows[0],
+
+      mensagem:
+        "Solicitação cadastrada com sucesso.",
+
+
+      protocolo,
+
+
+      demanda:
+        resultado.rows[0],
+
+
       whatsapp: {
-        cidadao: whatsappCidadao,
-        gabinete: whatsappGabinete
+
+        cidadao:
+          whatsappCidadao,
+
+
+        gabinete:
+          whatsappGabinete
+
       }
+
     });
+
+
 
   } catch (erro) {
-    console.error("Erro ao cadastrar solicitação pública:", erro);
+
+
+    console.error(
+      "Erro ao cadastrar solicitação pública:",
+      erro
+    );
+
 
     return res.status(500).json({
+
       ok: false,
-      mensagem: "Erro ao cadastrar solicitação pública.",
-      erro: erro.message
+
+      mensagem:
+        "Erro ao cadastrar solicitação pública.",
+
+      erro:
+        erro.message
+
     });
+
+
   }
+
+
 });
+
+
 
 app.use("/api/demandas", autenticar, demandasRoutes);
 app.use("/api/relatorios", autenticar, relatoriosRoutes);

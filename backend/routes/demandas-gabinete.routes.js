@@ -113,13 +113,13 @@ router.get("/resumo", async (req, res) => {
     const resolvidas = await pool.query(`
       SELECT COUNT(*)::int AS total
       FROM demandas_gabinete
-      WHERE UPPER(status) IN ('CONCLUÍDO', 'CONCLUIDO', 'RESOLVIDA')
+      WHERE UPPER(COALESCE(status, '')) IN ('CONCLUÍDO', 'CONCLUIDO', 'RESOLVIDA')
     `);
 
     const pendentes = await pool.query(`
       SELECT COUNT(*)::int AS total
       FROM demandas_gabinete
-      WHERE UPPER(status) IN ('PENDENTE', 'EM ANDAMENTO')
+      WHERE UPPER(COALESCE(status, '')) IN ('PENDENTE', 'EM ANDAMENTO', 'RECEBIDA')
     `);
 
     const secretarias = await pool.query(`
@@ -185,45 +185,43 @@ router.get("/resumo", async (req, res) => {
 
     const evolucaoMensal = await pool.query(`
       SELECT 
-        ano,
-        mes,
+        EXTRACT(YEAR FROM data)::int AS ano,
+        CASE EXTRACT(MONTH FROM data)::int
+          WHEN 1 THEN 'JANEIRO'
+          WHEN 2 THEN 'FEVEREIRO'
+          WHEN 3 THEN 'MARÇO'
+          WHEN 4 THEN 'ABRIL'
+          WHEN 5 THEN 'MAIO'
+          WHEN 6 THEN 'JUNHO'
+          WHEN 7 THEN 'JULHO'
+          WHEN 8 THEN 'AGOSTO'
+          WHEN 9 THEN 'SETEMBRO'
+          WHEN 10 THEN 'OUTUBRO'
+          WHEN 11 THEN 'NOVEMBRO'
+          WHEN 12 THEN 'DEZEMBRO'
+        END AS mes,
         COUNT(*)::int AS total
       FROM demandas_gabinete
-      WHERE ano IS NOT NULL
-        AND mes IS NOT NULL
-        AND TRIM(mes) <> ''
-      GROUP BY ano, mes
-      ORDER BY ano,
-        CASE UPPER(mes)
-          WHEN 'JANEIRO' THEN 1
-          WHEN 'FEVEREIRO' THEN 2
-          WHEN 'MARÇO' THEN 3
-          WHEN 'MARCO' THEN 3
-          WHEN 'ABRIL' THEN 4
-          WHEN 'MAIO' THEN 5
-          WHEN 'JUNHO' THEN 6
-          WHEN 'JULHO' THEN 7
-          WHEN 'AGOSTO' THEN 8
-          WHEN 'SETEMBRO' THEN 9
-          WHEN 'OUTUBRO' THEN 10
-          WHEN 'NOVEMBRO' THEN 11
-          WHEN 'DEZEMBRO' THEN 12
-          ELSE 13
-        END
+      WHERE data IS NOT NULL
+      GROUP BY EXTRACT(YEAR FROM data), EXTRACT(MONTH FROM data)
+      ORDER BY EXTRACT(YEAR FROM data), EXTRACT(MONTH FROM data)
     `);
 
     const evolucaoAnual = await pool.query(`
-      SELECT ano, COUNT(*)::int AS total
+      SELECT 
+        EXTRACT(YEAR FROM data)::int AS ano,
+        COUNT(*)::int AS total
       FROM demandas_gabinete
-      WHERE ano IS NOT NULL
-      GROUP BY ano
-      ORDER BY ano
+      WHERE data IS NOT NULL
+      GROUP BY EXTRACT(YEAR FROM data)
+      ORDER BY EXTRACT(YEAR FROM data)
     `);
 
     const mesAtual = await pool.query(`
       SELECT COUNT(*)::int AS total
       FROM demandas_gabinete
-      WHERE EXTRACT(YEAR FROM data) = EXTRACT(YEAR FROM CURRENT_DATE)
+      WHERE data IS NOT NULL
+        AND EXTRACT(YEAR FROM data) = EXTRACT(YEAR FROM CURRENT_DATE)
         AND EXTRACT(MONTH FROM data) = EXTRACT(MONTH FROM CURRENT_DATE)
     `);
 
@@ -308,12 +306,12 @@ router.get("/", async (req, res) => {
 
     if (ano) {
       valores.push(Number(ano));
-      filtros.push(`dg.ano = $${valores.length}`);
+      filtros.push(`ano = $${valores.length}`);
     }
 
     if (mes) {
       valores.push(`%${mes}%`);
-      filtros.push(`dg.mes ILIKE $${valores.length}`);
+      filtros.push(`mes ILIKE $${valores.length}`);
     }
 
     const where = filtros.length

@@ -132,10 +132,10 @@ router.post("/importar", upload.single("arquivo"), async (req, res) => {
 
       await pool.query(
         `
-        INSERT INTO interacoes_mensais
-        (ano, mes, quantidade, total, origem)
-        VALUES ($1, $2, $3, $3, 'PLANILHA')
-        `,
+  INSERT INTO interacoes_mensais
+  (ano, mes, quantidade)
+  VALUES ($1, $2, $3)
+  `,
         [ano, mes, quantidade]
       );
 

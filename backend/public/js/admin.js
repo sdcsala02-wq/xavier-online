@@ -59,7 +59,7 @@ function classeStatus(status) {
       return "status-analise";
     case "ENCAMINHADA":
       return "status-encaminhada";
-    case "EM EXECUÇÃO":
+    case "EM EXECUÇÃO": 
       return "status-execucao";
     case "RESOLVIDA":
     case "CONCLUÍDO":

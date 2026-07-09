@@ -1,50 +1,288 @@
-const pool = require("../db");
+require("dotenv").config();
+
+const axios = require("axios");
+
 
 // ===========================================
-// Verificação do Webhook da Meta
+// NORMALIZAR TELEFONE BRASIL
 // ===========================================
 
-exports.verificarWebhook = (req, res) => {
+function normalizarTelefoneBR(numero) {
 
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
-
-  if (
-    mode === "subscribe" &&
-    token === process.env.VERIFY_TOKEN
-  ) {
-    console.log("✅ Webhook verificado.");
-    return res.status(200).send(challenge);
+  if (!numero) {
+    return null;
   }
 
-  return res.sendStatus(403);
+  let telefone = numero
+    .toString()
+    .replace(/\D/g, "");
 
-};
+
+  // Remove 00 internacional
+  if (telefone.startsWith("00")) {
+    telefone = telefone.substring(2);
+  }
+
+
+  // Remove 55 duplicado
+  if (
+    telefone.startsWith("55") &&
+    telefone.length > 11
+  ) {
+    telefone = telefone.substring(2);
+  }
+
+
+  // Adiciona código Brasil
+  if (
+    telefone.length === 10 ||
+    telefone.length === 11
+  ) {
+    telefone = "55" + telefone;
+  }
+
+
+  return telefone;
+
+}
+
+
 
 // ===========================================
-// Receber mensagens
+// ENVIO TEXTO WHATSAPP CLOUD API
 // ===========================================
 
-exports.receberWebhook = async (req, res) => {
+async function enviarTextoWhatsApp(numero, mensagem) {
 
   try {
 
-    console.log("📩 Webhook recebido");
 
-    console.log(JSON.stringify(req.body, null, 2));
+    const telefone = normalizarTelefoneBR(numero);
 
-    // Nesta primeira etapa apenas confirmamos
-    // que a Meta conseguiu entregar o evento.
 
-    res.sendStatus(200);
+    if (!telefone) {
+
+      throw new Error(
+        "Telefone inválido para WhatsApp"
+      );
+
+    }
+
+
+    const phoneId =
+      process.env.WHATSAPP_PHONE_NUMBER_ID ||
+      process.env.WHATSAPP_PHONE_ID;
+
+
+    if (!phoneId) {
+
+      throw new Error(
+        "WHATSAPP_PHONE_NUMBER_ID não configurado"
+      );
+
+    }
+
+
+    if (!process.env.WHATSAPP_TOKEN) {
+
+      throw new Error(
+        "WHATSAPP_TOKEN não configurado"
+      );
+
+    }
+
+
+
+    const url =
+      `https://graph.facebook.com/v22.0/${phoneId}/messages`;
+
+
+
+    console.log("==============================");
+    console.log("Enviando WhatsApp");
+    console.log("Número:", telefone);
+    console.log("Phone ID:", phoneId);
+    console.log("==============================");
+
+
+
+    const resposta = await axios.post(
+
+      url,
+
+      {
+
+        messaging_product: "whatsapp",
+
+        recipient_type: "individual",
+
+        to: telefone,
+
+        type: "text",
+
+        text: {
+
+          preview_url: false,
+
+          body: mensagem
+
+        }
+
+      },
+
+
+      {
+
+        headers: {
+
+          Authorization:
+            `Bearer ${process.env.WHATSAPP_TOKEN}`,
+
+          "Content-Type":
+            "application/json"
+
+        }
+
+      }
+
+    );
+
+
+
+    console.log(
+      "WhatsApp enviado:",
+      resposta.data
+    );
+
+
+    return resposta.data;
+
+
 
   } catch (erro) {
 
-    console.error(erro);
 
-    res.sendStatus(500);
+    console.error(
+      "ERRO META WHATSAPP:"
+    );
+
+
+    console.error(
+      erro.response?.data || erro.message
+    );
+
+
+    throw erro;
 
   }
+
+}
+
+
+
+// ===========================================
+// WEBHOOK META
+// ===========================================
+
+function verificarWebhook(req, res) {
+
+
+  const mode =
+    req.query["hub.mode"];
+
+
+  const token =
+    req.query["hub.verify_token"];
+
+
+  const challenge =
+    req.query["hub.challenge"];
+
+
+
+  if (
+
+    mode === "subscribe" &&
+
+    token === process.env.VERIFY_TOKEN
+
+  ) {
+
+
+    console.log(
+      "Webhook Meta verificado"
+    );
+
+
+    return res
+      .status(200)
+      .send(challenge);
+
+
+  }
+
+
+  return res.sendStatus(403);
+
+}
+
+
+
+// ===========================================
+// RECEBER WEBHOOK
+// ===========================================
+
+async function receberWebhook(req, res) {
+
+  try {
+
+
+    console.log(
+      "Webhook recebido:"
+    );
+
+
+    console.log(
+      JSON.stringify(
+        req.body,
+        null,
+        2
+      )
+    );
+
+
+    return res.sendStatus(200);
+
+
+  } catch(error) {
+
+
+    console.error(
+      "Erro webhook:",
+      error
+    );
+
+
+    return res.sendStatus(500);
+
+  }
+
+}
+
+
+
+// ===========================================
+// EXPORTS
+// ===========================================
+
+module.exports = {
+
+  normalizarTelefoneBR,
+
+  enviarTextoWhatsApp,
+
+  verificarWebhook,
+
+  receberWebhook
 
 };

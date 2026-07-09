@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Ficha do Cidadão | Xavier Online</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    body {
+      background: #0f172a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, .3);
+    }
+
+    h1,
+    h2 {
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .item {
+      background: #334155;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    .label {
+      font-size: 12px;
+      opacity: .7;
+    }
+
+    .valor {
+      font-size: 16px;
+      margin-top: 5px;
+    }
+
+    .protocolo {
+      background: #0f766e;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .historico {
+      border-left: 4px solid #38bdf8;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #334155;
+      border-radius: 8px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: .8;
+    }
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <div class="container">
+
+
+    <h1>👤 Ficha do Cidadão</h1>
+
+
+    <div id="conteudo">
+
+      Carregando dados...
+
+    </div>
+
+
+  </div>
+
+
+
+  <script>
+
+
+    async function carregarCidadao() {
+
+
+      try {
+
+
+        /*
+        Futuramente vamos pegar o ID pela URL.
+        Exemplo:
+        cidadao.html?id=1
+        */
+
+
+        const parametros =
+          new URLSearchParams(window.location.search);
+
+
+        const id =
+          parametros.get("id") || 1;
+
+
+
+        const resposta =
+          await fetch(`/api/cidadaos/${id}/perfil`, {
+            credentials: "include"
+          });
+
+
+
+        const dados =
+          await resposta.json();
+
+
+
+        if (!dados.ok) {
+
+          document.getElementById("conteudo").innerHTML =
+            `
+            <div class="card">
+            Erro ao carregar cidadão.
+            </div>
+            `;
+
+          return;
+
+        }
+
+
+
+        const c =
+          dados.cidadao;
+
+
+
+        let protocolosHTML = "";
+
+
+        dados.protocolos.forEach(p => {
+
+
+          protocolosHTML +=
+            `
+            <div class="protocolo">
+
+            <strong>${p.protocolo}</strong>
+
+            <br>
+
+            Serviço:
+            ${p.servico}
+
+            <br>
+
+            Secretaria:
+            ${p.secretaria}
+
+            <br>
+
+            Status:
+            ${p.status}
+
+            </div>
+            `;
+
+
+        });
+
+
+
+        let historicoHTML = "";
+
+
+        dados.historico.forEach(h => {
+
+
+          historicoHTML +=
+            `
+            <div class="historico">
+
+            <strong>${h.tipo}</strong>
+
+            <br>
+
+            ${h.descricao}
+
+            <br>
+
+            <small>
+            ${new Date(h.criado_em).toLocaleString()}
+            </small>
+
+            </div>
+            `;
+
+
+        });
+
+
+
+
+        document.getElementById("conteudo").innerHTML =
+
+
+          `
+
+        <div class="card">
+
+
+        <h2>Dados pessoais</h2>
+
+
+        <div class="grid">
+
+
+        <div class="item">
+        <div class="label">Nome</div>
+        <div class="valor">${c.nome || "-"}</div>
+        </div>
+
+
+        <div class="item">
+        <div class="label">Telefone</div>
+        <div class="valor">${c.telefone || "-"}</div>
+        </div>
+
+
+        <div class="item">
+        <div class="label">WhatsApp</div>
+        <div class="valor">${c.whatsapp || "-"}</div>
+        </div>
+
+
+        <div class="item">
+        <div class="label">Bairro</div>
+        <div class="valor">${c.bairro || "-"}</div>
+        </div>
+
+
+        <div class="item">
+        <div class="label">Endereço</div>
+        <div class="valor">${c.endereco || "-"}</div>
+        </div>
+
+
+        </div>
+
+
+        </div>
+
+
+
+
+        <div class="card">
+
+
+        <h2>🗳️ Dados eleitorais</h2>
+
+
+        <div class="grid">
+
+
+        <div class="item">
+        Título:
+        ${c.titulo_eleitoral || "-"}
+        </div>
+
+
+        <div class="item">
+        Zona:
+        ${c.zona_eleitoral || "-"}
+        </div>
+
+
+        <div class="item">
+        Seção:
+        ${c.secao_eleitoral || "-"}
+        </div>
+
+
+        <div class="item">
+        Escola:
+        ${c.escola_votacao || "-"}
+        </div>
+
+
+        </div>
+
+
+        </div>
+
+
+
+
+        <div class="card">
+
+
+        <h2>📋 Protocolos</h2>
+
+
+        ${protocolosHTML ||
+          "Nenhum protocolo encontrado."
+          }
+
+
+        </div>
+
+
+
+
+        <div class="card">
+
+
+        <h2>🕒 Histórico</h2>
+
+
+        ${historicoHTML ||
+          "Nenhum histórico encontrado."
+          }
+
+
+        </div>
+
+
+
+
+        `;
+
+
+
+      }
+      catch (erro) {
+
+        console.error(erro);
+
+        document.getElementById("conteudo").innerHTML =
+          "Erro ao carregar dados.";
+
+      }
+
+
+    }
+
+
+
+    carregarCidadao();
+
+
+  </script>
+
+
+
+</body>
+
+</html>
+```

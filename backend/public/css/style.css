@@ -4196,3 +4196,45 @@ body.xavier-dashboard .dashboard-mobile-top .btn-sair-discreto:hover {
     color: rgba(220, 230, 245, 0.62) !important;
   }
 }
+.acoes-topo-direita {
+  position: absolute;
+  top: 26px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 10;
+}
+
+.btn-sair-discreto,
+.btn-voltar-painel {
+  width: 150px;
+  height: 36px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-sair-discreto {
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, .35);
+}
+
+.btn-voltar-painel {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, .35);
+}
+
+.btn-sair-discreto:hover,
+.btn-voltar-painel:hover {
+  background: #334155;
+  color: #fff;
+}

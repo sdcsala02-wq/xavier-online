@@ -11,6 +11,7 @@
   <style>
     .main-dashboard {
       padding: 24px 28px 40px;
+      position: relative;
     }
 
     .form-grid {
@@ -36,18 +37,48 @@
       box-sizing: border-box;
     }
 
-    .btn-voltar-inicio {
-      display: inline-flex;
+    .acoes-topo-direita {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      z-index: 20;
+    }
+
+    .btn-sair-discreto,
+    .btn-voltar-painel {
+      width: 160px;
+      height: 38px;
+      display: none;
       align-items: center;
       justify-content: center;
-      height: 40px;
-      padding: 0 16px;
       border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    .btn-sair-discreto {
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, .35);
+    }
+
+    .btn-voltar-painel {
       background: #1e293b;
       color: #e2e8f0;
-      text-decoration: none;
-      font-weight: 800;
-      border: 1px solid rgba(148, 163, 184, .30);
+      border: 1px solid rgba(148, 163, 184, .35);
+    }
+
+    .btn-sair-discreto:hover,
+    .btn-voltar-painel:hover {
+      background: #334155;
+      color: #ffffff;
     }
 
     @media (max-width: 768px) {
@@ -55,6 +86,17 @@
         padding: 16px 12px 24px !important;
         margin-left: 0 !important;
         width: 100% !important;
+      }
+
+      .acoes-topo-direita {
+        position: static;
+        align-items: stretch;
+        margin-bottom: 16px;
+      }
+
+      .btn-sair-discreto,
+      .btn-voltar-painel {
+        width: 100%;
       }
 
       .form-grid {
@@ -71,11 +113,6 @@
         text-align: center;
       }
 
-      .topbar-right {
-        margin-top: 14px;
-      }
-
-      .btn-voltar-inicio,
       .btn-nova {
         width: 100%;
       }
@@ -119,31 +156,23 @@
 
     <main class="conteudo main-dashboard">
 
-      <header class="topbar dashboard-mobile-top">
-
-        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
-          ☰
-        </button>
-
-        <button class="btn-sair-discreto" onclick="sairSistema()">
+      <div class="acoes-topo-direita">
+        <button id="btnSairSistema" class="btn-sair-discreto" onclick="sairSistema()" style="display:none;">
           ⇱ Sair
         </button>
 
-      </header>
+        <a href="dashboard.html" id="btnVoltarSistema" class="btn-voltar-painel" style="display:none;">
+          ← Voltar ao Painel
+        </a>
+      </div>
 
       <header class="topbar">
-
         <div>
           <h2>Registrar Solicitação</h2>
           <p class="subtitulo-dashboard">
             Atendimento do Gabinete Eduardo Xavier
           </p>
         </div>
-
-        <!--<div class="topbar-right">
-          <a href="index.html" class="btn-voltar-inicio">Voltar ao início</a>
-        </div> -->
-
       </header>
 
       <section class="painel">
@@ -198,7 +227,6 @@
 
           <div class="form-item">
             <label>Secretaria Responsável</label>
-
             <input type="text" id="secretaria" readonly placeholder="Selecione um serviço">
           </div>
 
@@ -222,56 +250,6 @@
   </div>
 
   <script src="js/nova-demanda.js"></script>
-  <!--<script src="js/auth.js"></script> -->
-  <!--<script src="js/app.js"></script> -->
-
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.querySelector(".sidebar");
-      const overlay = document.querySelector(".sidebar-overlay");
-
-      if (sidebar) sidebar.classList.toggle("active");
-      if (overlay) overlay.classList.toggle("active");
-
-      document.body.classList.toggle("menu-aberto");
-    }
-
-    function fecharSidebar() {
-      const sidebar = document.querySelector(".sidebar");
-      const overlay = document.querySelector(".sidebar-overlay");
-
-      if (sidebar) sidebar.classList.remove("active");
-      if (overlay) overlay.classList.remove("active");
-
-      document.body.classList.remove("menu-aberto");
-    }
-
-    async function sairSistema() {
-      try {
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          credentials: "include"
-        });
-      } catch (erro) {
-        console.error("Erro ao sair:", erro);
-      }
-
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = "/index.html";
-    }
-
-    document.querySelectorAll(".menu a").forEach(link => {
-      const paginaAtual = window.location.pathname.split("/").pop();
-      const href = link.getAttribute("href");
-
-      if (href === paginaAtual) {
-        link.classList.add("active");
-      }
-
-      link.addEventListener("click", fecharSidebar);
-    });
-  </script>
 
   <script>
     const mapaSecretarias = {
@@ -298,16 +276,6 @@
       });
     }
 
-    function toggleSidebar() {
-      const sidebar = document.querySelector(".sidebar");
-      const overlay = document.querySelector(".sidebar-overlay");
-
-      if (sidebar) sidebar.classList.toggle("active");
-      if (overlay) overlay.classList.toggle("active");
-
-      document.body.classList.toggle("menu-aberto");
-    }
-
     function fecharSidebar() {
       const sidebar = document.querySelector(".sidebar");
       const overlay = document.querySelector(".sidebar-overlay");
@@ -332,6 +300,22 @@
       sessionStorage.clear();
       window.location.href = "/index.html";
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const btnVoltar = document.getElementById("btnVoltarSistema");
+      const btnSair = document.getElementById("btnSairSistema");
+
+      const usuarioLogado =
+        localStorage.getItem("token") ||
+        localStorage.getItem("usuario") ||
+        sessionStorage.getItem("token") ||
+        sessionStorage.getItem("usuario");
+
+      if (usuarioLogado) {
+        if (btnSair) btnSair.style.display = "inline-flex";
+        if (btnVoltar) btnVoltar.style.display = "inline-flex";
+      }
+    });
   </script>
 
 </body>
