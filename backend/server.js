@@ -866,6 +866,19 @@ app.use((req, res) => {
   res.status(404).send("Não encontrado");
 });
 
+(async () => {
+  try {
+    const r = await db.query("SELECT COUNT(*) AS total FROM demandas_gabinete");
+
+    console.log("==================================");
+    console.log("BANCO EM USO PELO NODE");
+    console.log("Demandas:", r.rows[0].total);
+    console.log("==================================");
+  } catch (erro) {
+    console.error("Erro ao consultar banco:", erro);
+  }
+})();
+
 app.listen(PORT, () => {
   console.log(`Servidor Xavier Online rodando na porta ${PORT}`);
 });
