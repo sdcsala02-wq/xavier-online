@@ -49,10 +49,11 @@
     }
 
     .btn-sair-discreto,
-    .btn-voltar-painel {
-      width: 160px;
-      height: 38px;
-      display: none;
+    .btn-voltar-painel,
+    .btn-consultar-protocolo {
+      width: 180px;
+      min-height: 38px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: 10px;
@@ -61,6 +62,8 @@
       text-decoration: none;
       cursor: pointer;
       box-sizing: border-box;
+      padding: 8px 12px;
+      text-align: center;
     }
 
     .btn-sair-discreto {
@@ -94,7 +97,7 @@
         margin-bottom: 16px;
       }
 
-      .btn-sair-discreto,
+      /*.btn-sair-discreto,*/
       .btn-voltar-painel {
         width: 100%;
       }
@@ -157,13 +160,19 @@
     <main class="conteudo main-dashboard">
 
       <div class="acoes-topo-direita">
-        <button id="btnSairSistema" class="btn-sair-discreto" onclick="sairSistema()" style="display:none;">
+
+        <button id="btnSairSistema" class="btn-sair-discreto" type="button" onclick="sairSistema()">
           ⇱ Sair
         </button>
 
-        <a href="dashboard.html" id="btnVoltarSistema" class="btn-voltar-painel" style="display:none;">
-          ← Voltar ao Painel
+        <a href="protocolo.html" class="btn-consultar-protocolo">
+          🔎 Consultar protocolo
         </a>
+
+        <a href="index.html" id="btnVoltarSistema" class="btn-voltar-painel">
+          ← Voltar ao início
+        </a>
+
       </div>
 
       <header class="topbar">
@@ -312,39 +321,54 @@
         sessionStorage.getItem("usuario");
 
       if (usuarioLogado) {
-        if (btnSair) btnSair.style.display = "inline-flex";
-        if (btnVoltar) btnVoltar.style.display = "inline-flex";
+        if (btnSair) {
+          btnSair.style.display = "inline-flex";
+        }
+
+        if (btnVoltar) {
+          btnVoltar.href = "dashboard.html";
+          btnVoltar.textContent = "← Voltar ao Painel";
+        }
+      } else {
+        if (btnSair) {
+          btnSair.style.display = "none";
+        }
+
+        if (btnVoltar) {
+          btnVoltar.href = "index.html";
+          btnVoltar.textContent = "← Voltar ao início";
+        }
       }
     });
   </script>
 
   <div id="modalSucessoDemanda" class="modal-sucesso-demanda" style="display:none;">
-  <div class="modal-sucesso-card">
-    <h2>✔️ Solicitação registrada</h2>
+    <div class="modal-sucesso-card">
+      <h2>✔️ Solicitação registrada</h2>
 
-    <p>Seu protocolo é:</p>
+      <p>Seu protocolo é:</p>
 
-    <div id="protocoloGerado" class="protocolo-destaque"></div>
+      <div id="protocoloGerado" class="protocolo-destaque"></div>
 
-    <hr>
+      <hr>
 
-    <p>📲 Acompanhe sua solicitação pelo WhatsApp</p>
-    <a id="btnAbrirWhatsApp" class="btn-primary" target="_blank">
-      Abrir WhatsApp
-    </a>
+      <p>📲 Acompanhe sua solicitação pelo WhatsApp</p>
+      <a id="btnAbrirWhatsApp" class="btn-primary" target="_blank">
+        Abrir WhatsApp
+      </a>
 
-    <hr>
+      <hr>
 
-    <p>🌐 Acompanhar pelo portal</p>
-    <a id="btnConsultarProtocolo" class="btn-secondary">
-      Consultar protocolo
-    </a>
+      <p>🌐 Acompanhar pelo portal</p>
+      <a id="btnConsultarProtocolo" class="btn-secondary">
+        Consultar protocolo
+      </a>
 
-    <button onclick="novaSolicitacao()" class="btn-secondary">
-      Nova solicitação
-    </button>
+      <button onclick="novaSolicitacao()" class="btn-secondary">
+        Nova solicitação
+      </button>
+    </div>
   </div>
-</div>
 
 </body>
 

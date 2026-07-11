@@ -4196,6 +4196,11 @@ body.xavier-dashboard .dashboard-mobile-top .btn-sair-discreto:hover {
     color: rgba(220, 230, 245, 0.62) !important;
   }
 }
+
+/*nova demanda html*/
+
+/* NOVA DEMANDA — BOTÕES SUPERIORES */
+
 .acoes-topo-direita {
   position: absolute;
   top: 26px;
@@ -4204,14 +4209,15 @@ body.xavier-dashboard .dashboard-mobile-top .btn-sair-discreto:hover {
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
-  z-index: 10;
+  z-index: 20;
 }
 
 .btn-sair-discreto,
-.btn-voltar-painel {
-  width: 150px;
-  height: 36px;
-  display: none;
+.btn-voltar-painel,
+.btn-consultar-protocolo {
+  width: 180px;
+  min-height: 38px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
@@ -4219,9 +4225,13 @@ body.xavier-dashboard .dashboard-mobile-top .btn-sair-discreto:hover {
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  text-align: center;
 }
 
 .btn-sair-discreto {
+  display: none;
   background: transparent;
   color: #cbd5e1;
   border: 1px solid rgba(148, 163, 184, .35);
@@ -4233,11 +4243,37 @@ body.xavier-dashboard .dashboard-mobile-top .btn-sair-discreto:hover {
   border: 1px solid rgba(148, 163, 184, .35);
 }
 
+.btn-consultar-protocolo {
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #3b82f6;
+}
+
 .btn-sair-discreto:hover,
 .btn-voltar-painel:hover {
   background: #334155;
-  color: #fff;
+  color: #ffffff;
 }
+
+.btn-consultar-protocolo:hover {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .acoes-topo-direita {
+    position: static;
+    align-items: stretch;
+    margin-bottom: 16px;
+  }
+
+  .btn-sair-discreto,
+  .btn-voltar-painel,
+  .btn-consultar-protocolo {
+    width: 100%;
+  }
+}
+
 
 /* ===========================
    MODAL SUCESSO NOVA DEMANDA
