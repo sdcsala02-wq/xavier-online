@@ -89,13 +89,20 @@ function aplicarPermissoesMenu(perfil) {
   const permitidos = regras[perfilNormalizado] || regras.CONSULTA;
 
   document.querySelectorAll(".menu a").forEach(link => {
+
     const href = link.getAttribute("href");
 
     if (!href || href === "#" || href.startsWith("http")) return;
 
-    if (!permitidos.includes(href)) {
+    // Remove a barra inicial (/dashboard.html -> dashboard.html)
+    const pagina = href.replace(/^\//, "");
+
+    if (!permitidos.includes(pagina)) {
       link.style.display = "none";
+    } else {
+      link.style.display = "";
     }
+
   });
 }
 
@@ -133,43 +140,165 @@ async function logoutSistema() {
 async function carregarDashboard() {
   try {
     const [resDemandas, resInteracoes, resLista] = await Promise.all([
-      fetch(`${API_DEMANDAS}/resumo`, { credentials: "include" }),
-      fetch(`${API_INTERACOES}/resumo`, { credentials: "include" }),
-      fetch(API_DEMANDAS, { credentials: "include" })
+      fetch(`${API_DEMANDAS}/resumo`, {
+        credentials: "include",
+        cache: "no-store"
+      }),
+
+      fetch(`${API_INTERACOES}/resumo`, {
+        credentials: "include",
+        cache: "no-store"
+      }),
+
+      fetch(API_DEMANDAS, {
+        credentials: "include",
+        cache: "no-store"
+      })
     ]);
+
+    if (!resDemandas.ok) {
+      throw new Error(
+        `Erro no resumo de demandas: ${resDemandas.status}`
+      );
+    }
+
+    if (!resInteracoes.ok) {
+      throw new Error(
+        `Erro no resumo de interações: ${resInteracoes.status}`
+      );
+    }
+
+    if (!resLista.ok) {
+      throw new Error(
+        `Erro na lista de demandas: ${resLista.status}`
+      );
+    }
 
     const demandas = await resDemandas.json();
     const interacoes = await resInteracoes.json();
-    const lista = await resLista.json();
+    const retornoLista = await resLista.json();
 
-    const demandas2025 = totalAno(demandas.evolucaoAnual, 2025);
-    const demandas2026 = totalAno(demandas.evolucaoAnual, 2026);
+    const lista = Array.isArray(retornoLista)
+      ? retornoLista
+      : Array.isArray(retornoLista.dados)
+        ? retornoLista.dados
+        : Array.isArray(retornoLista.demandas)
+          ? retornoLista.demandas
+          : [];
 
-    const interacoes2025 = totalAno(interacoes.porAno, 2025);
-    const interacoes2026 = totalAno(interacoes.porAno, 2026);
+    const evolucaoMensal = Array.isArray(demandas.evolucaoMensal)
+      ? demandas.evolucaoMensal
+      : [];
 
-    preencherTexto("demandas2025", demandas2025);
-    preencherTexto("demandas2026", demandas2026);
-    preencherTexto("interacoes2025", interacoes2025);
-    preencherTexto("interacoes2026", interacoes2026);
+    const demandas2025 = evolucaoMensal
+      .filter(item => Number(item.ano) === 2025)
+      .reduce(
+        (total, item) => total + Number(item.total || 0),
+        0
+      );
 
-    preencherTexto("donutTotal", demandas.total || 0);
+    const demandas2026 = evolucaoMensal
+      .filter(item => Number(item.ano) === 2026)
+      .reduce(
+        (total, item) => total + Number(item.total || 0),
+        0
+      );
+
+    const interacoes2025 = totalAno(
+      interacoes.porAno,
+      2025
+    );
+
+    const interacoes2026 = totalAno(
+      interacoes.porAno,
+      2026
+    );
+
+    preencherTexto(
+      "demandas2025",
+      demandas2025
+    );
+
+    preencherTexto(
+      "demandas2026",
+      demandas2026
+    );
+
+    preencherTexto(
+      "interacoes2025",
+      interacoes2025
+    );
+
+    preencherTexto(
+      "interacoes2026",
+      interacoes2026
+    );
+
+    preencherTexto(
+      "donutTotal",
+      demandas.total || 0
+    );
 
     montarEvolucaoAnual([
-      { ano: 2025, total: demandas2025 + interacoes2025 },
-      { ano: 2026, total: demandas2026 + interacoes2026 }
+      {
+        ano: 2025,
+        total: demandas2025 + interacoes2025
+      },
+      {
+        ano: 2026,
+        total: demandas2026 + interacoes2026
+      }
     ]);
 
-    montarGraficoStatus(demandas.porStatus || [], demandas.total || 0);
-    montarRanking("rankingSecretarias", demandas.porSecretaria || [], "secretaria");
-    montarRanking("rankingBairros", demandas.topBairros || [], "bairro");
-    montarEvolucaoMensal(demandas.evolucaoMensal || []);
-    montarUltimasDemandas(lista || []);
+    montarGraficoStatus(
+      Array.isArray(demandas.porStatus)
+        ? demandas.porStatus
+        : [],
+      Number(demandas.total || 0)
+    );
 
-  } catch (error) {
-    console.error("Erro ao carregar dashboard:", error);
+    montarRanking(
+      "rankingSecretarias",
+      Array.isArray(demandas.porSecretaria)
+        ? demandas.porSecretaria
+        : [],
+      "secretaria"
+    );
+
+    montarRanking(
+      "rankingBairros",
+      Array.isArray(demandas.topBairros)
+        ? demandas.topBairros
+        : [],
+      "bairro"
+    );
+
+    montarEvolucaoMensal(
+      evolucaoMensal
+    );
+
+    montarUltimasDemandas(
+      lista
+    );
+
+    console.log("Dashboard carregado:", {
+      demandas2025,
+      demandas2026,
+      interacoes2025,
+      interacoes2026,
+      totalDemandas: demandas.total,
+      registros: lista.length
+    });
+
+  } catch (erro) {
+    console.error(
+      "Erro ao carregar dashboard:",
+      erro
+    );
   }
 }
+
+
 
 function totalAno(lista, ano) {
   if (!Array.isArray(lista)) return 0;

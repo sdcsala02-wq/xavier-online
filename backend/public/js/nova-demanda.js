@@ -90,7 +90,15 @@ async function salvarNovaDemanda(event) {
       return;
     }
 
-    const protocolo = retorno.demanda?.protocolo || "-";
+    //const protocolo = retorno.demanda?.protocolo || "-";
+
+    const protocolo =
+      retorno.protocolo ||
+      retorno.demanda?.protocolo ||
+      "-";
+
+
+
 
     exibirModalSucesso(protocolo);
 
@@ -143,20 +151,59 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//function exibirModalSucesso(protocolo) {
+//const numeroXavier = "5513996924317";
+//const mensagem = `Olá, quero acompanhar meu protocolo ${protocolo}`;
+//const linkWhatsApp = `https://wa.me/${numeroXavier}?text=${encodeURIComponent(mensagem)}`;
+
+//document.getElementById("protocoloGerado").textContent = protocolo;
+//document.getElementById("btnAbrirWhatsApp").href = linkWhatsApp;
+//document.getElementById("btnConsultarProtocolo").href =
+//`protocolo.html?protocolo=${encodeURIComponent(protocolo)}`;
+
+//document.getElementById("modalSucessoDemanda").style.display = "flex";
+//}
+
+//function novaSolicitacao() {
+//document.getElementById("modalSucessoDemanda").style.display = "none";
+//limparFormularioNovaDemanda();
+//}
+
 function exibirModalSucesso(protocolo) {
   const numeroXavier = "5513996924317";
-  const mensagem = `Olá, quero acompanhar meu protocolo ${protocolo}`;
-  const linkWhatsApp = `https://wa.me/${numeroXavier}?text=${encodeURIComponent(mensagem)}`;
 
-  document.getElementById("protocoloGerado").textContent = protocolo;
-  document.getElementById("btnAbrirWhatsApp").href = linkWhatsApp;
-  document.getElementById("btnConsultarProtocolo").href =
-    `protocolo.html?protocolo=${encodeURIComponent(protocolo)}`;
+  const mensagem =
+    `Olá, quero acompanhar meu protocolo ${protocolo}`;
 
-  document.getElementById("modalSucessoDemanda").style.display = "flex";
-}
+  const linkWhatsApp =
+    `https://wa.me/${numeroXavier}?text=${encodeURIComponent(mensagem)}`;
 
-function novaSolicitacao() {
-  document.getElementById("modalSucessoDemanda").style.display = "none";
-  limparFormularioNovaDemanda();
+  const protocoloGerado =
+    document.getElementById("protocoloGerado");
+
+  const btnWhatsApp =
+    document.getElementById("btnAbrirWhatsApp");
+
+  const btnConsultar =
+    document.getElementById("btnConsultarProtocolo");
+
+  const modal =
+    document.getElementById("modalSucessoDemanda");
+
+  if (protocoloGerado) {
+    protocoloGerado.textContent = protocolo;
+  }
+
+  if (btnWhatsApp) {
+    btnWhatsApp.href = linkWhatsApp;
+  }
+
+  if (btnConsultar) {
+    btnConsultar.href =
+      `/protocolo-publico.html?protocolo=${encodeURIComponent(protocolo)}`;
+  }
+
+  if (modal) {
+    modal.style.display = "flex";
+  }
 }

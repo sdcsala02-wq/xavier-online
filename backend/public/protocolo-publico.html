@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Consultar Protocolo | Xavier Online</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #e2e8f0;
+      background:
+        radial-gradient(circle at top, rgba(37, 99, 235, 0.14), transparent 35%),
+        linear-gradient(180deg, #08111f 0%, #020617 100%);
+    }
+
+    .topo-publico {
+      width: 100%;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+      background: rgba(2, 6, 23, 0.7);
+      backdrop-filter: blur(12px);
+    }
+
+    .topo-conteudo {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 78px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .marca-publica {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .marca-icone {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.28);
+    }
+
+    .marca-texto strong {
+      display: block;
+      font-size: 19px;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+    }
+
+    .marca-texto span {
+      display: block;
+      margin-top: 3px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .whatsapp-topo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #86efac;
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .pagina-protocolo-publico {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 50px;
+    }
+
+    .cabecalho-publico {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .cabecalho-publico h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.1;
+      color: #ffffff;
+    }
+
+    .cabecalho-publico h1::after {
+      content: "";
+      display: block;
+      width: 70px;
+      height: 4px;
+      margin: 16px auto 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .cabecalho-publico p {
+      max-width: 680px;
+      margin: 18px auto 0;
+      color: #cbd5e1;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .consulta-card {
+      padding: 18px;
+      margin-bottom: 26px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.75);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+    }
+
+    .form-consulta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 170px;
+      gap: 12px;
+    }
+
+    .campo-protocolo-wrap {
+      position: relative;
+    }
+
+    .icone-pesquisa {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #60a5fa;
+      pointer-events: none;
+    }
+
+    .form-consulta input {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 16px 0 50px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 12px;
+      outline: none;
+      background: rgba(15, 23, 42, 0.8);
+      color: #ffffff;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .form-consulta input::placeholder {
+      color: #64748b;
+    }
+
+    .form-consulta input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+    }
+
+    .form-consulta button {
+      min-height: 54px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+      transition: 0.2s;
+    }
+
+    .form-consulta button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .ajuda-consulta {
+      margin: 12px 2px 0;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    .mensagem-consulta {
+      display: none;
+      margin-bottom: 22px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .mensagem-consulta.erro {
+      display: block;
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      background: rgba(127, 29, 29, 0.35);
+      color: #fecaca;
+    }
+
+    .mensagem-consulta.info {
+      display: block;
+      border: 1px solid rgba(96, 165, 250, 0.25);
+      background: rgba(30, 64, 175, 0.25);
+      color: #bfdbfe;
+    }
+
+    .resultado-protocolo {
+      display: none;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.82);
+      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.3);
+    }
+
+    .resultado-topo {
+      padding: 24px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .protocolo-identidade {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .protocolo-icone {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #93c5fd;
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(96, 165, 250, 0.16);
+    }
+
+    .protocolo-bloco span {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .protocolo-bloco strong {
+      display: block;
+      font-size: clamp(22px, 3vw, 30px);
+      color: #ffffff;
+      word-break: break-word;
+    }
+
+    .data-solicitacao-topo {
+      text-align: right;
+    }
+
+    .data-solicitacao-topo span {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .data-solicitacao-topo strong {
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+
+    .status-linha {
+      margin-top: 10px;
+    }
+
+    .status-protocolo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      border: 1px solid transparent;
+    }
+
+    .status-recebida {
+      color: #bfdbfe;
+      background: rgba(37, 99, 235, 0.2);
+      border-color: rgba(96, 165, 250, 0.25);
+    }
+
+    .status-andamento {
+      color: #fde68a;
+      background: rgba(217, 119, 6, 0.18);
+      border-color: rgba(251, 191, 36, 0.25);
+    }
+
+    .status-concluida {
+      color: #bbf7d0;
+      background: rgba(22, 163, 74, 0.18);
+      border-color: rgba(74, 222, 128, 0.25);
+    }
+
+    .status-cancelada {
+      color: #fecaca;
+      background: rgba(220, 38, 38, 0.18);
+      border-color: rgba(248, 113, 113, 0.25);
+    }
+
+    .dados-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding: 22px 24px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .dado-card {
+      min-width: 0;
+      padding: 4px 18px;
+      border-right: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .dado-card:first-child {
+      padding-left: 0;
+    }
+
+    .dado-card:last-child {
+      border-right: none;
+      padding-right: 0;
+    }
+
+    .dado-card span {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .dado-card strong {
+      display: block;
+      color: #ffffff;
+      font-size: 15px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .andamento-box {
+      margin: 22px 24px 0;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      background: rgba(30, 64, 175, 0.16);
+    }
+
+    .andamento-box span {
+      display: block;
+      margin-bottom: 7px;
+      color: #60a5fa;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .andamento-box p {
+      margin: 0;
+      color: #dbeafe;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .tratativas-area {
+      padding: 24px;
+    }
+
+    .tratativas-titulo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .tratativas-lista {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tratativas-lista::before {
+      content: "";
+      position: absolute;
+      top: 18px;
+      bottom: 18px;
+      left: 17px;
+      width: 2px;
+      background: rgba(59, 130, 246, 0.26);
+    }
+
+    .tratativa-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .tratativa-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tratativa-marcador {
+      position: relative;
+      z-index: 2;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 15px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+    }
+
+    .tratativa-conteudo {
+      padding-top: 1px;
+    }
+
+    .tratativa-data {
+      margin-bottom: 5px;
+      color: #60a5fa;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tratativa-titulo-item {
+      margin-bottom: 5px;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .tratativa-descricao {
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .seguranca-box {
+      margin-top: 24px;
+      padding: 18px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border: 1px solid rgba(148, 163, 184, 0.13);
+      border-radius: 15px;
+      background: rgba(15, 23, 42, 0.68);
+    }
+
+    .seguranca-icone {
+      min-width: 44px;
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      color: #c4b5fd;
+      background: rgba(124, 58, 237, 0.18);
+    }
+
+    .seguranca-box strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #93c5fd;
+      font-size: 14px;
+    }
+
+    .seguranca-box p {
+      margin: 0;
+      color: #cbd5e1;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .acoes-publicas {
+      margin-top: 26px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .acoes-publicas a {
+      min-height: 44px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .btn-voltar {
+      color: #bfdbfe;
+      border: 1px solid rgba(96, 165, 250, 0.22);
+      background: rgba(30, 64, 175, 0.14);
+    }
+
+    .btn-whatsapp {
+      color: #dcfce7;
+      border: 1px solid rgba(74, 222, 128, 0.22);
+      background: rgba(22, 163, 74, 0.16);
+    }
+
+    @media (max-width: 860px) {
+      .dados-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 0;
+      }
+
+      .dado-card:nth-child(2) {
+        border-right: none;
+      }
+
+      .dado-card:nth-child(3) {
+        padding-left: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topo-conteudo {
+        min-height: 70px;
+      }
+
+      .whatsapp-topo {
+        display: none;
+      }
+
+      .pagina-protocolo-publico {
+        width: min(100% - 20px, 1080px);
+        padding-top: 28px;
+      }
+
+      .form-consulta {
+        grid-template-columns: 1fr;
+      }
+
+      .resultado-topo {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .data-solicitacao-topo {
+        text-align: left;
+        padding-left: 75px;
+      }
+
+      .dados-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dado-card {
+        padding: 14px 0;
+        border-right: none;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+      }
+
+      .dado-card:last-child {
+        border-bottom: none;
+      }
+
+      .andamento-box {
+        margin: 18px 16px 0;
+      }
+
+      .tratativas-area {
+        padding: 20px 16px;
+      }
+
+      .seguranca-box {
+        flex-direction: column;
+      }
+
+      .acoes-publicas {
+        flex-direction: column;
+      }
+
+      .acoes-publicas a {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topo-publico">
+    <div class="topo-conteudo">
+
+      <div class="marca-publica">
+        <div class="marca-icone">🏛️</div>
+
+        <div class="marca-texto">
+          <strong>XAVIER ONLINE</strong>
+          <span>PRAIA GRANDE - SP</span>
+        </div>
+      </div>
+
+      <a class="whatsapp-topo" href="https://wa.me/5513996924317" target="_blank" rel="noopener noreferrer">
+        💬 Atendimento via WhatsApp
+      </a>
+
+    </div>
+  </header>
+
+  <main class="pagina-protocolo-publico">
+
+    <header class="cabecalho-publico">
+      <h1>Consultar protocolo</h1>
+
+      <p>
+        Acompanhe o andamento da sua solicitação de forma rápida e segura,
+        sem acessar ou exibir dados pessoais.
+      </p>
+    </header>
+
+    <section class="consulta-card">
+
+      <form id="formConsultaProtocolo" class="form-consulta">
+
+        <div class="campo-protocolo-wrap">
+          <span class="icone-pesquisa">⌕</span>
+
+          <input type="text" id="campoProtocolo" placeholder="Ex.: XAV-2026-000123" autocomplete="off" spellcheck="false" required>
+        </div>
+
+        <button type="submit" id="btnConsultar">
+          Consultar
+        </button>
+
+      </form>
+
+      <p class="ajuda-consulta">
+        Digite o número completo do protocolo exatamente como informado no momento do registro.
+      </p>
+
+    </section>
+
+    <div id="mensagemConsulta" class="mensagem-consulta"></div>
+
+    <section id="resultadoProtocolo" class="resultado-protocolo">
+
+      <div class="resultado-topo">
+
+        <div class="protocolo-identidade">
+
+          <div class="protocolo-icone">📋</div>
+
+          <div class="protocolo-bloco">
+            <span>Protocolo</span>
+
+            <strong id="resultadoNumero">
+              -
+            </strong>
+
+            <div class="status-linha">
+              <span id="resultadoStatus" class="status-protocolo status-recebida">
+                RECEBIDA
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="data-solicitacao-topo">
+          <span>Data da solicitação</span>
+          <strong id="resultadoDataTopo">-</strong>
+        </div>
+
+      </div>
+
+      <div class="dados-grid">
+
+        <div class="dado-card">
+          <span>Serviço</span>
+          <strong id="resultadoServico">-</strong>
+        </div>
+
+        <div class="dado-card">
+          <span>Secretaria responsável</span>
+          <strong id="resultadoSecretaria">-</strong>
+        </div>
+
+        <div class="dado-card">
+          <span>Última atualização</span>
+          <strong id="resultadoAtualizacao">-</strong>
+        </div>
+
+        <div class="dado-card">
+          <span>Status atual</span>
+          <strong id="resultadoStatusTexto">-</strong>
+        </div>
+
+      </div>
+
+      <div class="andamento-box">
+        <span>Situação da sua solicitação</span>
+        <p id="resultadoAndamento">
+          Aguardando consulta.
+        </p>
+      </div>
+
+      <div class="tratativas-area">
+
+        <div class="tratativas-titulo">
+          💬 Andamento e tratativas
+        </div>
+
+        <ul id="listaTratativas" class="tratativas-lista"></ul>
+
+      </div>
+
+    </section>
+
+    <section class="seguranca-box">
+      <div class="seguranca-icone">🛡️</div>
+
+      <div>
+        <strong>Seus dados estão protegidos</strong>
+
+        <p>
+          Esta consulta apresenta somente informações públicas sobre o andamento
+          da solicitação. Nenhum nome, telefone, endereço ou dado pessoal é exibido.
+        </p>
+      </div>
+    </section>
+
+    <div class="acoes-publicas">
+
+      <a href="/index.html" class="btn-voltar">
+        ← Voltar ao início
+      </a>
+
+      <a id="btnWhatsApp" href="https://wa.me/5513996924317" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
+        💬 Continuar pelo WhatsApp
+      </a>
+
+    </div>
+
+  </main>
+
+  <script>
+    const formConsulta =
+      document.getElementById("formConsultaProtocolo");
+
+    const campoProtocolo =
+      document.getElementById("campoProtocolo");
+
+    const mensagemConsulta =
+      document.getElementById("mensagemConsulta");
+
+    const resultadoProtocolo =
+      document.getElementById("resultadoProtocolo");
+
+    const btnConsultar =
+      document.getElementById("btnConsultar");
+
+    function formatarData(data) {
+      if (!data) {
+        return "Não informado";
+      }
+
+      const dataConvertida = new Date(data);
+
+      if (Number.isNaN(dataConvertida.getTime())) {
+        return "Não informado";
+      }
+
+      return dataConvertida.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function mostrarMensagem(texto, tipo = "info") {
+      mensagemConsulta.textContent = texto;
+      mensagemConsulta.className =
+        `mensagem-consulta ${tipo}`;
+
+      resultadoProtocolo.style.display = "none";
+    }
+
+    function limparMensagem() {
+      mensagemConsulta.textContent = "";
+      mensagemConsulta.className =
+        "mensagem-consulta";
+    }
+
+    function definirClasseStatus(status) {
+      const texto =
+        String(status || "").toUpperCase();
+
+      if (texto.includes("CONCLU")) {
+        return "status-concluida";
+      }
+
+      if (texto.includes("CANCEL")) {
+        return "status-cancelada";
+      }
+
+      if (
+        texto.includes("ANDAMENTO") ||
+        texto.includes("ENCAMINH") ||
+        texto.includes("AGUARD")
+      ) {
+        return "status-andamento";
+      }
+
+      return "status-recebida";
+    }
+
+    function montarTratativas(tratativas) {
+      const listaTratativas =
+        document.getElementById("listaTratativas");
+
+      listaTratativas.innerHTML = "";
+
+      if (
+        !Array.isArray(tratativas) ||
+        tratativas.length === 0
+      ) {
+        tratativas = [
+          {
+            data: null,
+            titulo: "Solicitação recebida",
+            descricao:
+              "A solicitação foi registrada e está aguardando atualização."
+          }
+        ];
+      }
+
+      tratativas.forEach((tratativa) => {
+        const item =
+          document.createElement("li");
+
+        item.className =
+          "tratativa-item";
+
+        const marcador =
+          document.createElement("div");
+
+        marcador.className =
+          "tratativa-marcador";
+
+        marcador.textContent =
+          "✓";
+
+        const conteudo =
+          document.createElement("div");
+
+        conteudo.className =
+          "tratativa-conteudo";
+
+        const data =
+          document.createElement("div");
+
+        data.className =
+          "tratativa-data";
+
+        data.textContent =
+          formatarData(tratativa.data);
+
+        const titulo =
+          document.createElement("div");
+
+        titulo.className =
+          "tratativa-titulo-item";
+
+        titulo.textContent =
+          tratativa.titulo ||
+          "Atualização da solicitação";
+
+        const descricao =
+          document.createElement("p");
+
+        descricao.className =
+          "tratativa-descricao";
+
+        descricao.textContent =
+          tratativa.descricao ||
+          "Sem detalhes adicionais.";
+
+        conteudo.appendChild(data);
+        conteudo.appendChild(titulo);
+        conteudo.appendChild(descricao);
+
+        item.appendChild(marcador);
+        item.appendChild(conteudo);
+
+        listaTratativas.appendChild(item);
+      });
+    }
+
+    async function consultarProtocolo(protocolo) {
+      limparMensagem();
+
+      resultadoProtocolo.style.display =
+        "none";
+
+      btnConsultar.disabled = true;
+      btnConsultar.textContent = "Consultando...";
+
+      try {
+        const protocoloNormalizado =
+          String(protocolo || "")
+            .trim()
+            .toUpperCase();
+
+        const resposta = await fetch(
+          `/api/publico/protocolo/${encodeURIComponent(protocoloNormalizado)}`,
+          {
+            cache: "no-store"
+          }
+        );
+
+        const dados =
+          await resposta.json();
+
+        if (!resposta.ok) {
+          throw new Error(
+            dados.mensagem ||
+            dados.erro ||
+            "Protocolo não encontrado."
+          );
+        }
+
+        const status =
+          String(dados.status || "RECEBIDA")
+            .toUpperCase();
+
+        document.getElementById(
+          "resultadoNumero"
+        ).textContent =
+          dados.protocolo ||
+          "Não informado";
+
+        document.getElementById(
+          "resultadoServico"
+        ).textContent =
+          dados.servico ||
+          "Não informado";
+
+        document.getElementById(
+          "resultadoSecretaria"
+        ).textContent =
+          dados.secretaria ||
+          "Não informado";
+
+        document.getElementById(
+          "resultadoDataTopo"
+        ).textContent =
+          formatarData(
+            dados.data_criacao ||
+            dados.criado_em
+          );
+
+        document.getElementById(
+          "resultadoAtualizacao"
+        ).textContent =
+          formatarData(
+            dados.ultima_atualizacao ||
+            dados.data_criacao ||
+            dados.criado_em
+          );
+
+        document.getElementById(
+          "resultadoStatusTexto"
+        ).textContent =
+          status;
+
+        document.getElementById(
+          "resultadoAndamento"
+        ).textContent =
+          dados.andamento_publico ||
+          "Sua solicitação está sendo analisada.";
+
+        const elementoStatus =
+          document.getElementById(
+            "resultadoStatus"
+          );
+
+        elementoStatus.textContent =
+          status;
+
+        elementoStatus.className =
+          `status-protocolo ${definirClasseStatus(status)}`;
+
+        montarTratativas(
+          dados.tratativas
+        );
+
+        const btnWhatsApp =
+          document.getElementById(
+            "btnWhatsApp"
+          );
+
+        const mensagemWhatsApp =
+          `Olá, quero acompanhar o protocolo ${dados.protocolo || protocoloNormalizado}`;
+
+        btnWhatsApp.href =
+          `https://wa.me/5513996924317?text=${encodeURIComponent(mensagemWhatsApp)}`;
+
+        resultadoProtocolo.style.display =
+          "block";
+
+        campoProtocolo.value =
+          dados.protocolo ||
+          protocoloNormalizado;
+
+      } catch (erro) {
+        mostrarMensagem(
+          erro.message,
+          "erro"
+        );
+      } finally {
+        btnConsultar.disabled = false;
+        btnConsultar.textContent = "Consultar";
+      }
+    }
+
+    formConsulta.addEventListener(
+      "submit",
+      (evento) => {
+        evento.preventDefault();
+
+        const protocolo =
+          campoProtocolo.value
+            .trim()
+            .toUpperCase();
+
+        if (!protocolo) {
+          mostrarMensagem(
+            "Informe o número do protocolo.",
+            "erro"
+          );
+
+          return;
+        }
+
+        consultarProtocolo(
+          protocolo
+        );
+      }
+    );
+
+    campoProtocolo.addEventListener(
+      "input",
+      () => {
+        campoProtocolo.value =
+          campoProtocolo.value.toUpperCase();
+      }
+    );
+
+    const protocoloURL =
+      new URLSearchParams(
+        window.location.search
+      ).get("protocolo");
+
+    if (protocoloURL) {
+      campoProtocolo.value =
+        protocoloURL.toUpperCase();
+
+      consultarProtocolo(
+        protocoloURL
+      );
+    }
+  </script>
+
+</body>
+
+</html>
