@@ -232,46 +232,9 @@ function verificarWebhook(req, res) {
 // RECEBER WEBHOOK
 // ===========================================
 
-async function receberWebhook(req, res) {
-
-  try {
 
 
-    console.log(
-      "Webhook recebido:"
-    );
-
-
-    console.log(
-      JSON.stringify(
-        req.body,
-        null,
-        2
-      )
-    );
-
-
-    return res.sendStatus(200);
-
-
-  } catch(error) {
-
-
-    console.error(
-      "Erro webhook:",
-      error
-    );
-
-
-    return res.sendStatus(500);
-
-  }
-
-}
-
-
-
-// ===========================================
+// ===========================================  
 // EXPORTS
 // ===========================================
 
@@ -282,7 +245,5 @@ module.exports = {
   enviarTextoWhatsApp,
 
   verificarWebhook,
-
-  receberWebhook
 
 };

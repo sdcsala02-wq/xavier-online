@@ -14,6 +14,10 @@ require("dotenv").config();
 const db = require("./db");
 
 const {
+  testarOpenAI
+} = require("./services/openai.service");
+
+const {
   enviarTextoWhatsApp,
   normalizarTelefoneBR
 } = require("./services/whatsapp.service");
@@ -362,6 +366,40 @@ app.get(
       status:
         "API funcionando"
     });
+  }
+);
+
+// ======================================
+// TESTE CONTROLADO DA OPENAI
+// ======================================
+
+app.get(
+  "/api/teste-ia",
+  async (req, res) => {
+    try {
+      const resposta =
+        await testarOpenAI();
+
+      return res.json({
+        ok: true,
+        mensagem:
+          "Conexão com a OpenAI funcionando.",
+        resposta
+      });
+    } catch (erro) {
+      console.error(
+        "Erro no teste da IA:",
+        erro
+      );
+
+      return res.status(500).json({
+        ok: false,
+        mensagem:
+          "Não foi possível conectar com a OpenAI.",
+        erro:
+          erro.message
+      });
+    }
   }
 );
 
@@ -1068,6 +1106,39 @@ ${descricao
     }
   }
 );
+
+app.post("/api/teste-ia", async (req, res) => {
+  try {
+
+    const { mensagem } = req.body;
+
+    if (!mensagem) {
+      return res.status(400).json({
+        ok: false,
+        mensagem: "Informe uma mensagem."
+      });
+    }
+
+    const resposta = await testarOpenAI(mensagem);
+
+    return res.json({
+      ok: true,
+      resposta
+    });
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    return res.status(500).json({
+      ok: false,
+      erro: erro.message
+    });
+
+  }
+});
+
+
 app.use(
   "/api/demandas",
   autenticar,
