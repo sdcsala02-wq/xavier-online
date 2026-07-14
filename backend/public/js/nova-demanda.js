@@ -34,7 +34,7 @@ function limparFormularioNovaDemanda() {
 }
 
 function abrirWhatsAppDemanda(dados, protocolo) {
-  const telefoneDestino = "5513996015888";
+  const telefoneDestino = "5513974172763";
 
   const mensagem = `Nova demanda Xavier Online
 
