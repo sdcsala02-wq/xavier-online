@@ -19,6 +19,7 @@ const {
 
 const {
   enviarTextoWhatsApp,
+  enviarTemplateWhatsApp,
   normalizarTelefoneBR
 } = require("./services/whatsapp.service");
 
@@ -967,7 +968,6 @@ app.post(
 Olá, ${nome.trim()}.
 
 Sua solicitação foi registrada com sucesso no Xavier Online.
-
 📌 Protocolo: ${protocolo}
 
 🏥 Serviço: ${servico}
@@ -1025,18 +1025,43 @@ ${descricao
           mensagemCidadao
         );
 
-        whatsappCidadao =
-          true;
+        whatsappCidadao = true;
 
         console.log(
-          "WhatsApp cidadão enviado:",
+          "WhatsApp cidadão enviado por texto:",
           protocolo
         );
-      } catch (erro) {
-        console.error(
-          "Falha WhatsApp cidadão:",
-          erro.message
+
+      } catch (erroTexto) {
+        console.warn(
+          "Mensagem comum não permitida. Tentando template:",
+          erroTexto.response?.data || erroTexto.message
         );
+
+        try {
+          await enviarTemplateWhatsApp(
+            telefoneLimpo,
+            "confirmacao_protocolo_xavier_online",
+            "pt_BR",
+            [
+              protocolo
+            ]
+          );
+
+          whatsappCidadao = true;
+
+          console.log(
+            "WhatsApp cidadão enviado por template:",
+            protocolo
+          );
+
+        } catch (erroTemplate) {
+          console.error(
+            "Falha total no WhatsApp cidadão:",
+            erroTemplate.response?.data ||
+            erroTemplate.message
+          );
+        }
       }
 
       try {
