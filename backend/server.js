@@ -1013,56 +1013,12 @@ ${descricao
           : "Não informado"}
 `;
 
-      let whatsappCidadao =
-        false;
+      let whatsappCidadao = false;
+      let whatsappGabinete = false;
 
-      let whatsappGabinete =
-        false;
-
-      try {
-        await enviarTextoWhatsApp(
-          telefoneLimpo,
-          mensagemCidadao
-        );
-
-        whatsappCidadao = true;
-
-        console.log(
-          "WhatsApp cidadão enviado por texto:",
-          protocolo
-        );
-
-      } catch (erroTexto) {
-        console.warn(
-          "Mensagem comum não permitida. Tentando template:",
-          erroTexto.response?.data || erroTexto.message
-        );
-
-        try {
-          await enviarTemplateWhatsApp(
-            telefoneLimpo,
-            "confirmacao_protocolo_xavier_online",
-            "pt_BR",
-            [
-              protocolo
-            ]
-          );
-
-          whatsappCidadao = true;
-
-          console.log(
-            "WhatsApp cidadão enviado por template:",
-            protocolo
-          );
-
-        } catch (erroTemplate) {
-          console.error(
-            "Falha total no WhatsApp cidadão:",
-            erroTemplate.response?.data ||
-            erroTemplate.message
-          );
-        }
-      }
+      // ===========================================
+      // ENVIO DO PROTOCOLO AO CIDADÃO
+      // ===========================================
 
       try {
         await enviarTemplateWhatsApp(
@@ -1070,7 +1026,9 @@ ${descricao
           "confirmacao_protocolo_xavier_online",
           "pt_BR",
           [
-            protocolo
+            nome.trim(),
+            protocolo,
+            servico
           ]
         );
 
@@ -1086,6 +1044,45 @@ ${descricao
           "Falha no envio do template ao cidadão:",
           erroTemplate.response?.data ||
           erroTemplate.message
+        );
+      }
+
+      // ===========================================
+      // ENVIO DA CÓPIA AO GABINETE
+      // ===========================================
+
+      try {
+        const telefoneGabinete =
+          process.env.WHATSAPP_GABINETE;
+
+        console.log(
+          "Preparando envio ao gabinete:",
+          telefoneGabinete
+        );
+
+        if (telefoneGabinete) {
+          await enviarTextoWhatsApp(
+            telefoneGabinete,
+            mensagemGabinete
+          );
+
+          whatsappGabinete = true;
+
+          console.log(
+            "WhatsApp gabinete enviado:",
+            protocolo
+          );
+        } else {
+          console.warn(
+            "WHATSAPP_GABINETE não configurado."
+          );
+        }
+
+      } catch (erroGabinete) {
+        console.error(
+          "Falha WhatsApp gabinete:",
+          erroGabinete.response?.data ||
+          erroGabinete.message
         );
       }
 
