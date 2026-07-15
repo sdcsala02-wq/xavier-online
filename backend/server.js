@@ -1065,28 +1065,27 @@ ${descricao
       }
 
       try {
-        if (
-          process.env
-            .WHATSAPP_GABINETE
-        ) {
-          await enviarTextoWhatsApp(
-            process.env
-              .WHATSAPP_GABINETE,
-            mensagemGabinete
-          );
-
-          whatsappGabinete =
-            true;
-
-          console.log(
-            "WhatsApp gabinete enviado:",
+        await enviarTemplateWhatsApp(
+          telefoneLimpo,
+          "confirmacao_protocolo_xavier_online",
+          "pt_BR",
+          [
             protocolo
-          );
-        }
-      } catch (erro) {
+          ]
+        );
+
+        whatsappCidadao = true;
+
+        console.log(
+          "WhatsApp cidadão enviado por template:",
+          protocolo
+        );
+
+      } catch (erroTemplate) {
         console.error(
-          "Falha WhatsApp gabinete:",
-          erro.message
+          "Falha no envio do template ao cidadão:",
+          erroTemplate.response?.data ||
+          erroTemplate.message
         );
       }
 
