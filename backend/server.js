@@ -1028,7 +1028,7 @@ ${descricao
           [
             nome.trim(),
             protocolo,
-            servico
+            secretaria
           ]
         );
 
