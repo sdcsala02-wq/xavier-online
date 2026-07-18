@@ -564,6 +564,80 @@ function mostrarSecretaria() {
   secretariaPreview.innerText = mapaSecretarias[valor] || "---";
 }
 
+function aplicarMascaraTelefone(input) {
+  let numeros = String(input.value || "").replace(/\D/g, "");
+
+  // Permite apenas DDD + 9 números
+  numeros = numeros.slice(0, 11);
+
+  if (numeros.length === 0) {
+    input.value = "";
+    return;
+  }
+
+  if (numeros.length <= 2) {
+    input.value = `(${numeros}`;
+    return;
+  }
+
+  if (numeros.length <= 7) {
+    input.value = `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+    return;
+  }
+
+  input.value =
+    `(${numeros.slice(0, 2)}) ` +
+    `${numeros.slice(2, 7)} - ` +
+    `${numeros.slice(7, 11)}`;
+}
+
+
+function validarTelefoneCelular(telefone) {
+  const numeros = String(telefone || "").replace(/\D/g, "");
+
+  /*
+    Exige:
+    - 11 números;
+    - DDD com dois dígitos;
+    - celular começando com 9.
+  */
+  return /^[1-9]{2}9\d{8}$/.test(numeros);
+}
+
+
+function configurarCampoTelefone() {
+  const campoTelefone = document.getElementById("telefone");
+  const formDemanda = document.getElementById("formDemanda");
+
+  // Evita erro nas páginas que não possuem telefone
+  if (!campoTelefone) return;
+
+  campoTelefone.addEventListener("input", function () {
+    aplicarMascaraTelefone(this);
+  });
+
+  campoTelefone.addEventListener("paste", function () {
+    setTimeout(() => {
+      aplicarMascaraTelefone(this);
+    }, 0);
+  });
+
+  if (formDemanda) {
+    formDemanda.addEventListener("submit", function (evento) {
+      if (!validarTelefoneCelular(campoTelefone.value)) {
+        evento.preventDefault();
+        evento.stopImmediatePropagation();
+
+        alert(
+          "Informe um celular válido no formato (XX) XXXXX - XXXX."
+        );
+
+        campoTelefone.focus();
+      }
+    }, true);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const pagina = window.location.pathname.split("/").pop();
 
@@ -572,6 +646,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   marcarPaginaAtiva();
+
+  // Ativa a máscara e a validação do telefone
+  configurarCampoTelefone();
+
 
   if (
     document.getElementById("demandas2025") ||

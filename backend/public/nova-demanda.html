@@ -201,8 +201,30 @@
           </div>
 
           <div class="form-item">
-            <label>Telefone</label>
-            <input type="text" id="telefone" placeholder="(13) 99999-9999">
+            <label>Telefone / WhatsApp</label>
+
+            <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000 - 0000" maxlength="17" inputmode="numeric" autocomplete="tel" required onkeydown="
+      if (
+        !/[0-9]/.test(event.key) &&
+        !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key) &&
+        !(event.ctrlKey || event.metaKey)
+      ) {
+        event.preventDefault();
+      }
+    " oninput="
+      let numeros = this.value.replace(/\D/g, '').slice(0, 11);
+
+      if (numeros.length <= 2) {
+        this.value = numeros ? '(' + numeros : '';
+      } else if (numeros.length <= 7) {
+        this.value = '(' + numeros.slice(0, 2) + ') ' + numeros.slice(2);
+      } else {
+        this.value =
+          '(' + numeros.slice(0, 2) + ') ' +
+          numeros.slice(2, 7) + ' - ' +
+          numeros.slice(7, 11);
+      }
+    ">
           </div>
 
           <div class="form-item">
@@ -278,6 +300,69 @@
 
     const campoServico = document.getElementById("servico");
     const campoSecretaria = document.getElementById("secretaria");
+    const campoTelefone = document.getElementById("telefone");
+    const formNovaDemanda = document.getElementById("formNovaDemanda");
+
+    function aplicarMascaraTelefone(input) {
+      let numeros = String(input.value || "").replace(/\D/g, "");
+
+      numeros = numeros.slice(0, 11);
+
+      if (numeros.length === 0) {
+        input.value = "";
+        return;
+      }
+
+      if (numeros.length <= 2) {
+        input.value = `(${numeros}`;
+        return;
+      }
+
+      if (numeros.length <= 7) {
+        input.value = `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+        return;
+      }
+
+      input.value =
+        `(${numeros.slice(0, 2)}) ` +
+        `${numeros.slice(2, 7)} - ` +
+        `${numeros.slice(7, 11)}`;
+    }
+
+    function validarTelefoneCelular(telefone) {
+      const numeros = String(telefone || "").replace(/\D/g, "");
+
+      return /^[1-9]{2}9\d{8}$/.test(numeros);
+    }
+
+    if (campoTelefone) {
+      campoTelefone.addEventListener("input", function () {
+        aplicarMascaraTelefone(this);
+      });
+
+      campoTelefone.addEventListener("paste", function () {
+        setTimeout(() => {
+          aplicarMascaraTelefone(this);
+        }, 0);
+      });
+    }
+
+    if (formNovaDemanda && campoTelefone) {
+      formNovaDemanda.addEventListener(
+        "submit",
+        function (evento) {
+          if (!validarTelefoneCelular(campoTelefone.value)) {
+            evento.preventDefault();
+            evento.stopImmediatePropagation();
+
+            alert("Informe um celular válido no formato (XX) XXXXX - XXXX.");
+
+            campoTelefone.focus();
+          }
+        },
+        true
+      );
+    }
 
     if (campoServico && campoSecretaria) {
       campoServico.addEventListener("change", () => {
@@ -340,6 +425,8 @@
         }
       }
     });
+
+
   </script>
 
   <div id="modalSucessoDemanda" class="modal-sucesso-demanda" style="display:none;">
