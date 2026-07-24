@@ -3,1356 +3,280 @@
 
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demandas | Xavier Online</title>
 
-  <title>Painel Administrativo | Sistema Lucas</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 
   <style>
-    :root {
-      --fundo: #050d1c;
-      --fundo-secundario: #081427;
-      --sidebar: #061524;
-      --painel: #0c172b;
-      --painel-claro: #111f37;
-      --borda: rgba(148, 163, 184, 0.14);
-      --texto: #f8fafc;
-      --texto-secundario: #91a4c1;
-      --azul: #2f6df6;
-      --azul-claro: #38bdf8;
-      --verde: #22c55e;
-      --amarelo: #f59e0b;
-      --vermelho: #ef4444;
-      --roxo: #8b5cf6;
-      --sombra: 0 18px 45px rgba(0, 0, 0, 0.24);
+    .main-dashboard {
+      padding: 24px 28px 40px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      min-height: 100vh;
-      margin: 0;
-      background:
-        radial-gradient(circle at top right,
-          rgba(47, 109, 246, 0.10),
-          transparent 32%),
-        var(--fundo);
-      color: var(--texto);
-      font-family: "Poppins", sans-serif;
-    }
-
-    button,
-    input,
-    select {
-      font-family: inherit;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .layout {
+    .filtros-admin {
       display: grid;
-      min-height: 100vh;
-      grid-template-columns: 245px minmax(0, 1fr);
-    }
-
-    .sidebar {
-      position: fixed;
-      inset: 0 auto 0 0;
-      z-index: 20;
-      display: flex;
-      width: 245px;
-      flex-direction: column;
-      padding: 22px 17px;
-      border-right: 1px solid var(--borda);
-      background: rgba(6, 21, 36, 0.97);
-      backdrop-filter: blur(16px);
-    }
-
-    .marca {
-      display: flex;
-      align-items: center;
+      grid-template-columns: 1fr 220px;
       gap: 12px;
-      padding: 4px 7px 22px;
-      border-bottom: 1px solid var(--borda);
-    }
-
-    .marca-icone {
-      display: flex;
-      width: 45px;
-      height: 45px;
-      flex: 0 0 auto;
       align-items: center;
-      justify-content: center;
-      border-radius: 13px;
-      background:
-        linear-gradient(135deg,
-          #2563eb,
-          #0ea5e9);
-      color: white;
-      font-size: 13px;
-      font-weight: 800;
-      box-shadow:
-        0 12px 24px rgba(37, 99, 235, 0.24);
     }
 
-    .marca strong {
-      display: block;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-    }
-
-    .marca span {
-      display: block;
-      margin-top: 3px;
-      color: var(--texto-secundario);
-      font-size: 9px;
-    }
-
-    .menu {
-      display: flex;
-      margin-top: 22px;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .menu a,
-    .menu button {
-      display: flex;
+    .filtros-admin input,
+    .filtros-admin select {
       width: 100%;
-      min-height: 43px;
-      align-items: center;
-      gap: 11px;
-      padding: 0 13px;
-      border: 1px solid transparent;
-      border-radius: 11px;
-      background: transparent;
-      color: #cbd5e1;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 600;
-      text-align: left;
-      transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
-    }
-
-    .menu a:hover,
-    .menu button:hover {
-      transform: translateX(2px);
-      border-color: rgba(59, 130, 246, 0.18);
-      background: rgba(37, 99, 235, 0.09);
-    }
-
-    .menu a.ativo {
-      border-color: rgba(59, 130, 246, 0.34);
-      background:
-        linear-gradient(135deg,
-          rgba(37, 99, 235, 0.88),
-          rgba(14, 165, 233, 0.78));
-      color: white;
-      box-shadow:
-        0 10px 24px rgba(37, 99, 235, 0.18);
-    }
-
-    .menu-icone {
-      width: 19px;
-      text-align: center;
-      font-size: 15px;
-    }
-
-    .sidebar-rodape {
-      margin-top: auto;
-      padding: 15px;
-      border: 1px solid var(--borda);
-      border-radius: 14px;
-      background: rgba(15, 31, 53, 0.72);
-    }
-
-    .sidebar-rodape strong {
-      display: block;
-      font-size: 11px;
-    }
-
-    .sidebar-rodape span {
-      display: block;
-      margin-top: 4px;
-      color: var(--texto-secundario);
-      font-size: 9px;
-    }
-
-    .conteudo {
-      grid-column: 2;
-      min-width: 0;
-      padding: 24px;
-    }
-
-    .topo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .topo-texto h1 {
-      margin: 0;
-      font-size: 25px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-    }
-
-    .topo-texto p {
-      margin: 7px 0 0;
-      color: var(--texto-secundario);
-      font-size: 11px;
-    }
-
-    .topo-acoes {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn {
-      display: inline-flex;
-      min-height: 40px;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 0 15px;
-      border: 1px solid var(--borda);
-      border-radius: 11px;
-      background: rgba(15, 31, 53, 0.72);
-      color: #dbeafe;
-      cursor: pointer;
-      font-size: 10px;
-      font-weight: 700;
-      transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      border-color: rgba(59, 130, 246, 0.35);
-    }
-
-    .btn-primario {
-      border-color: rgba(59, 130, 246, 0.35);
-      background:
-        linear-gradient(135deg,
-          #2563eb,
-          #0ea5e9);
-      color: white;
-    }
-
-    .hero-admin {
-      position: relative;
-      padding: 26px;
-      overflow: hidden;
-      border: 1px solid var(--borda);
-      border-radius: 21px;
-      background:
-        linear-gradient(135deg,
-          rgba(17, 31, 55, 0.97),
-          rgba(9, 21, 40, 0.97));
-      box-shadow: var(--sombra);
-    }
-
-    .hero-admin::before {
-      position: absolute;
-      top: -70px;
-      right: -50px;
-      width: 230px;
-      height: 230px;
-      border-radius: 50%;
-      background: rgba(47, 109, 246, 0.11);
-      content: "";
-    }
-
-    .hero-admin::after {
-      position: absolute;
-      bottom: -85px;
-      left: 18%;
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
-      background: rgba(139, 92, 246, 0.08);
-      content: "";
-    }
-
-    .hero-conteudo {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 25px;
-    }
-
-    .hero-conteudo h2 {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .hero-conteudo p {
-      max-width: 680px;
-      margin: 8px 0 0;
-      color: var(--texto-secundario);
-      font-size: 11px;
-      line-height: 1.65;
-    }
-
-    .status-sistema {
-      display: flex;
-      flex: 0 0 auto;
-      align-items: center;
-      gap: 9px;
-      padding: 10px 14px;
-      border: 1px solid rgba(34, 197, 94, 0.24);
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.09);
-      color: #86efac;
-      font-size: 10px;
+      height: 46px;
+      background: #0f172a;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, .25);
+      border-radius: 10px;
+      padding: 0 12px;
+      outline: none;
       font-weight: 700;
     }
 
-    .status-sistema::before {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--verde);
-      box-shadow:
-        0 0 0 5px rgba(34, 197, 94, 0.10);
-      content: "";
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns:
-        repeat(6, minmax(150px, 1fr));
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    .card {
-      position: relative;
-      min-width: 0;
-      min-height: 132px;
-      padding: 18px;
-      overflow: hidden;
-      border: 1px solid var(--borda);
-      border-radius: 17px;
-      background:
-        linear-gradient(145deg,
-          rgba(16, 31, 55, 0.98),
-          rgba(11, 23, 42, 0.98));
-      box-shadow:
-        0 12px 28px rgba(0, 0, 0, 0.16);
-    }
-
-    .card::after {
-      position: absolute;
-      top: -29px;
-      right: -29px;
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: rgba(59, 130, 246, 0.08);
-      content: "";
-    }
-
-    .card-titulo {
-      position: relative;
-      z-index: 2;
-      color: var(--texto-secundario);
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 0.45px;
-      text-transform: uppercase;
-    }
-
-    .card-valor {
-      position: relative;
-      z-index: 2;
-      margin-top: 15px;
-      font-size: 29px;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .card-legenda {
-      position: relative;
-      z-index: 2;
-      margin-top: 10px;
-      color: #9eb0c9;
-      font-size: 9px;
-      line-height: 1.5;
-    }
-
-    .card-azul {
-      border-left: 3px solid var(--azul);
-    }
-
-    .card-verde {
-      border-left: 3px solid var(--verde);
-    }
-
-    .card-vermelho {
-      border-left: 3px solid var(--vermelho);
-    }
-
-    .card-amarelo {
-      border-left: 3px solid var(--amarelo);
-    }
-
-    .card-roxo {
-      border-left: 3px solid var(--roxo);
-    }
-
-    .card-ciano {
-      border-left: 3px solid var(--azul-claro);
-    }
-
-    .grade-principal {
-      display: grid;
-      grid-template-columns:
-        minmax(0, 1.15fr) minmax(320px, 0.85fr);
-      gap: 18px;
-      margin-top: 18px;
-    }
-
-    .painel {
-      min-width: 0;
-      padding: 20px;
-      border: 1px solid var(--borda);
-      border-radius: 18px;
-      background:
-        linear-gradient(145deg,
-          rgba(12, 23, 43, 0.98),
-          rgba(8, 19, 36, 0.98));
-      box-shadow:
-        0 15px 32px rgba(0, 0, 0, 0.17);
-    }
-
-    .painel-topo {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 17px;
-    }
-
-    .painel-topo h3 {
-      margin: 0;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-    }
-
-    .painel-topo p {
-      margin: 5px 0 0;
-      color: var(--texto-secundario);
-      font-size: 9px;
-    }
-
-    .tag {
-      padding: 7px 10px;
-      border: 1px solid rgba(56, 189, 248, 0.20);
-      border-radius: 999px;
-      background: rgba(14, 165, 233, 0.08);
-      color: #7dd3fc;
-      font-size: 8px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .perfis {
-      display: flex;
-      min-height: 230px;
-      flex-direction: column;
-      justify-content: center;
-      gap: 14px;
-    }
-
-    .perfil-item {
-      display: grid;
-      grid-template-columns:
-        minmax(90px, 125px) minmax(0, 1fr) 38px;
-      gap: 11px;
-      align-items: center;
-    }
-
-    .perfil-nome {
-      color: #dce8f8;
-      font-size: 10px;
-      font-weight: 700;
-    }
-
-    .perfil-barra {
-      height: 9px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: rgba(148, 163, 184, 0.10);
-    }
-
-    .perfil-progresso {
-      width: 0;
-      height: 100%;
-      border-radius: inherit;
-      background:
-        linear-gradient(90deg,
-          #2563eb,
-          #38bdf8);
-      transition: width 0.55s ease;
-    }
-
-    .perfil-total {
-      color: white;
-      font-size: 10px;
-      font-weight: 800;
-      text-align: right;
-    }
-
-    .acoes-rapidas {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 11px;
-    }
-
-    .acao-rapida {
-      min-height: 94px;
-      padding: 15px;
-      border: 1px solid var(--borda);
-      border-radius: 14px;
-      background: rgba(15, 31, 53, 0.62);
-      transition:
-        transform 0.2s ease,
-        border-color 0.2s ease;
-    }
-
-    .acao-rapida:hover {
-      transform: translateY(-2px);
-      border-color: rgba(59, 130, 246, 0.32);
-    }
-
-    .acao-rapida span {
-      display: block;
-      font-size: 20px;
-    }
-
-    .acao-rapida strong {
-      display: block;
-      margin-top: 9px;
-      font-size: 10px;
-    }
-
-    .acao-rapida small {
-      display: block;
-      margin-top: 4px;
-      color: var(--texto-secundario);
-      font-size: 8px;
-      line-height: 1.5;
-    }
-
-    .grade-tabelas {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-      margin-top: 18px;
-    }
-
-    .tabela-wrapper {
-      width: 100%;
+    .painel-tabela {
       overflow-x: auto;
     }
 
-    table {
+    .painel-tabela table {
+      min-width: 1000px;
+    }
+
+    .modal-grid input,
+    .modal-grid select,
+    .modal-grid textarea {
       width: 100%;
-      min-width: 760px;
-      border-collapse: collapse;
+      box-sizing: border-box;
     }
 
-    th {
-      padding: 11px 12px;
-      border-bottom: 1px solid var(--borda);
-      color: var(--texto-secundario);
-      font-size: 8px;
-      font-weight: 800;
-      letter-spacing: 0.45px;
-      text-align: left;
-      text-transform: uppercase;
+    .modal-grid textarea {
+      min-height: 120px;
     }
 
-    td {
-      padding: 13px 12px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-      color: #dbe7f7;
-      font-size: 9px;
-      vertical-align: middle;
-    }
-
-    tbody tr {
-      transition: background 0.18s ease;
-    }
-
-    tbody tr:hover {
-      background: rgba(37, 99, 235, 0.07);
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .usuario {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .avatar {
-      display: flex;
-      width: 31px;
-      height: 31px;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      background:
-        linear-gradient(135deg,
-          rgba(37, 99, 235, 0.90),
-          rgba(14, 165, 233, 0.85));
-      color: white;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .usuario strong {
-      display: block;
-      font-size: 9px;
-    }
-
-    .usuario small {
-      display: block;
-      margin-top: 3px;
-      color: var(--texto-secundario);
-      font-size: 8px;
-    }
-
-    .badge {
-      display: inline-flex;
-      min-height: 24px;
-      align-items: center;
-      justify-content: center;
-      padding: 0 9px;
-      border-radius: 999px;
-      font-size: 8px;
-      font-weight: 800;
-    }
-
-    .badge-verde {
-      border: 1px solid rgba(34, 197, 94, 0.21);
-      background: rgba(34, 197, 94, 0.10);
-      color: #86efac;
-    }
-
-    .badge-vermelho {
-      border: 1px solid rgba(239, 68, 68, 0.22);
-      background: rgba(239, 68, 68, 0.10);
-      color: #fca5a5;
-    }
-
-    .badge-amarelo {
-      border: 1px solid rgba(245, 158, 11, 0.22);
-      background: rgba(245, 158, 11, 0.10);
-      color: #fcd34d;
-    }
-
-    .badge-azul {
-      border: 1px solid rgba(59, 130, 246, 0.22);
-      background: rgba(59, 130, 246, 0.10);
-      color: #93c5fd;
-    }
-
-    .badge-roxo {
-      border: 1px solid rgba(139, 92, 246, 0.22);
-      background: rgba(139, 92, 246, 0.10);
-      color: #c4b5fd;
-    }
-
-    .mensagem {
-      display: none;
-      margin: 18px 0 0;
-      padding: 13px 15px;
-      border-radius: 12px;
-      font-size: 10px;
-    }
-
-    .mensagem.erro {
-      display: block;
-      border: 1px solid rgba(239, 68, 68, 0.22);
-      background: rgba(127, 29, 29, 0.22);
-      color: #fca5a5;
-    }
-
-    .estado-vazio {
-      padding: 35px 15px;
-      color: var(--texto-secundario);
-      font-size: 10px;
-      text-align: center;
-    }
-
-    .carregando {
-      min-height: 130px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--texto-secundario);
-      font-size: 10px;
-    }
-
-    .menu-mobile {
-      display: none;
-    }
-
-    @media (max-width: 1350px) {
-      .cards {
-        grid-template-columns:
-          repeat(3, minmax(160px, 1fr));
-      }
-    }
-
-    @media (max-width: 1050px) {
-      .grade-principal {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 850px) {
-      .layout {
-        display: block;
+    @media (max-width: 768px) {
+      .main-dashboard {
+        padding: 16px 12px 24px !important;
+        margin-left: 0 !important;
+        width: 100% !important;
       }
 
-      .sidebar {
-        transform: translateX(-105%);
-        transition: transform 0.25s ease;
+      .cards-modernos {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
       }
 
-      .sidebar.aberta {
-        transform: translateX(0);
-      }
-
-      .conteudo {
-        padding: 17px;
-      }
-
-      .menu-mobile {
-        display: inline-flex;
-      }
-
-      .cards {
-        grid-template-columns:
-          repeat(2, minmax(145px, 1fr));
-      }
-
-      .topo {
-        align-items: flex-start;
-      }
-
-      .topo-acoes {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .conteudo {
-        padding: 12px;
-      }
-
-      .topo {
-        flex-direction: column;
-      }
-
-      .topo-acoes {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .hero-admin {
-        padding: 20px;
-      }
-
-      .hero-conteudo {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
-
-      .acoes-rapidas {
-        grid-template-columns: 1fr;
+      .filtros-admin {
+        grid-template-columns: 1fr !important;
       }
 
       .painel {
-        padding: 16px;
+        padding: 16px !important;
+      }
+
+      .topbar:not(.dashboard-mobile-top) {
+        display: block;
+        text-align: center;
+      }
+
+      .topbar-right {
+        margin-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .topbar-right .btn-nova {
+        width: 100%;
+      }
+
+      .modal-conteudo {
+        width: calc(100% - 24px) !important;
+        max-height: 88vh;
+        overflow-y: auto;
+      }
+
+      .modal-grid {
+        grid-template-columns: 1fr !important;
       }
     }
   </style>
 </head>
 
-<body>
+<body class="xavier-dashboard">
 
-  <div class="layout">
+  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
 
-    <aside id="sidebar" class="sidebar">
+  <div class="app-layout">
 
-      <div class="marca">
+    <aside class="sidebar">
 
-        <div class="marca-icone">
-          SDC
-        </div>
+      <div class="brand">
+        <div class="brand-icon">🏛️</div>
 
         <div>
-          <strong>
-            SISTEMA LUCAS
-          </strong>
-
-          <span>
-            Administração e Segurança
-          </span>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
         </div>
-
       </div>
 
       <nav class="menu">
 
-        <a href="/dashboard.html">
-          <span class="menu-icone">📊</span>
-          Dashboard
-        </a>
+        <a href="dashboard.html">▣ Dashboard</a>
 
-        <a href="/eleitores.html">
-          <span class="menu-icone">👥</span>
-          Eleitores
-        </a>
+        <a href="admin.html">📋 Demandas</a>
 
-        <a href="/mapa.html">
-          <span class="menu-icone">🗺️</span>
-          Mapa Territorial
-        </a>
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
 
-        <a href="/liderancas.html">
-          <span class="menu-icone">🤝</span>
-          Lideranças
-        </a>
+        <a href="protocolo.html">🔎 Protocolo</a>
 
-        <a href="/relatorios.html">
-          <span class="menu-icone">📈</span>
-          Relatórios
-        </a>
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
 
-        <a href="/importar.html">
-          <span class="menu-icone">📥</span>
-          Importar Planilha
-        </a>
+        <a href="eleitores.html">🗳️ Eleitores</a>
 
-        <a href="/usuarios.html">
-          <span class="menu-icone">👤</span>
-          Usuários
-        </a>
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
 
-        <a href="/admin.html" class="ativo">
-          <span class="menu-icone">🛡️</span>
-          Painel Administrador
-        </a>
+        <a href="interacoes.html">💬 Interações</a>
 
-        <a href="/configuracoes.html">
-          <span class="menu-icone">⚙️</span>
-          Configurações
-        </a>
+        <a href="importar.html">⬆ Importar Planilha</a>
 
-        <button type="button" onclick="sairDoSistema()">
-          <span class="menu-icone">↩</span>
-          Sair
-        </button>
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
+        <a href="secretarias.html">☷ Secretarias</a>
+
+        <a href="liderancas.html">👥 Lideranças</a>
+
+        <a href="configuracoes.html">⚙ Configurações</a>
 
       </nav>
 
-      <div class="sidebar-rodape">
+      <div class="sidebar-phone">
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+      </div>
 
-        <strong id="nomeUsuarioSidebar">
-          Administrador
-        </strong>
-
-        <span id="perfilUsuarioSidebar">
-          Perfil ADMIN
-        </span>
-
+      <div class="sidebar-footer">
+        <strong>XAVIER ONLINE</strong>
+        <p>Gestão interna das demandas comunitárias.</p>
+        <span>Versão 1.0.0</span>
       </div>
 
     </aside>
 
+    <main class="conteudo main-dashboard">
 
-    <main class="conteudo">
+      <header class="topbar dashboard-mobile-top">
 
-      <header class="topo">
+        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
+          ☰
+        </button>
 
-        <div class="topo-texto">
+        <button class="btn-sair-discreto" onclick="sairSistema()">
+          ⇱ Sair
+        </button>
 
-          <h1>
-            Painel Administrativo
-          </h1>
+      </header>
 
-          <p>
-            Gestão de usuários, segurança, acessos e auditoria do Sistema Lucas.
+      <header class="topbar">
+
+        <div>
+          <h2>Demandas</h2>
+          <p class="subtitulo-dashboard">
+            Gestão interna das demandas do Gabinete Eduardo Xavier
           </p>
-
         </div>
 
-        <div class="topo-acoes">
-
-          <button type="button" class="btn menu-mobile" onclick="alternarMenu()">
-            ☰ Menu
-          </button>
-
-          <button type="button" class="btn" onclick="carregarPainel()">
-            ↻ Atualizar
-          </button>
-
-          <a href="/usuarios.html" class="btn btn-primario">
-            ＋ Gerenciar usuários
-          </a>
-
+        <div class="topbar-right">
+          <a href="dashboard.html" class="btn-nova">Dashboard</a>
+          <a href="relatorio-legislativo.html" class="btn-nova">Relatório Legislativo</a>
         </div>
 
       </header>
 
+      <section class="cards-modernos">
 
-      <section class="hero-admin">
+        <div class="card-mod azul">
+          <h3>Total</h3>
+          <strong id="cardTotal">0</strong>
+          <p>Demandas registradas</p>
+        </div>
 
-        <div class="hero-conteudo">
+        <div class="card-mod verde">
+          <h3>Recebidas</h3>
+          <strong id="cardRecebidas">0</strong>
+          <p>Aguardando análise</p>
+        </div>
 
+        <div class="card-mod roxo">
+          <h3>Em Análise</h3>
+          <strong id="cardAnalise">0</strong>
+          <p>Demandas em andamento</p>
+        </div>
+
+        <div class="card-mod laranja">
+          <h3>Resolvidas</h3>
+          <strong id="cardResolvidas">0</strong>
+          <p>Demandas finalizadas</p>
+        </div>
+
+      </section>
+
+      <section class="painel">
+
+        <div class="painel-topo">
           <div>
-
-            <h2>
-              Central de Controle do Sistema
-            </h2>
-
-            <p>
-              Acompanhe usuários, acessos recentes, bloqueios,
-              alterações de senha e registros de auditoria em
-              uma única tela.
-            </p>
-
+            <h3>Filtros</h3>
+            <p>Pesquise por protocolo, nome ou status</p>
           </div>
+        </div>
 
-          <div class="status-sistema">
-            Sistema operacional
-          </div>
+        <div class="filtros-admin">
+
+          <input type="text" id="filtroBusca" placeholder="Pesquisar protocolo ou nome...">
+
+          <select id="filtroStatus">
+            <option value="">Todos os Status</option>
+            <option value="RECEBIDA">RECEBIDA</option>
+            <option value="EM ANÁLISE">EM ANÁLISE</option>
+            <option value="ENCAMINHADA">ENCAMINHADA</option>
+            <option value="EM EXECUÇÃO">EM EXECUÇÃO</option>
+            <option value="RESOLVIDA">RESOLVIDA</option>
+          </select>
 
         </div>
 
       </section>
 
+      <section class="painel painel-tabela">
 
-      <div id="mensagem" class="mensagem"></div>
-
-
-      <section class="cards">
-
-        <article class="card card-azul">
-
-          <div class="card-titulo">
-            Total de usuários
+        <div class="painel-topo">
+          <div>
+            <h3>Demandas registradas</h3>
+            <p>Lista geral de protocolos cadastrados</p>
           </div>
-
-          <div id="totalUsuarios" class="card-valor">
-            0
-          </div>
-
-          <div class="card-legenda">
-            Contas cadastradas no sistema
-          </div>
-
-        </article>
-
-
-        <article class="card card-verde">
-
-          <div class="card-titulo">
-            Usuários ativos
-          </div>
-
-          <div id="usuariosAtivos" class="card-valor">
-            0
-          </div>
-
-          <div class="card-legenda">
-            Contas liberadas para acesso
-          </div>
-
-        </article>
-
-
-        <article class="card card-vermelho">
-
-          <div class="card-titulo">
-            Usuários inativos
-          </div>
-
-          <div id="usuariosInativos" class="card-valor">
-            0
-          </div>
-
-          <div class="card-legenda">
-            Contas sem acesso ao sistema
-          </div>
-
-        </article>
-
-
-        <article class="card card-amarelo">
-
-          <div class="card-titulo">
-            Bloqueados
-          </div>
-
-          <div id="usuariosBloqueados" class="card-valor">
-            0
-          </div>
-
-          <div class="card-legenda">
-            Bloqueios temporários de segurança
-          </div>
-
-        </article>
-
-
-        <article class="card card-roxo">
-
-          <div class="card-titulo">
-            Troca de senha
-          </div>
-
-          <div id="aguardandoTrocaSenha" class="card-valor">
-            0
-          </div>
-
-          <div class="card-legenda">
-            Usuários com alteração pendente
-          </div>
-
-        </article>
-
-
-        <article class="card card-ciano">
-
-          <div class="card-titulo">
-            Acessos em 24 horas
-          </div>
-
-          <div id="acessos24h" class="card-valor">
-            0
-          </div>
-
-          <div class="card-legenda">
-            Usuários que acessaram recentemente
-          </div>
-
-        </article>
-
-      </section>
-
-
-      <section class="grade-principal">
-
-        <article class="painel">
-
-          <div class="painel-topo">
-
-            <div>
-
-              <h3>
-                Distribuição por perfil
-              </h3>
-
-              <p>
-                Quantidade de usuários cadastrados em cada perfil.
-              </p>
-
-            </div>
-
-            <span class="tag">
-              Perfis
-            </span>
-
-          </div>
-
-          <div id="listaPerfis" class="perfis">
-
-            <div class="carregando">
-              Carregando perfis...
-            </div>
-
-          </div>
-
-        </article>
-
-
-        <article class="painel">
-
-          <div class="painel-topo">
-
-            <div>
-
-              <h3>
-                Ações rápidas
-              </h3>
-
-              <p>
-                Acesse as principais funções administrativas.
-              </p>
-
-            </div>
-
-          </div>
-
-          <div class="acoes-rapidas">
-
-            <a href="/usuarios.html" class="acao-rapida">
-              <span>👤</span>
-
-              <strong>
-                Usuários
-              </strong>
-
-              <small>
-                Criar, editar, ativar e bloquear contas.
-              </small>
-            </a>
-
-            <a href="/usuarios.html" class="acao-rapida">
-              <span>🔐</span>
-
-              <strong>
-                Permissões
-              </strong>
-
-              <small>
-                Configurar acessos individuais por usuário.
-              </small>
-            </a>
-
-            <a href="#auditoria" class="acao-rapida">
-              <span>🧾</span>
-
-              <strong>
-                Auditoria
-              </strong>
-
-              <small>
-                Consultar as alterações realizadas no sistema.
-              </small>
-            </a>
-
-            <a href="/configuracoes.html" class="acao-rapida">
-              <span>⚙️</span>
-
-              <strong>
-                Configurações
-              </strong>
-
-              <small>
-                Ajustar informações e regras do sistema.
-              </small>
-            </a>
-
-          </div>
-
-        </article>
-
-      </section>
-
-
-      <section class="grade-tabelas">
-
-        <article class="painel">
-
-          <div class="painel-topo">
-
-            <div>
-
-              <h3>
-                Usuários mais recentes
-              </h3>
-
-              <p>
-                Situação atual das contas cadastradas.
-              </p>
-
-            </div>
-
-            <a href="/usuarios.html" class="btn">
-              Ver todos
-            </a>
-
-          </div>
-
-          <div class="tabela-wrapper">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Usuário</th>
-                  <th>Perfil</th>
-                  <th>Status</th>
-                  <th>Último acesso</th>
-                  <th>Último IP</th>
-                  <th>Senha</th>
-                </tr>
-              </thead>
-
-              <tbody id="corpoUsuarios">
-
-                <tr>
-                  <td colspan="6" class="estado-vazio">
-                    Carregando usuários...
-                  </td>
-                </tr>
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </article>
-
-
-        <article class="painel">
-
-          <div class="painel-topo">
-
-            <div>
-
-              <h3>
-                Últimos acessos
-              </h3>
-
-              <p>
-                Histórico recente de autenticações no sistema.
-              </p>
-
-            </div>
-
-            <span class="tag">
-              Segurança
-            </span>
-
-          </div>
-
-          <div class="tabela-wrapper">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Usuário</th>
-                  <th>Login</th>
-                  <th>IP</th>
-                  <th>Resultado</th>
-                  <th>Data e hora</th>
-                </tr>
-              </thead>
-
-              <tbody id="corpoAcessos">
-
-                <tr>
-                  <td colspan="5" class="estado-vazio">
-                    Carregando acessos...
-                  </td>
-                </tr>
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </article>
-
-
-        <article id="auditoria" class="painel">
-
-          <div class="painel-topo">
-
-            <div>
-
-              <h3>
-                Auditoria do sistema
-              </h3>
-
-              <p>
-                Registro das ações administrativas realizadas.
-              </p>
-
-            </div>
-
-            <span class="tag">
-              Rastreabilidade
-            </span>
-
-          </div>
-
-          <div class="tabela-wrapper">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Responsável</th>
-                  <th>Ação</th>
-                  <th>Usuário afetado</th>
-                  <th>Detalhes</th>
-                  <th>IP</th>
-                  <th>Data e hora</th>
-                </tr>
-              </thead>
-
-              <tbody id="corpoAuditoria">
-
-                <tr>
-                  <td colspan="6" class="estado-vazio">
-                    Carregando auditoria...
-                  </td>
-                </tr>
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </article>
+        </div>
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Protocolo</th>
+              <th>Nome</th>
+              <th>Bairro</th>
+              <th>Serviço</th>
+              <th>Secretaria</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody id="listaAdmin">
+            <tr>
+              <td colspan="7">Carregando demandas...</td>
+            </tr>
+          </tbody>
+
+        </table>
 
       </section>
 
@@ -1360,660 +284,149 @@
 
   </div>
 
+  <div id="modalDemanda" class="modal">
+
+    <div class="modal-conteudo">
+
+      <div class="modal-topo">
+        <h2>Detalhes da Demanda</h2>
+
+        <button onclick="fecharModal()">
+          ✕
+        </button>
+      </div>
+
+      <div id="conteudoModal"></div>
+
+    </div>
+
+  </div>
+
+  <div id="modalEditarDemanda" class="modal">
+
+    <div class="modal-conteudo">
+
+      <div class="modal-topo">
+        <h2>Editar Demanda</h2>
+
+        <button onclick="fecharModalEditar()">
+          ✕
+        </button>
+      </div>
+
+      <form id="formEditarDemanda" class="modal-grid">
+
+        <input type="hidden" id="editarId">
+
+        <div class="modal-item">
+          <strong>Nome</strong>
+          <input id="editarNome" type="text">
+        </div>
+
+        <div class="modal-item">
+          <strong>Telefone</strong>
+          <input id="editarTelefone" type="text">
+        </div>
+
+        <div class="modal-item">
+          <strong>Bairro</strong>
+          <input id="editarBairro" type="text">
+        </div>
+
+        <div class="modal-item">
+          <strong>Endereço</strong>
+          <input id="editarEndereco" type="text">
+        </div>
+
+        <div class="modal-item">
+          <strong>Serviço</strong>
+          <input id="editarServico" type="text">
+        </div>
+
+        <div class="modal-item">
+          <strong>Secretaria</strong>
+          <input id="editarSecretaria" type="text">
+        </div>
+
+        <div class="modal-item">
+          <strong>Status</strong>
+
+          <select id="editarStatus">
+            <option value="RECEBIDA">RECEBIDA</option>
+            <option value="EM ANÁLISE">EM ANÁLISE</option>
+            <option value="ENCAMINHADA">ENCAMINHADA</option>
+            <option value="EM EXECUÇÃO">EM EXECUÇÃO</option>
+            <option value="RESOLVIDA">RESOLVIDA</option>
+          </select>
+        </div>
+
+        <div class="modal-item descricao">
+          <strong>Descrição</strong>
+          <textarea id="editarDescricao"></textarea>
+        </div>
+
+        <div class="modal-item descricao">
+          <button type="submit" class="btn-nova">
+            Salvar Alterações
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <script src="js/admin.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
 
   <script>
-    function obterElemento(id) {
-      return document.getElementById(id);
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
+
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
+
+      document.body.classList.toggle("menu-aberto");
     }
 
+    function fecharSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
 
-    function escaparHTML(valor) {
-      return String(valor ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
+
+      document.body.classList.remove("menu-aberto");
     }
 
-
-    function formatarData(valor) {
-      if (!valor) {
-        return "Nunca acessou";
-      }
-
-      const data = new Date(valor);
-
-      if (Number.isNaN(data.getTime())) {
-        return "Não informado";
-      }
-
-      return new Intl.DateTimeFormat(
-        "pt-BR",
-        {
-          dateStyle: "short",
-          timeStyle: "short"
-        }
-      ).format(data);
-    }
-
-
-    function obterIniciais(nome) {
-      const palavras = String(nome || "")
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean);
-
-      if (palavras.length === 0) {
-        return "US";
-      }
-
-      if (palavras.length === 1) {
-        return palavras[0]
-          .slice(0, 2)
-          .toUpperCase();
-      }
-
-      return (
-        palavras[0][0] +
-        palavras[palavras.length - 1][0]
-      ).toUpperCase();
-    }
-
-
-    function formatarDetalhes(valor) {
-      if (!valor) {
-        return "Sem detalhes";
-      }
-
-      if (typeof valor === "string") {
-        return valor;
-      }
-
-      const partes = Object.entries(valor)
-        .map(([chave, conteudo]) => {
-          const nome = chave
-            .replaceAll("_", " ");
-
-          return `${nome}: ${conteudo}`;
-        });
-
-      return partes.join(" | ");
-    }
-
-
-    function formatarAcao(valor) {
-      const texto = String(valor || "")
-        .replaceAll("_", " ")
-        .toLowerCase();
-
-      return texto.replace(
-        /\b\w/g,
-        letra => letra.toUpperCase()
-      );
-    }
-
-
-    function mostrarErro(texto) {
-      const mensagem =
-        obterElemento("mensagem");
-
-      mensagem.textContent = texto;
-      mensagem.className =
-        "mensagem erro";
-    }
-
-
-    function limparErro() {
-      const mensagem =
-        obterElemento("mensagem");
-
-      mensagem.textContent = "";
-      mensagem.className =
-        "mensagem";
-    }
-
-
-    function preencherResumo(resumo) {
-      obterElemento("totalUsuarios").textContent =
-        resumo.total_usuarios ?? 0;
-
-      obterElemento("usuariosAtivos").textContent =
-        resumo.usuarios_ativos ?? 0;
-
-      obterElemento("usuariosInativos").textContent =
-        resumo.usuarios_inativos ?? 0;
-
-      obterElemento("usuariosBloqueados").textContent =
-        resumo.usuarios_bloqueados ?? 0;
-
-      obterElemento("aguardandoTrocaSenha").textContent =
-        resumo.aguardando_troca_senha ?? 0;
-
-      obterElemento("acessos24h").textContent =
-        resumo.acessos_ultimas_24h ?? 0;
-    }
-
-
-    function preencherPerfis(perfis) {
-      const lista =
-        obterElemento("listaPerfis");
-
-      if (!Array.isArray(perfis) || perfis.length === 0) {
-        lista.innerHTML =
-          '<div class="estado-vazio">Nenhum perfil encontrado.</div>';
-
-        return;
-      }
-
-      const maiorTotal =
-        Math.max(
-          ...perfis.map(
-            item => Number(item.total) || 0
-          ),
-          1
-        );
-
-      lista.innerHTML = perfis
-        .map(item => {
-          const total =
-            Number(item.total) || 0;
-
-          const percentual =
-            Math.max(
-              5,
-              Math.round(
-                total / maiorTotal * 100
-              )
-            );
-
-          return `
-            <div class="perfil-item">
-
-              <div class="perfil-nome">
-                ${escaparHTML(item.perfil)}
-              </div>
-
-              <div class="perfil-barra">
-
-                <div
-                  class="perfil-progresso"
-                  style="width: ${percentual}%"
-                ></div>
-
-              </div>
-
-              <div class="perfil-total">
-                ${total}
-              </div>
-
-            </div>
-          `;
-        })
-        .join("");
-    }
-
-
-    function preencherUsuarios(usuarios) {
-      const corpo =
-        obterElemento("corpoUsuarios");
-
-      if (
-        !Array.isArray(usuarios) ||
-        usuarios.length === 0
-      ) {
-        corpo.innerHTML = `
-          <tr>
-            <td
-              colspan="6"
-              class="estado-vazio"
-            >
-              Nenhum usuário encontrado.
-            </td>
-          </tr>
-        `;
-
-        return;
-      }
-
-      corpo.innerHTML = usuarios
-        .map(usuario => {
-          const bloqueado =
-            usuario.bloqueado_ate &&
-            new Date(usuario.bloqueado_ate) > new Date();
-
-          let statusHTML = `
-            <span class="badge badge-verde">
-              Ativo
-            </span>
-          `;
-
-          if (!usuario.ativo) {
-            statusHTML = `
-              <span class="badge badge-vermelho">
-                Inativo
-              </span>
-            `;
-          } else if (bloqueado) {
-            statusHTML = `
-              <span class="badge badge-amarelo">
-                Bloqueado
-              </span>
-            `;
-          }
-
-          const senhaHTML =
-            usuario.precisa_alterar_senha
-              ? `
-                <span class="badge badge-amarelo">
-                  Pendente
-                </span>
-              `
-              : `
-                <span class="badge badge-verde">
-                  Atualizada
-                </span>
-              `;
-
-          return `
-            <tr>
-
-              <td>
-
-                <div class="usuario">
-
-                  <div class="avatar">
-                    ${escaparHTML(
-            obterIniciais(usuario.nome)
-          )}
-                  </div>
-
-                  <div>
-
-                    <strong>
-                      ${escaparHTML(usuario.nome)}
-                    </strong>
-
-                    <small>
-                      ${escaparHTML(
-            usuario.email ||
-            usuario.login ||
-            "Sem identificação"
-          )}
-                    </small>
-
-                  </div>
-
-                </div>
-
-              </td>
-
-              <td>
-                <span class="badge badge-azul">
-                  ${escaparHTML(
-            usuario.perfil || "SEM PERFIL"
-          )}
-                </span>
-              </td>
-
-              <td>
-                ${statusHTML}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            formatarData(
-              usuario.ultimo_acesso_em
-            )
-          )}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            usuario.ultimo_ip ||
-            "Não informado"
-          )}
-              </td>
-
-              <td>
-                ${senhaHTML}
-              </td>
-
-            </tr>
-          `;
-        })
-        .join("");
-    }
-
-
-    function preencherAcessos(acessos) {
-      const corpo =
-        obterElemento("corpoAcessos");
-
-      if (
-        !Array.isArray(acessos) ||
-        acessos.length === 0
-      ) {
-        corpo.innerHTML = `
-          <tr>
-            <td
-              colspan="5"
-              class="estado-vazio"
-            >
-              Nenhum acesso registrado.
-            </td>
-          </tr>
-        `;
-
-        return;
-      }
-
-      corpo.innerHTML = acessos
-        .map(acesso => {
-          const resultadoHTML =
-            acesso.sucesso
-              ? `
-                <span class="badge badge-verde">
-                  Sucesso
-                </span>
-              `
-              : `
-                <span class="badge badge-vermelho">
-                  Falha
-                </span>
-              `;
-
-          return `
-            <tr>
-
-              <td>
-                ${escaparHTML(
-            acesso.usuario_nome ||
-            "Usuário não identificado"
-          )}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            acesso.usuario_login ||
-            "Não informado"
-          )}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            acesso.ip ||
-            "Não informado"
-          )}
-              </td>
-
-              <td>
-                ${resultadoHTML}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            formatarData(
-              acesso.criado_em
-            )
-          )}
-              </td>
-
-            </tr>
-          `;
-        })
-        .join("");
-    }
-
-
-    function preencherAuditoria(registros) {
-      const corpo =
-        obterElemento("corpoAuditoria");
-
-      if (
-        !Array.isArray(registros) ||
-        registros.length === 0
-      ) {
-        corpo.innerHTML = `
-          <tr>
-            <td
-              colspan="6"
-              class="estado-vazio"
-            >
-              Nenhum registro de auditoria encontrado.
-            </td>
-          </tr>
-        `;
-
-        return;
-      }
-
-      corpo.innerHTML = registros
-        .map(registro => {
-          return `
-            <tr>
-
-              <td>
-                ${escaparHTML(
-            registro.realizado_por_nome ||
-            "Sistema"
-          )}
-              </td>
-
-              <td>
-                <span class="badge badge-roxo">
-                  ${escaparHTML(
-            formatarAcao(
-              registro.acao
-            )
-          )}
-                </span>
-              </td>
-
-              <td>
-                ${escaparHTML(
-            registro.usuario_alvo_nome ||
-            "Não informado"
-          )}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            formatarDetalhes(
-              registro.detalhes
-            )
-          )}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            registro.ip ||
-            "Não informado"
-          )}
-              </td>
-
-              <td>
-                ${escaparHTML(
-            formatarData(
-              registro.criado_em
-            )
-          )}
-              </td>
-
-            </tr>
-          `;
-        })
-        .join("");
-    }
-
-
-    async function verificarUsuario() {
-      const resposta = await fetch(
-        "/api/auth/me",
-        {
+    async function sairSistema() {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
           credentials: "include"
-        }
-      );
-
-      if (!resposta.ok) {
-        window.location.href =
-          "/index.html";
-
-        return false;
-      }
-
-      const dados =
-        await resposta.json();
-
-      if (
-        !dados.ok ||
-        !dados.usuario
-      ) {
-        window.location.href =
-          "/index.html";
-
-        return false;
-      }
-
-      const perfil =
-        String(
-          dados.usuario.perfil || ""
-        ).toUpperCase();
-
-      if (perfil !== "ADMIN") {
-        window.location.href =
-          "/dashboard.html";
-
-        return false;
-      }
-
-      obterElemento(
-        "nomeUsuarioSidebar"
-      ).textContent =
-        dados.usuario.nome ||
-        "Administrador";
-
-      obterElemento(
-        "perfilUsuarioSidebar"
-      ).textContent =
-        `Perfil ${perfil}`;
-
-      localStorage.setItem(
-        "usuario",
-        JSON.stringify(
-          dados.usuario
-        )
-      );
-
-      return true;
-    }
-
-
-    async function carregarPainel() {
-      limparErro();
-
-      try {
-        const autorizado =
-          await verificarUsuario();
-
-        if (!autorizado) {
-          return;
-        }
-
-        const resposta = await fetch(
-          "/api/admin/resumo",
-          {
-            credentials: "include"
-          }
-        );
-
-        let dados = {};
-
-        try {
-          dados = await resposta.json();
-        } catch (erroLeitura) {
-          dados = {};
-        }
-
-        if (!resposta.ok || !dados.ok) {
-          throw new Error(
-            dados.mensagem ||
-            "Não foi possível carregar o painel."
-          );
-        }
-
-        preencherResumo(
-          dados.resumo || {}
-        );
-
-        preencherPerfis(
-          dados.usuarios_por_perfil || []
-        );
-
-        preencherUsuarios(
-          dados.ultimos_usuarios || []
-        );
-
-        preencherAcessos(
-          dados.ultimos_acessos || []
-        );
-
-        preencherAuditoria(
-          dados.ultimas_auditorias || []
-        );
-
+        });
       } catch (erro) {
-        console.error(
-          "Erro ao carregar painel administrativo:",
-          erro
-        );
-
-        mostrarErro(
-          erro.message ||
-          "Erro ao carregar o painel administrativo."
-        );
+        console.error("Erro ao sair:", erro);
       }
+
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/index.html";
     }
 
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
 
-    function alternarMenu() {
-      obterElemento("sidebar")
-        .classList
-        .toggle("aberta");
-    }
-
-
-    async function sairDoSistema() {
-      try {
-        await fetch(
-          "/api/auth/logout",
-          {
-            method: "POST",
-            credentials: "include"
-          }
-        );
-
-      } catch (erro) {
-        console.error(
-          "Erro ao encerrar sessão:",
-          erro
-        );
-
-      } finally {
-        localStorage.removeItem(
-          "usuario"
-        );
-
-        window.location.href =
-          "/index.html";
+      if (href === paginaAtual) {
+        link.classList.add("active");
       }
-    }
 
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      carregarPainel
-    );
+      link.addEventListener("click", fecharSidebar);
+    });
   </script>
 
 </body>

@@ -3,12 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>
-    Importar Eleitores | Sistema Lucas
-  </title>
+  <title>Importar Planilha | Xavier Online</title>
 
   <link rel="stylesheet" href="css/style.css">
 
@@ -18,349 +14,78 @@
     }
 
     .importar-area {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
-    .cards-importacao {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 22px;
-    }
-
-    .card-resumo {
-      padding: 20px;
-      background:
-        linear-gradient(145deg,
-          #0f172a,
-          #111827);
-      border:
-        1px solid rgba(148, 163, 184, 0.18);
-      border-radius: 16px;
-    }
-
-    .card-resumo span {
-      display: block;
-      margin-bottom: 8px;
-      color: #94a3b8;
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .card-resumo strong {
-      display: block;
-      color: #ffffff;
-      font-size: 26px;
-    }
-
     .card-importacao {
-      margin-top: 22px;
-      padding: 28px;
-      background:
-        linear-gradient(145deg,
-          #0f172a,
-          #111827);
-      border:
-        1px solid rgba(148, 163, 184, 0.20);
-      border-radius: 20px;
-      box-shadow:
-        0 18px 35px rgba(0, 0, 0, 0.18);
+      background: linear-gradient(145deg, #0f172a, #111827);
+      border: 1px solid rgba(148, 163, 184, .20);
+      border-radius: 22px;
+      padding: 32px;
+      margin-top: 24px;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, .22);
     }
 
     .card-importacao h3 {
-      margin: 0 0 8px;
       color: #ffffff;
-      font-size: 22px;
+      font-size: 24px;
+      margin-bottom: 8px;
     }
 
     .card-importacao p {
-      margin: 0;
       color: #94a3b8;
-      line-height: 1.6;
-    }
-
-    .orientacoes {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    .orientacao-item {
-      padding: 16px;
-      background: #0f172a;
-      border:
-        1px solid rgba(148, 163, 184, 0.16);
-      border-radius: 14px;
-    }
-
-    .orientacao-item strong {
-      display: block;
-      margin-bottom: 6px;
-      color: #38bdf8;
-      font-size: 14px;
-    }
-
-    .orientacao-item span {
-      color: #cbd5e1;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .area-arquivo {
-      margin-top: 24px;
-      padding: 22px;
-      text-align: center;
-      background:
-        rgba(15, 23, 42, 0.72);
-      border:
-        2px dashed rgba(96, 165, 250, 0.45);
-      border-radius: 16px;
-      transition: 0.2s;
-    }
-
-    .area-arquivo:hover {
-      border-color: #60a5fa;
-      background:
-        rgba(30, 41, 59, 0.82);
-    }
-
-    .area-arquivo.ativo {
-      border-color: #22c55e;
-      background:
-        rgba(20, 83, 45, 0.18);
-    }
-
-    .icone-arquivo {
-      margin-bottom: 10px;
-      font-size: 34px;
-    }
-
-    .area-arquivo h4 {
-      margin: 0 0 6px;
-      color: #ffffff;
-      font-size: 17px;
-    }
-
-    .area-arquivo p {
-      margin: 0 0 16px;
-      font-size: 13px;
-    }
-
-    .input-arquivo {
-      display: none;
-    }
-
-    .arquivo-selecionado {
-      display: none;
-      margin-top: 16px;
-      padding: 12px;
-      color: #dcfce7;
-      font-size: 13px;
-      font-weight: 700;
-      background:
-        rgba(22, 101, 52, 0.28);
-      border:
-        1px solid rgba(34, 197, 94, 0.35);
-      border-radius: 10px;
+      margin-bottom: 22px;
     }
 
     .acoes-importacao {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .btn-importar,
-    .btn-modelo,
-    .btn-limpar {
-      min-height: 44px;
-      padding: 0 22px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 800;
-      text-decoration: none;
-      transition: 0.2s;
-    }
-
-    .btn-importar {
-      color: #ffffff;
-      background: #2563eb;
-    }
-
-    .btn-importar:hover {
-      background: #1d4ed8;
-    }
-
-    .btn-importar:disabled {
-      cursor: not-allowed;
-      opacity: 0.55;
-    }
-
-    .btn-modelo {
-      display: inline-flex;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 14px;
       align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      background: #7c3aed;
     }
 
-    .btn-modelo:hover {
-      background: #6d28d9;
-    }
-
-    .btn-limpar {
-      color: #e2e8f0;
-      background: #334155;
-    }
-
-    .btn-limpar:hover {
-      background: #475569;
-    }
-
-    .progresso-area {
-      display: none;
-      margin-top: 22px;
-    }
-
-    .progresso-topo {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      color: #cbd5e1;
-      font-size: 12px;
+    .acoes-importacao input[type="file"] {
+      width: 100%;
+      height: 48px;
+      background: #0f172a;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, .28);
+      border-radius: 12px;
+      padding: 10px;
       font-weight: 700;
     }
 
-    .barra-progresso {
-      width: 100%;
-      height: 10px;
-      overflow: hidden;
-      background: #1e293b;
-      border-radius: 999px;
-    }
-
-    .barra-progresso span {
-      display: block;
-      width: 0;
-      height: 100%;
-      background:
-        linear-gradient(90deg,
-          #2563eb,
-          #38bdf8);
-      border-radius: 999px;
-      transition: width 0.3s;
-    }
-
-    .resultado-importacao {
-      display: none;
-      margin-top: 22px;
-      padding: 22px;
-      background: #0f172a;
-      border:
-        1px solid rgba(148, 163, 184, 0.18);
-      border-radius: 16px;
-    }
-
-    .resultado-importacao.sucesso {
-      border-color:
-        rgba(34, 197, 94, 0.45);
-    }
-
-    .resultado-importacao.erro {
-      border-color:
-        rgba(239, 68, 68, 0.45);
-    }
-
-    .resultado-importacao h4 {
-      margin: 0 0 14px;
-      color: #ffffff;
-      font-size: 18px;
-    }
-
-    .resultado-grid {
-      display: grid;
-      grid-template-columns:
-        repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .resultado-item {
-      padding: 14px;
-      text-align: center;
-      background: #111827;
-      border:
-        1px solid rgba(148, 163, 184, 0.14);
+    .acoes-importacao button {
+      height: 48px;
       border-radius: 12px;
+      padding: 0 22px;
+      border: none;
+      cursor: pointer;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
-    .resultado-item span {
-      display: block;
-      margin-bottom: 6px;
-      color: #94a3b8;
-      font-size: 11px;
+    #resultadoImportacao {
+      margin-top: 24px;
+      font-size: 16px;
       font-weight: 800;
-      text-transform: uppercase;
+      color: #e5e7eb;
     }
 
-    .resultado-item strong {
-      color: #ffffff;
-      font-size: 22px;
+    .sucesso {
+      color: #22c55e !important;
     }
 
-    .detalhes-erros {
-      display: none;
-      margin-top: 18px;
-      padding: 16px;
-      background:
-        rgba(127, 29, 29, 0.18);
-      border:
-        1px solid rgba(239, 68, 68, 0.25);
-      border-radius: 12px;
-    }
-
-    .detalhes-erros h5 {
-      margin: 0 0 10px;
-      color: #fecaca;
-      font-size: 14px;
-    }
-
-    .detalhes-erros ul {
-      margin: 0;
-      padding-left: 20px;
-      color: #fca5a5;
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .menu-admin {
-      display: none;
-    }
-
-    @media (max-width: 900px) {
-
-      .cards-importacao,
-      .orientacoes {
-        grid-template-columns: 1fr;
-      }
-
-      .resultado-grid {
-        grid-template-columns:
-          repeat(2, 1fr);
-      }
+    .erro {
+      color: #ef4444 !important;
     }
 
     @media (max-width: 768px) {
       .main-dashboard {
-        width: 100% !important;
+        padding: 16px 12px 24px !important;
         margin-left: 0 !important;
-        padding:
-          16px 12px 24px !important;
+        width: 100% !important;
       }
 
       .topbar:not(.dashboard-mobile-top) {
@@ -378,20 +103,15 @@
 
       .card-importacao {
         padding: 20px;
+        border-radius: 18px;
       }
 
       .acoes-importacao {
-        flex-direction: column;
+        grid-template-columns: 1fr !important;
       }
 
-      .btn-importar,
-      .btn-modelo,
-      .btn-limpar {
+      .acoes-importacao button {
         width: 100%;
-      }
-
-      .resultado-grid {
-        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -406,73 +126,55 @@
     <aside class="sidebar">
 
       <div class="brand">
-
-        <div class="brand-icon">
-          🗳️
-        </div>
+        <div class="brand-icon">🏛️</div>
 
         <div>
-          <h2>
-            SISTEMA LUCAS
-          </h2>
-
-          <span>
-            GESTÃO ELEITORAL
-          </span>
+          <h2>XAVIER ONLINE</h2>
+          <span>PRAIA GRANDE - SP</span>
         </div>
-
       </div>
 
       <nav class="menu">
 
-        <a href="dashboard.html">
-          ▣ Dashboard
-        </a>
+        <a href="dashboard.html">▣ Dashboard</a>
 
-        <a href="eleitores.html">
-          👥 Eleitores
-        </a>
+        <a href="demandas-gabinete.html">📋 Demandas</a>
 
-        <a href="mapa.html">
-          🗺️ Mapa Territorial
-        </a>
+        <a href="nova-demanda.html">➕ Nova Demanda</a>
 
-        <a href="liderancas.html">
-          🤝 Lideranças
-        </a>
+        <a href="protocolo.html">🔎 Protocolo</a>
 
-        <a href="importar.html" class="active">
-          ⬆ Importar Planilha
-        </a>
+        <a href="mapa.html">🗺️ Mapa da Cidade</a>
 
-        <a href="relatorios.html">
-          📊 Relatórios
-        </a>
+        <a href="eleitores.html">🗳️ Eleitores</a>
 
-        <a href="usuarios.html" class="menu-admin">
-          🔐 Usuários
-        </a>
+        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
 
-        <a href="configuracoes.html">
-          ⚙ Configurações
-        </a>
+        <a href="interacoes.html">💬 Interações</a>
+
+        <a href="importar.html">⬆ Importar Planilha</a>
+
+        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
+
+        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
+
+        <a href="secretarias.html">☷ Secretarias</a>
+
+        <a href="liderancas.html">👥 Lideranças</a>
+
+        <a href="configuracoes.html">⚙ Configurações</a>
 
       </nav>
 
+      <div class="sidebar-phone">
+        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
+        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
+      </div>
+
       <div class="sidebar-footer">
-
-        <strong>
-          SISTEMA LUCAS
-        </strong>
-
-        <p>
-          Importação da base eleitoral.
-        </p>
-
-        <span>
-          Versão 1.0.0
-        </span>
-
+        <strong>XAVIER ONLINE</strong>
+        <p>Importação de planilhas e atualização de dados.</p>
+        <span>Versão 1.0.0</span>
       </div>
 
     </aside>
@@ -485,7 +187,7 @@
           ☰
         </button>
 
-        <button type="button" class="btn-sair-discreto" onclick="sairSistema()">
+        <button class="btn-sair-discreto" onclick="sairSistema()">
           ⇱ Sair
         </button>
 
@@ -494,234 +196,40 @@
       <header class="topbar">
 
         <div>
-
-          <h2>
-            Importar Base Eleitoral
-          </h2>
-
+          <h2>Importar Planilha</h2>
           <p class="subtitulo-dashboard">
-            Cadastre ou atualize eleitores por meio de uma planilha Excel
+            Carregar dados históricos para o Xavier Online
           </p>
-
         </div>
 
         <div class="topbar-right">
-
-          <a href="/api/eleitores/modelo-excel" class="btn-nova">
-            ↓ Baixar modelo oficial
-          </a>
-
+          <a href="dashboard.html" class="btn-nova">Voltar</a>
         </div>
 
       </header>
 
       <section class="importar-area">
 
-        <div class="cards-importacao">
-
-          <div class="card-resumo">
-            <span>
-              Formatos permitidos
-            </span>
-
-            <strong>
-              XLSX / XLS
-            </strong>
-          </div>
-
-          <div class="card-resumo">
-            <span>
-              Tamanho máximo
-            </span>
-
-            <strong>
-              10 MB
-            </strong>
-          </div>
-
-          <div class="card-resumo">
-            <span>
-              Aba obrigatória
-            </span>
-
-            <strong>
-              Eleitores
-            </strong>
-          </div>
-
-        </div>
-
         <div class="card-importacao">
 
-          <h3>
-            Enviar planilha
-          </h3>
-
-          <p>
-            Utilize preferencialmente o modelo oficial do Sistema Lucas.
-          </p>
-
-          <div class="orientacoes">
-
-            <div class="orientacao-item">
-              <strong>
-                Nome obrigatório
-              </strong>
-
-              <span>
-                Cada eleitor precisa possuir o campo Nome preenchido.
-              </span>
-            </div>
-
-            <div class="orientacao-item">
-              <strong>
-                Atualização automática
-              </strong>
-
-              <span>
-                Registros existentes poderão ser atualizados pelo título eleitoral ou telefone.
-              </span>
-            </div>
-
-            <div class="orientacao-item">
-              <strong>
-                Importação segura
-              </strong>
-
-              <span>
-                Cada usuário importa dados apenas para o candidato vinculado à sua sessão.
-              </span>
-            </div>
-
-          </div>
-
-          <div class="area-arquivo" id="areaArquivo">
-
-            <div class="icone-arquivo">
-              📊
-            </div>
-
-            <h4>
-              Selecione a planilha de eleitores
-            </h4>
-
-            <p>
-              Arquivos permitidos: .xlsx ou .xls
-            </p>
-
-            <label for="arquivoExcel" class="btn-modelo">
-              Escolher arquivo
-            </label>
-
-            <input type="file" id="arquivoExcel" class="input-arquivo" accept=".xlsx,.xls">
-
-            <div class="arquivo-selecionado" id="arquivoSelecionado"></div>
-
-          </div>
+          <h3>Enviar arquivo Excel</h3>
+          <p>Selecione uma planilha nos formatos .xlsx ou .xls.</p>
 
           <div class="acoes-importacao">
 
-            <button type="button" class="btn-importar" id="btnImportar" onclick="importarEleitores()" disabled>
-              Importar eleitores
+            <input type="file" id="arquivoExcel" accept=".xlsx,.xls">
+
+            <button class="btn-nova" onclick="importarArquivo('demandas')">
+              Importar Demandas
             </button>
 
-            <button type="button" class="btn-limpar" onclick="limparImportacao()">
-              Limpar seleção
+            <button class="btn-nova" onclick="importarArquivo('atividades')">
+              Importar Interações
             </button>
 
           </div>
 
-          <div class="progresso-area" id="progressoArea">
-
-            <div class="progresso-topo">
-
-              <span id="textoProgresso">
-                Preparando importação...
-              </span>
-
-              <span id="percentualProgresso">
-                0%
-              </span>
-
-            </div>
-
-            <div class="barra-progresso">
-              <span id="barraProgresso"></span>
-            </div>
-
-          </div>
-
-          <div class="resultado-importacao" id="resultadoImportacao">
-
-            <h4 id="tituloResultado">
-              Resultado da importação
-            </h4>
-
-            <div class="resultado-grid">
-
-              <div class="resultado-item">
-                <span>
-                  Linhas
-                </span>
-
-                <strong id="resultadoLinhas">
-                  0
-                </strong>
-              </div>
-
-              <div class="resultado-item">
-                <span>
-                  Inseridos
-                </span>
-
-                <strong id="resultadoInseridos">
-                  0
-                </strong>
-              </div>
-
-              <div class="resultado-item">
-                <span>
-                  Atualizados
-                </span>
-
-                <strong id="resultadoAtualizados">
-                  0
-                </strong>
-              </div>
-
-              <div class="resultado-item">
-                <span>
-                  Ignorados
-                </span>
-
-                <strong id="resultadoIgnorados">
-                  0
-                </strong>
-              </div>
-
-              <div class="resultado-item">
-                <span>
-                  Erros
-                </span>
-
-                <strong id="resultadoErros">
-                  0
-                </strong>
-              </div>
-
-            </div>
-
-            <div class="detalhes-erros" id="detalhesErros">
-
-              <h5>
-                Detalhes dos erros encontrados
-              </h5>
-
-              <ul id="listaErros"></ul>
-
-            </div>
-
-          </div>
+          <div id="resultadoImportacao"></div>
 
         </div>
 
@@ -731,150 +239,56 @@
 
   </div>
 
+  <script src="js/importar.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/importar.js"></script>
 
   <script>
     function toggleSidebar() {
-      const sidebar =
-        document.querySelector(
-          ".sidebar"
-        );
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
 
-      const overlay =
-        document.querySelector(
-          ".sidebar-overlay"
-        );
+      if (sidebar) sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
 
-      if (sidebar) {
-        sidebar.classList.toggle(
-          "active"
-        );
-      }
-
-      if (overlay) {
-        overlay.classList.toggle(
-          "active"
-        );
-      }
-
-      document.body.classList.toggle(
-        "menu-aberto"
-      );
+      document.body.classList.toggle("menu-aberto");
     }
 
     function fecharSidebar() {
-      const sidebar =
-        document.querySelector(
-          ".sidebar"
-        );
+      const sidebar = document.querySelector(".sidebar");
+      const overlay = document.querySelector(".sidebar-overlay");
 
-      const overlay =
-        document.querySelector(
-          ".sidebar-overlay"
-        );
+      if (sidebar) sidebar.classList.remove("active");
+      if (overlay) overlay.classList.remove("active");
 
-      if (sidebar) {
-        sidebar.classList.remove(
-          "active"
-        );
-      }
-
-      if (overlay) {
-        overlay.classList.remove(
-          "active"
-        );
-      }
-
-      document.body.classList.remove(
-        "menu-aberto"
-      );
+      document.body.classList.remove("menu-aberto");
     }
 
     async function sairSistema() {
       try {
-        await fetch(
-          "/api/auth/logout",
-          {
-            method: "POST",
-            credentials: "include"
-          }
-        );
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
       } catch (erro) {
-        console.error(
-          "Erro ao sair:",
-          erro
-        );
+        console.error("Erro ao sair:", erro);
       }
 
       localStorage.clear();
       sessionStorage.clear();
-
-      window.location.href =
-        "/index.html";
+      window.location.href = "/index.html";
     }
 
-    function mostrarItensAdmin() {
-      document
-        .querySelectorAll(
-          ".menu-admin"
-        )
-        .forEach(elemento => {
-          elemento.style.display =
-            "";
-        });
-    }
+    document.querySelectorAll(".menu a").forEach(link => {
+      const paginaAtual = window.location.pathname.split("/").pop();
+      const href = link.getAttribute("href");
 
-    async function verificarPerfil() {
-      try {
-        const resposta =
-          await fetch(
-            "/api/auth/me",
-            {
-              credentials: "include"
-            }
-          );
-
-        if (!resposta.ok) {
-          return;
-        }
-
-        const dados =
-          await resposta.json();
-
-        const perfil =
-          String(
-            dados.usuario?.perfil || ""
-          ).toUpperCase();
-
-        if (perfil === "ADMIN") {
-          mostrarItensAdmin();
-        }
-
-      } catch (erro) {
-        console.error(
-          "Erro ao verificar perfil:",
-          erro
-        );
+      if (href === paginaAtual) {
+        link.classList.add("active");
       }
-    }
 
-    document
-      .querySelectorAll(
-        ".menu a"
-      )
-      .forEach(link => {
-        link.addEventListener(
-          "click",
-          fecharSidebar
-        );
-      });
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      verificarPerfil
-    );
+      link.addEventListener("click", fecharSidebar);
+    });
   </script>
 
 </body>
