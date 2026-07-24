@@ -3,347 +3,1463 @@
 
 <head>
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eleitores | Xavier Online</title>
+
+  <title>Eleitores | Sistema Lucas</title>
 
   <link rel="stylesheet" href="css/style.css">
 
+
+
+
   <style>
-    .main-dashboard {
-      padding: 24px 28px 40px;
+    :root {
+      --eleitor-fundo: #f4f7fb;
+      --eleitor-painel: #ffffff;
+      --eleitor-texto: #172033;
+      --eleitor-texto-suave: #64748b;
+      --eleitor-borda: #e2e8f0;
+      --eleitor-primario: #2563eb;
+      --eleitor-primario-escuro: #1d4ed8;
+      --eleitor-verde: #16a34a;
+      --eleitor-roxo: #7c3aed;
+      --eleitor-laranja: #ea580c;
+      --eleitor-vermelho: #dc2626;
+      --eleitor-sidebar: #111827;
+      --eleitor-sidebar-suave: #1f2937;
+      --eleitor-sombra: 0 10px 30px rgba(15, 23, 42, 0.08);
     }
 
-    .eleitores-compacto .painel {
-      padding: 18px 20px;
-      min-height: auto;
+    * {
+      box-sizing: border-box;
     }
 
-    .eleitores-compacto .form-grid {
-      max-width: 100%;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--eleitor-fundo);
+      color: var(--eleitor-texto);
+      font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
     }
 
-    .eleitores-compacto .form-item.descricao {
-      grid-column: 1 / -1;
+    body.modal-aberto,
+    body.menu-aberto {
+      overflow: hidden;
     }
 
-    .eleitores-compacto input,
-    .eleitores-compacto textarea {
-      height: 42px;
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
     }
 
-    .eleitores-compacto textarea {
-      height: 76px;
-    }
-
-    .botoes-eleitor {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .botoes-eleitor button {
-      width: 360px;
-      height: 46px;
-      padding: 0 24px;
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .filtros-eleitores {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      align-items: center;
-      margin-top: 12px;
-    }
-
-    .filtros-eleitores input {
-      width: 100%;
-      height: 42px;
-      background: #0f172a;
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 184, .25);
-      border-radius: 10px;
-      padding: 0 12px;
-      outline: none;
-      font-weight: 600;
-    }
-
-    .filtros-eleitores input::placeholder {
-      color: #94a3b8;
-    }
-
-    .filtros-eleitores button {
-      height: 42px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 800;
+    button {
       cursor: pointer;
     }
 
-    .ranking-grid-eleitores {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-top: 18px;
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
     }
 
-    .ranking-box-eleitores {
-      background: #0f172a;
-      border: 1px solid rgba(148, 163, 184, .25);
-      border-radius: 14px;
-      padding: 16px;
-      min-height: 285px;
-    }
-
-    .ranking-box-eleitores h3 {
-      text-align: center;
-      font-size: 15px;
-      margin-bottom: 14px;
-      color: #fff;
-    }
-
-    .ranking-lista-eleitores {
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 1000;
+      width: 260px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      max-height: 230px;
-      overflow-y: auto;
-      padding-right: 6px;
+      background: var(--eleitor-sidebar);
+      color: #ffffff;
+      box-shadow: 12px 0 30px rgba(15, 23, 42, 0.12);
+      transition: transform 0.25s ease;
     }
 
-    .ranking-linha-eleitores {
-      display: grid !important;
-      grid-template-columns: 120px 1fr 44px !important;
-      align-items: center !important;
-      gap: 10px !important;
-      width: 100% !important;
-      padding: 4px 0 !important;
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: none;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(2px);
     }
 
-    .ranking-linha-eleitores span {
-      font-size: 12px !important;
-      font-weight: 700 !important;
-      color: #e5e7eb !important;
-      white-space: nowrap !important;
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      text-align: left !important;
+    .sidebar-overlay.active {
+      display: block;
     }
 
-    .barra-eleitores {
-      height: 10px !important;
-      background: #1e293b !important;
-      border-radius: 999px !important;
-      overflow: hidden !important;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 86px;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .barra-eleitores b {
-      display: block !important;
-      height: 100% !important;
-      border-radius: 999px !important;
-      background: linear-gradient(90deg, #2563eb, #38bdf8) !important;
+    .brand-icon {
+      display: grid;
+      flex: 0 0 46px;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      font-size: 22px;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.28);
     }
 
-    .ranking-linha-eleitores strong {
-      font-size: 12px !important;
-      font-weight: 900 !important;
-      color: #fff !important;
-      text-align: right !important;
+    .brand h2 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
     }
 
-    .ranking-vazio-eleitores {
-      text-align: center;
+    .brand span {
+      display: block;
+      margin-top: 3px;
       color: #94a3b8;
-      padding: 28px 0;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .menu {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 5px;
+      padding: 18px 12px;
+      overflow-y: auto;
+    }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 10px 13px;
+      border-radius: 10px;
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .menu a:hover {
+      color: #ffffff;
+      background: var(--eleitor-sidebar-suave);
+      transform: translateX(2px);
+    }
+
+    .menu a.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-footer strong {
+      display: block;
+      color: #ffffff;
+      font-size: 12px;
+    }
+
+    .sidebar-footer p {
+      margin: 5px 0;
+      color: #94a3b8;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .sidebar-footer span {
+      color: #64748b;
+      font-size: 10px;
+    }
+
+    .conteudo {
+      width: calc(100% - 260px);
+      max-width: none;
+      min-height: 100vh;
+      margin-left: 260px;
+      padding: 24px 28px 40px;
+      text-align: left;
+    }
+
+    .topbar-mobile {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .mobile-menu-btn,
+    .btn-sair-discreto {
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--eleitor-borda);
+      border-radius: 10px;
+      background: #ffffff;
+      color: var(--eleitor-texto);
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .cabecalho-pagina {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .cabecalho-pagina h1 {
+      margin: 0;
+      color: var(--eleitor-texto);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.6px;
+    }
+
+    .cabecalho-pagina p {
+      margin: 6px 0 0;
+      color: var(--eleitor-texto-suave);
+      font-size: 14px;
+    }
+
+    .acoes-cabecalho {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primario,
+    .btn-secundario,
+    .btn-perigo,
+    .btn-icone {
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      transition:
+        transform 0.18s ease,
+        filter 0.18s ease,
+        box-shadow 0.18s ease;
+    }
+
+    .btn-primario:hover,
+    .btn-secundario:hover,
+    .btn-perigo:hover,
+    .btn-icone:hover {
+      transform: translateY(-1px);
+      filter: brightness(0.98);
+    }
+
+    .btn-primario {
+      min-height: 44px;
+      padding: 0 18px;
+      background: linear-gradient(135deg,
+          var(--eleitor-primario),
+          #3b82f6);
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+    }
+
+    .btn-secundario {
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid var(--eleitor-borda);
+      background: #ffffff;
+      color: var(--eleitor-texto);
+    }
+
+    .btn-perigo {
+      min-height: 38px;
+      padding: 0 13px;
+      background: #fee2e2;
+      color: var(--eleitor-vermelho);
+    }
+
+    .cards-resumo {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-resumo {
+      position: relative;
+      min-height: 128px;
+      overflow: hidden;
+      padding: 20px 22px;
+      border: 1px solid var(--eleitor-borda);
+      border-radius: 16px;
+      background: var(--eleitor-painel);
+      box-shadow: var(--eleitor-sombra);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .card-resumo:hover {
+      transform: translateY(-3px);
+      border-color: #cbd5e1;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    }
+
+    .card-resumo::after {
+      position: absolute;
+      right: -22px;
+      bottom: -34px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: currentColor;
+      content: "";
+      opacity: 0.07;
+    }
+
+    .card-resumo-topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-resumo-titulo {
+      color: var(--eleitor-texto-suave);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .card-resumo-icone {
+      display: grid;
+      flex: 0 0 42px;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 12px;
+      color: inherit;
+      font-size: 18px;
+      background-color: color-mix(in srgb,
+          currentColor 12%,
+          transparent);
+    }
+
+    .card-resumo strong {
+      display: block;
+      margin-top: 14px;
+      color: var(--eleitor-texto);
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .card-resumo p {
+      margin: 4px 0 0;
+      color: var(--eleitor-texto-suave);
+      font-size: 12px;
+    }
+
+    .card-azul {
+      color: var(--eleitor-primario);
+    }
+
+    .card-verde {
+      color: var(--eleitor-verde);
+    }
+
+    .card-roxo {
+      color: var(--eleitor-roxo);
+    }
+
+    .card-laranja {
+      color: var(--eleitor-laranja);
+    }
+
+    .painel {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid var(--eleitor-borda);
+      border-radius: 16px;
+      background: var(--eleitor-painel);
+      box-shadow: var(--eleitor-sombra);
+    }
+
+    .painel-topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .painel-topo h2,
+    .painel-topo h3 {
+      margin: 0;
+      color: var(--eleitor-texto);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .painel-topo p {
+      margin: 5px 0 0;
+      color: var(--eleitor-texto-suave);
+      font-size: 12px;
+    }
+
+    .barra-pesquisa {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.5fr) repeat(3, minmax(140px, 1fr)) auto;
+      gap: 10px;
+    }
+
+    .campo-pesquisa {
+      position: relative;
+      width: 100%;
+    }
+
+    .campo-pesquisa span {
+      position: absolute;
+      top: 50%;
+      left: 13px;
+      z-index: 2;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .campo-pesquisa input {
+      width: 100%;
+      padding-left: 42px !important;
+    }
+
+    .barra-pesquisa input,
+    .barra-pesquisa select {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--eleitor-borda);
+      border-radius: 10px;
+      background: #ffffff;
+      color: var(--eleitor-texto);
+      padding: 0 12px;
+      outline: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition:
+        border 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .form-item input:focus,
+    .form-item select:focus,
+    .form-item textarea:focus {
+      border-color: #2563eb;
+      box-shadow:
+        0 0 0 4px rgba(37, 99, 235, .12),
+        0 4px 14px rgba(37, 99, 235, .08);
+      transform: translateY(-1px);
+    }
+
+    .tabela-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--eleitor-borda);
+      border-radius: 13px;
+    }
+
+    .tabela-eleitores {
+      width: 100%;
+      min-width: 1080px;
+      border-collapse: collapse;
+      background: #ffffff;
+    }
+
+    .tabela-eleitores thead {
+      background: #f8fafc;
+    }
+
+    thead th {
+
+      background: linear-gradient(180deg, #202335, #1a1d2e);
+
+      color: #94a3b8;
+
+      font-size: 11px;
+
+      text-transform: uppercase;
+
+      letter-spacing: .7px;
+
+      font-weight: 800;
+
+      padding: 16px 18px;
+
+      white-space: nowrap;
+
+      border: none;
+
+    }
+
+    tbody tr {
+
+      transition: .18s;
+
+    }
+
+    tbody tr:hover {
+
+      background: #f8fafc;
+
+    }
+
+    tbody td {
+
+      padding: 18px;
+
+      font-size: 13px;
+
+      color: #334155;
+
+      border-bottom: 1px solid #eef2f7;
+
+      vertical-align: middle;
+
+    }
+
+    .tabela-eleitores tbody tr {
+      transition: background 0.18s ease;
+    }
+
+    .tabela-eleitores tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .tabela-eleitores tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .nome-eleitor {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 190px;
+    }
+
+    .nome-eleitor strong {
+
+      display: block;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      color: #0f172a;
+
+    }
+
+    .nome-eleitor span {
+
+      display: block;
+
+      margin-top: 3px;
+
+      color: #94a3b8;
+
+      font-size: 12px;
+
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .avatar-eleitor {
+
+      width: 40px;
+
+      height: 40px;
+
+      border-radius: 50%;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-weight: 800;
+
+      font-size: 13px;
+
+      color: #2563eb;
+
+      background: #dbeafe;
+
+      flex-shrink: 0;
+
+    }
+
+    .badge-status.inativo {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .acoes-tabela {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .btn-icone {
+
+      width: 34px;
+
+      height: 34px;
+
+      border-radius: 10px;
+
+      border: 1px solid #e2e8f0;
+
+      background: white;
+
+      cursor: pointer;
+
+      transition: .18s;
+
+    }
+
+    .btn-icone:hover {
+
+      transform: translateY(-2px);
+
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .10);
+
+    }
+
+    .btn-icone.editar:hover {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: var(--eleitor-primario);
+    }
+
+    .btn-icone.excluir:hover {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: var(--eleitor-vermelho);
+    }
+
+    .estado-tabela {
+      padding: 38px 18px !important;
+      color: var(--eleitor-texto-suave) !important;
+      font-weight: 700;
+      text-align: center !important;
+    }
+
+    .rodape-tabela {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .rodape-tabela p {
+      margin: 0;
+      color: var(--eleitor-texto-suave);
+      font-size: 12px;
+    }
+
+    .paginacao {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .paginacao button {
+      min-width: 34px;
+      height: 34px;
+      border: 1px solid var(--eleitor-borda);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--eleitor-texto);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .paginacao button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.ativo {
+      display: flex;
+    }
+
+    .modal-eleitor {
+      width: min(940px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      border-radius: 22px;
+      background: #ffffff;
+      box-shadow: 0 35px 90px rgba(15, 23, 42, .30);
+      animation: abrirModal 0.2s ease;
+    }
+
+    @keyframes abrirModal {
+      from {
+        transform: translateY(14px) scale(0.98);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-cabecalho {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 22px;
+      border-bottom: 1px solid var(--eleitor-borda);
+      background: #ffffff;
+    }
+
+    .modal-cabecalho h2 {
+      margin: 0;
+      color: var(--eleitor-texto);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .modal-cabecalho p {
+      margin: 5px 0 0;
+      color: var(--eleitor-texto-suave);
+      font-size: 12px;
+    }
+
+    .modal-fechar {
+      display: grid;
+      flex: 0 0 38px;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid var(--eleitor-borda);
+      border-radius: 10px;
+      background: #ffffff;
+      color: #64748b;
+      font-size: 20px;
       font-weight: 700;
     }
 
-    .btn-tabela {
-      margin: 2px;
-      padding: 7px 10px;
-      font-size: 12px;
-      border: none;
-      cursor: pointer;
+    .modal-fechar:hover {
+      background: #f8fafc;
+      color: var(--eleitor-texto);
     }
 
-    .painel-tabela {
-      overflow-x: auto;
+    .modal-corpo {
+      padding: 22px;
     }
 
-    .painel-tabela table {
-      min-width: 1200px;
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .form-item {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-item.coluna-2 {
+      grid-column: span 2;
+    }
+
+    .form-item.coluna-3 {
+      grid-column: 1 / -1;
+    }
+
+    .form-item label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .form-item input,
+    .form-item select,
+    .form-item textarea {
+      width: 100%;
+      border: 1px solid #dbe4f0;
+      border-radius: 12px;
+      background: #fff;
+      padding: 0 14px;
+      font-size: 14px;
+      color: #0f172a;
+      transition: .18s;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+    }
+
+    .form-item input,
+    .form-item select {
+      height: 44px;
+    }
+
+    .form-item textarea {
+      min-height: 90px;
+      padding-top: 12px;
+      resize: vertical;
+    }
+
+    .campo-obrigatorio {
+      color: var(--eleitor-vermelho);
+    }
+
+    .modal-rodape {
+      position: sticky;
+      bottom: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 22px;
+      border-top: 1px solid var(--eleitor-borda);
+      background: #ffffff;
+    }
+
+    .mensagem-sistema {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 3000;
+      min-width: 280px;
+      max-width: 420px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #111827;
+      color: #ffffff;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.28);
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .mensagem-sistema.ativo {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .mensagem-sistema.sucesso {
+      background: #15803d;
+    }
+
+    .mensagem-sistema.erro {
+      background: #b91c1c;
     }
 
     @media (max-width: 1200px) {
-      .eleitores-compacto .form-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .cards-resumo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .filtros-eleitores {
-        grid-template-columns: repeat(3, 1fr);
+      .barra-pesquisa {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .ranking-grid-eleitores {
-        grid-template-columns: repeat(2, 1fr);
+      .campo-pesquisa {
+        grid-column: 1 / -1;
       }
     }
 
-    @media (max-width: 768px) {
-      .main-dashboard {
-        padding: 16px 12px 24px !important;
-        margin-left: 0 !important;
-        width: 100% !important;
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
       }
 
-      .eleitores-compacto .form-grid {
-        grid-template-columns: 1fr !important;
+      .sidebar.active {
+        transform: translateX(0);
       }
 
-      .filtros-eleitores {
-        grid-template-columns: 1fr !important;
+      .conteudo {
+        width: 100%;
+        margin-left: 0;
+        padding: 18px 16px 30px;
       }
 
-      .ranking-grid-eleitores {
-        grid-template-columns: 1fr !important;
+      .topbar-mobile {
+        display: flex;
       }
 
-      .cards-modernos {
-        grid-template-columns: 1fr !important;
+      .cabecalho-pagina {
+        align-items: flex-start;
+      }
+
+      .form-secao-titulo {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
         gap: 12px;
+        margin-top: 8px;
+        padding: 14px 16px;
+        border: 1px solid #dbe4f0;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f8fafc, #eff6ff);
       }
 
-      .botoes-eleitor button,
-      .filtros-eleitores button {
+      .form-secao-titulo:first-child {
+        margin-top: 0;
+      }
+
+      .form-secao-titulo span {
+        display: grid;
+        flex: 0 0 38px;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border-radius: 10px;
+        background: #dbeafe;
+        font-size: 18px;
+      }
+
+      .form-secao-titulo strong {
+        display: block;
+        color: #172033;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .form-secao-titulo small {
+        display: block;
+        margin-top: 3px;
+        color: #64748b;
+        font-size: 11px;
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-item.coluna-3 {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .conteudo {
+        padding: 14px 12px 24px;
+      }
+
+      .cabecalho-pagina {
+        flex-direction: column;
+      }
+
+      .cabecalho-pagina h1 {
+        font-size: 24px;
+      }
+
+      .acoes-cabecalho,
+      .acoes-cabecalho .btn-primario {
+        width: 100%;
+      }
+
+      .cards-resumo {
+        grid-template-columns: 1fr;
+      }
+
+      .barra-pesquisa {
+        grid-template-columns: 1fr;
+      }
+
+      .campo-pesquisa {
+        grid-column: auto;
+      }
+
+      .barra-pesquisa .btn-secundario {
         width: 100%;
       }
 
       .painel {
-        padding: 16px !important;
+        padding: 16px;
       }
 
-      .topbar:not(.dashboard-mobile-top) {
-        display: block;
-        text-align: center;
+      .painel-topo {
+        align-items: flex-start;
+        flex-direction: column;
       }
 
-      .ranking-linha-eleitores {
-        grid-template-columns: 100px 1fr 40px !important;
+      .rodape-tabela {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-item.coluna-2,
+      .form-item.coluna-3 {
+        grid-column: auto;
+      }
+
+      .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .modal-eleitor {
+        width: 100%;
+        max-height: 94vh;
+        border-radius: 18px 18px 0 0;
+      }
+
+      .modal-cabecalho,
+      .modal-corpo,
+      .modal-rodape {
+        padding-right: 16px;
+        padding-left: 16px;
+      }
+
+      .modal-rodape {
+        flex-direction: column-reverse;
+      }
+
+      .modal-rodape button {
+        width: 100%;
+      }
+
+      .mensagem-sistema {
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+        min-width: 0;
+      }
+    }
+
+    /* CORREÇÃO VISUAL DO MODAL DE ELEITOR */
+
+    .modal-eleitor {
+      background: #ffffff !important;
+      color: #172033 !important;
+    }
+
+    .modal-corpo {
+      background: #f8fafc !important;
+    }
+
+    .modal-corpo .form-grid {
+      padding: 18px !important;
+      border: none !important;
+      border-radius: 14px !important;
+      background: #ffffff !important;
+      color: #172033 !important;
+    }
+
+    .modal-corpo .form-item {
+      background: transparent !important;
+      color: #172033 !important;
+    }
+
+    .modal-corpo .form-item label {
+      color: #475569 !important;
+    }
+
+    .modal-corpo .form-item input,
+    .modal-corpo .form-item select,
+    .modal-corpo .form-item textarea {
+      border: 1px solid #dbe4f0 !important;
+      background: #ffffff !important;
+      color: #172033 !important;
+    }
+
+    .modal-corpo .form-item input::placeholder,
+    .modal-corpo .form-item textarea::placeholder {
+      color: #94a3b8 !important;
+    }
+
+    .modal-corpo .form-secao-titulo {
+      grid-column: 1 / -1 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      margin: 12px 0 2px !important;
+      padding: 12px 14px !important;
+      border: 1px solid #dbeafe !important;
+      border-radius: 12px !important;
+      background: #eff6ff !important;
+      color: #172033 !important;
+    }
+
+    .modal-corpo .form-secao-titulo strong {
+      color: #172033 !important;
+    }
+
+    .modal-corpo .form-secao-titulo small {
+      color: #64748b !important;
+    }
+
+    .acoes-cabecalho {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .acoes-cabecalho .btn-secundario {
+      min-height: 44px;
+    }
+
+    @media (max-width: 760px) {
+      .acoes-cabecalho {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+      }
+
+      .acoes-cabecalho button {
+        width: 100%;
+      }
+
+      .acoes-cabecalho .btn-primario {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .acoes-cabecalho {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .acoes-cabecalho button {
+      flex: 0 0 auto;
+      min-width: max-content;
+      white-space: nowrap;
+    }
+
+    .btn-importar {
+      min-width: 105px !important;
+    }
+
+    .btn-modelo {
+      min-width: 150px !important;
+    }
+
+    @media (max-width: 1100px) {
+      .cabecalho-pagina {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .acoes-cabecalho {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .acoes-cabecalho button {
+        width: 100%;
       }
     }
   </style>
 </head>
 
-<body class="xavier-dashboard">
+<body>
 
-  <div class="sidebar-overlay" onclick="fecharSidebar()"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="fecharMenuMobile()"></div>
 
   <div class="app-layout">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar"></aside>
 
-      <div class="brand">
-        <div class="brand-icon">🏛️</div>
+    <main class="conteudo">
+
+      <div class="topbar-mobile">
+
+        <button type="button" class="mobile-menu-btn" onclick="abrirMenuMobile()" aria-label="Abrir menu">
+          ☰ Menu
+        </button>
+
+        <button type="button" class="btn-sair-discreto" onclick="sairDoSistema(event)">
+          Sair
+        </button>
+
+      </div>
+
+      <header class="cabecalho-pagina">
 
         <div>
-          <h2>XAVIER ONLINE</h2>
-          <span>PRAIA GRANDE - SP</span>
+
+          <h1>Gestão de Eleitores</h1>
+
+          <p>
+            Cadastre, consulte e organize os eleitores vinculados à campanha.
+          </p>
+
         </div>
-      </div>
 
-      <nav class="menu">
+        <div class="acoes-cabecalho">
 
-        <a href="dashboard.html">▣ Dashboard</a>
+          <button type="button" class="btn-secundario btn-modelo" onclick="baixarModeloExcel()">
+            ↓ Baixar Modelo
+          </button>
 
-        <a href="demandas-gabinete.html">📋 Demandas</a>
+          <input type="file" id="arquivoImportacaoExcel" accept=".xlsx,.xls" hidden onchange="importarEleitoresExcel(event)">
 
-        <a href="nova-demanda.html">➕ Nova Demanda</a>
+          <button type="button" class="btn-secundario btn-importar" onclick="document.getElementById('arquivoImportacaoExcel').click()">
+            ↑ Importar
+          </button>
 
-        <a href="protocolo.html">🔎 Protocolo</a>
+          <button type="button" class="btn-secundario" onclick="exportarEleitoresExcel()">
+            ↓ Excel
+          </button>
 
-        <a href="mapa.html">🗺️ Mapa da Cidade</a>
+          <button type="button" class="btn-secundario" onclick="exportarEleitoresPdf()">
+            ↓ PDF
+          </button>
 
-        <a href="eleitores.html">🗳️ Eleitores</a>
+          <button type="button" class="btn-primario" onclick="abrirModalNovoEleitor()">
+            ＋ Novo Eleitor
+          </button>
 
-        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
-
-        <a href="interacoes.html">💬 Interações</a>
-
-        <a href="importar.html">⬆ Importar Planilha</a>
-
-        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
-
-        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
-
-        <a href="secretarias.html">☷ Secretarias</a>
-
-        <a href="liderancas.html">👥 Lideranças</a>
-
-        <a href="configuracoes.html">⚙ Configurações</a>
-
-      </nav>
-
-      <div class="sidebar-phone">
-        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
-        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
-      </div>
-
-      <div class="sidebar-footer">
-        <strong>XAVIER ONLINE</strong>
-        <p>Gestão territorial e base eleitoral.</p>
-        <span>Versão 1.0.0</span>
-      </div>
-
-    </aside>
-
-    <main class="conteudo main-dashboard eleitores-compacto">
-
-      <header class="topbar dashboard-mobile-top">
-
-        <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir menu">
-          ☰
-        </button>
-
-        <button class="btn-sair-discreto" onclick="sairSistema()">
-          ⇱ Sair
-        </button>
+        </div>
 
       </header>
 
-      <header class="topbar">
-        <div>
-          <h2>Eleitores</h2>
-          <p class="subtitulo-dashboard">Cadastro, filtros e análise territorial da base eleitoral</p>
+      <section class="cards-resumo">
+
+        <article class="card-resumo card-azul">
+
+          <div class="card-resumo-topo">
+
+            <span class="card-resumo-titulo">
+              Total de eleitores
+            </span>
+
+            <span class="card-resumo-icone">
+              👥
+            </span>
+
+          </div>
+
+          <strong id="cardTotalEleitores">
+            0
+          </strong>
+
+          <p>
+            Registros cadastrados
+          </p>
+
+        </article>
+
+        <article class="card-resumo card-verde">
+
+          <div class="card-resumo-topo">
+
+            <span class="card-resumo-titulo">
+              Eleitores ativos
+            </span>
+
+            <span class="card-resumo-icone">
+              ✓
+            </span>
+
+          </div>
+
+          <strong id="cardEleitoresAtivos">
+            0
+          </strong>
+
+          <p>
+            Cadastros com status ativo
+          </p>
+
+        </article>
+
+        <article class="card-resumo card-roxo">
+
+          <div class="card-resumo-topo">
+
+            <span class="card-resumo-titulo">
+              Bairros alcançados
+            </span>
+
+            <span class="card-resumo-icone">
+              📍
+            </span>
+
+          </div>
+
+          <strong id="cardTotalBairros">
+            0
+          </strong>
+
+          <p>
+            Regiões com eleitores
+          </p>
+
+        </article>
+
+        <article class="card-resumo card-laranja">
+
+          <div class="card-resumo-topo">
+
+            <span class="card-resumo-titulo">
+              Cidades alcançadas
+            </span>
+
+            <span class="card-resumo-icone">
+              🏙️
+            </span>
+
+          </div>
+
+          <strong id="cardTotalCidades">
+            0
+          </strong>
+
+          <p>
+            Municípios cadastrados
+          </p>
+
+        </article>
+
+      </section>
+
+      <section class="painel">
+
+        <div class="painel-topo">
+
+          <div>
+
+            <h2>Pesquisar eleitores</h2>
+
+            <p>
+              Utilize os campos abaixo para localizar registros.
+            </p>
+
+          </div>
+
+          <button type="button" class="btn-secundario" onclick="carregarEleitores()">
+            ↻ Atualizar
+          </button>
+
         </div>
-      </header>
 
-      <section class="cards-modernos">
+        <div class="barra-pesquisa">
 
-        <div class="card-mod azul">
-          <h3>Total de Eleitores</h3>
-          <strong id="cardEleitoresTotal">0</strong>
-          <p>Registros cadastrados</p>
-        </div>
+          <div class="campo-pesquisa">
 
-        <div class="card-mod verde">
-          <h3>Escolas</h3>
-          <strong id="cardEleitoresEscolas">0</strong>
-          <p>Locais de votação</p>
-        </div>
+            <span class="icone-busca">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="#94A3B8" stroke-width="2" />
+                <path d="M20 20L17 17" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </span>
 
-        <div class="card-mod roxo">
-          <h3>Zonas</h3>
-          <strong id="cardEleitoresZonas">0</strong>
-          <p>Zonas eleitorais</p>
-        </div>
+            <input type="search" id="filtroBusca" placeholder="Buscar por nome, apelido, telefone ou título..." autocomplete="off">
 
-        <div class="card-mod laranja">
-          <h3>Seções</h3>
-          <strong id="cardEleitoresSecoes">0</strong>
-          <p>Seções cadastradas</p>
+          </div>
+
+          <select id="filtroStatus">
+
+            <option value="">
+              Todos os status
+            </option>
+
+            <option value="ATIVO">
+              Ativos
+            </option>
+
+            <option value="INATIVO">
+              Inativos
+            </option>
+
+          </select>
+
+          <select id="filtroCidade">
+
+            <option value="">
+              Todas as cidades
+            </option>
+
+          </select>
+
+          <select id="filtroBairro">
+
+            <option value="">
+              Todos os bairros
+            </option>
+
+          </select>
+
+          <button type="button" class="btn-secundario" onclick="limparFiltros()">
+            Limpar
+          </button>
+
         </div>
 
       </section>
@@ -351,208 +1467,88 @@
       <section class="painel">
 
         <div class="painel-topo">
+
           <div>
-            <h3>Cadastrar Eleitor</h3>
-            <p>Preencha os dados eleitorais e de endereço</p>
-          </div>
-        </div>
 
-        <form id="formEleitor" class="form-grid">
+            <h2>Eleitores cadastrados</h2>
 
-          <input type="hidden" id="eleitorId">
+            <p id="textoQuantidadeEleitores">
+              Carregando registros...
+            </p>
 
-          <div class="form-item">
-            <label>Nome Completo</label>
-            <input type="text" id="nome" required>
-          </div>
-
-          <div class="form-item">
-            <label>Título de Eleitor</label>
-            <input type="text" id="titulo_eleitor">
-          </div>
-
-          <div class="form-item">
-            <label>Zona Eleitoral</label>
-            <input type="text" id="zona">
-          </div>
-
-          <div class="form-item">
-            <label>Seção Eleitoral</label>
-            <input type="text" id="secao">
-          </div>
-
-          <div class="form-item">
-            <label>Escola de Votação</label>
-            <input type="text" id="escola_votacao">
-          </div>
-
-          <div class="form-item">
-            <label>Telefone</label>
-            <input type="text" id="telefone">
-          </div>
-
-          <div class="form-item">
-            <label>Rua</label>
-            <input type="text" id="rua">
-          </div>
-
-          <div class="form-item">
-            <label>Número</label>
-            <input type="text" id="numero">
-          </div>
-
-          <div class="form-item">
-            <label>Complemento</label>
-            <input type="text" id="complemento">
-          </div>
-
-          <div class="form-item">
-            <label>Bairro</label>
-            <input type="text" id="bairro">
-          </div>
-
-          <div class="form-item descricao">
-            <label>Endereço Completo</label>
-            <input type="text" id="endereco_completo">
-          </div>
-
-          <div class="form-item descricao">
-            <label>Observação</label>
-            <textarea id="observacao"></textarea>
-          </div>
-
-          <div class="form-item descricao botoes-eleitor">
-            <button type="submit" class="btn-nova" id="btnSalvarEleitor">Salvar</button>
-            <button type="button" class="btn-secundario" onclick="limparFormularioEleitor()">Limpar</button>
-          </div>
-
-        </form>
-
-      </section>
-
-      <section class="painel">
-
-        <div class="painel-topo">
-          <div>
-            <h3>Filtros Avançados</h3>
-            <p>Combine os filtros para localizar grupos específicos</p>
-          </div>
-        </div>
-
-        <div class="filtros-eleitores">
-
-          <input type="text" id="filtroBusca" placeholder="Busca geral">
-          <input type="text" id="filtroTitulo" placeholder="Título">
-          <input type="text" id="filtroZona" placeholder="Zona">
-          <input type="text" id="filtroSecao" placeholder="Seção">
-          <input type="text" id="filtroEscola" placeholder="Escola">
-          <input type="text" id="filtroBairro" placeholder="Bairro">
-          <input type="text" id="filtroRua" placeholder="Rua">
-          <input type="text" id="filtroNumero" placeholder="Número">
-          <input type="text" id="filtroTelefone" placeholder="Telefone">
-
-          <button class="btn-nova" onclick="carregarEleitores()">Filtrar</button>
-          <button class="btn-secundario" onclick="limparFiltrosEleitores()">Limpar Filtros</button>
-
-        </div>
-
-      </section>
-
-      <section class="painel">
-
-        <div class="painel-topo">
-          <div>
-            <h3>Rankings</h3>
-            <p>Resumo por escola, bairro, rua, zona e seção</p>
-          </div>
-        </div>
-
-        <section class="cards-modernos">
-
-          <div class="card-mod azul">
-            <h3>Bairros</h3>
-            <strong id="cardEleitoresBairros">0</strong>
-            <p>Bairros cadastrados</p>
-          </div>
-
-          <div class="card-mod verde">
-            <h3>Ruas</h3>
-            <strong id="cardEleitoresRuas">0</strong>
-            <p>Ruas cadastradas</p>
-          </div>
-
-          <div class="card-mod roxo">
-            <h3>Top Escola</h3>
-            <strong id="cardTopEscola">-</strong>
-            <p>Maior concentração</p>
-          </div>
-
-          <div class="card-mod laranja">
-            <h3>Top Bairro</h3>
-            <strong id="cardTopBairro">-</strong>
-            <p>Maior concentração</p>
-          </div>
-
-        </section>
-
-        <div class="ranking-grid-eleitores">
-
-          <div class="ranking-box-eleitores">
-            <h3>Ranking por Escola</h3>
-            <div id="rankingEscolas" class="ranking-lista-eleitores">Carregando...</div>
-          </div>
-
-          <div class="ranking-box-eleitores">
-            <h3>Ranking por Bairro</h3>
-            <div id="rankingBairros" class="ranking-lista-eleitores">Carregando...</div>
-          </div>
-
-          <div class="ranking-box-eleitores">
-            <h3>Ranking por Rua</h3>
-            <div id="rankingRuas" class="ranking-lista-eleitores">Carregando...</div>
-          </div>
-
-          <div class="ranking-box-eleitores">
-            <h3>Ranking por Zona/Seção</h3>
-            <div id="rankingSecoes" class="ranking-lista-eleitores">Carregando...</div>
           </div>
 
         </div>
 
-      </section>
+        <div class="tabela-container">
 
-      <section class="painel painel-tabela">
+          <table class="tabela-eleitores">
 
-        <div class="painel-topo">
-          <div>
-            <h3>Eleitores Cadastrados</h3>
-            <p>Lista de eleitores conforme os filtros aplicados</p>
-          </div>
+            <thead>
+
+              <tr>
+
+                <th>Eleitor</th>
+
+                <th>Status</th>
+
+                <th>Telefone</th>
+
+                <th>Cidade</th>
+
+                <th>Bairro</th>
+
+                <th>Zona</th>
+
+                <th>Seção</th>
+
+                <th>Local de votação</th>
+
+                <th>Ações</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="tabelaEleitoresBody">
+
+              <tr>
+
+                <td colspan="9" class="estado-tabela">
+                  Carregando eleitores...
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
         </div>
 
-        <table>
+        <div class="rodape-tabela">
 
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Título</th>
-              <th>Zona</th>
-              <th>Seção</th>
-              <th>Escola</th>
-              <th>Endereço</th>
-              <th>Bairro</th>
-              <th>Telefone</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
+          <p id="informacaoPaginacao">
+            Nenhum registro carregado.
+          </p>
 
-          <tbody id="listaEleitores">
-            <tr>
-              <td colspan="9">Carregando eleitores...</td>
-            </tr>
-          </tbody>
+          <div class="paginacao">
 
-        </table>
+            <button type="button" id="btnPaginaAnterior" onclick="paginaAnterior()" disabled aria-label="Página anterior">
+              ‹
+            </button>
+
+            <button type="button" id="numeroPaginaAtual" disabled>
+              1
+            </button>
+
+            <button type="button" id="btnProximaPagina" onclick="proximaPagina()" disabled aria-label="Próxima página">
+              ›
+            </button>
+
+          </div>
+
+        </div>
 
       </section>
 
@@ -560,336 +1556,2105 @@
 
   </div>
 
+  <div class="modal-overlay" id="modalEleitor" onclick="fecharModalAoClicarFora(event)">
+
+    <div class="modal-eleitor" role="dialog" aria-modal="true" aria-labelledby="tituloModalEleitor">
+
+      <div class="modal-cabecalho">
+
+        <div>
+
+          <h2 id="tituloModalEleitor">
+            Novo Eleitor
+          </h2>
+
+          <p id="subtituloModalEleitor">
+            Preencha os dados para realizar o cadastro.
+          </p>
+
+        </div>
+
+        <button type="button" class="modal-fechar" onclick="fecharModalEleitor()" aria-label="Fechar">
+          ×
+        </button>
+
+      </div>
+
+      <form id="formEleitor" autocomplete="off">
+
+        <div class="modal-corpo">
+
+          <input type="hidden" id="eleitorId">
+
+          <div class="form-grid">
+
+            <div class="form-secao-titulo">
+              <span>👤</span>
+              <div>
+                <strong>Dados pessoais</strong>
+                <small>Informações básicas do eleitor</small>
+              </div>
+            </div>
+
+            <div class="form-secao-titulo">
+              <span>📍</span>
+              <div>
+                <strong>Endereço</strong>
+                <small>Localização e dados residenciais</small>
+              </div>
+            </div>
+
+            <div class="form-secao-titulo">
+              <span>🗳️</span>
+              <div>
+                <strong>Dados eleitorais</strong>
+                <small>Título, zona, seção e local de votação</small>
+              </div>
+            </div>
+
+            <div class="form-item">
+
+              <label for="status">
+                Status
+                <span class="campo-obrigatorio">*</span>
+              </label>
+
+              <select id="status" name="status" required>
+
+                <option value="ATIVO">
+                  Ativo
+                </option>
+
+                <option value="INATIVO">
+                  Inativo
+                </option>
+
+              </select>
+
+            </div>
+
+            <div class="form-item coluna-2">
+
+              <label for="nome">
+                Nome completo
+                <span class="campo-obrigatorio">*</span>
+              </label>
+
+              <input type="text" id="nome" name="nome" maxlength="150" placeholder="Digite o nome completo" required>
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="apelido">
+                Apelido
+              </label>
+
+              <input type="text" id="apelido" name="apelido" maxlength="100" placeholder="Como é conhecido">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="telefone">
+                Telefone
+              </label>
+
+              <input type="tel" id="telefone" name="telefone" maxlength="20" placeholder="(13) 99999-9999">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="dataNascimento">
+                Data de nascimento
+              </label>
+
+              <input type="date" id="dataNascimento" name="data_nascimento">
+
+            </div>
+
+            <div class="form-item coluna-2">
+
+              <label for="nomeMae">
+                Nome da mãe
+              </label>
+
+              <input type="text" id="nomeMae" name="nome_mae" maxlength="150" placeholder="Digite o nome da mãe">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="cep">
+                CEP
+              </label>
+
+              <input type="text" id="cep" name="cep" maxlength="9" placeholder="00000-000">
+
+            </div>
+
+            <div class="form-item coluna-2">
+
+              <label for="endereco">
+                Endereço
+              </label>
+
+              <input type="text" id="endereco" name="endereco" maxlength="200" placeholder="Rua, avenida ou travessa">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="numero">
+                Número
+              </label>
+
+              <input type="text" id="numero" name="numero" maxlength="20" placeholder="Número">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="complemento">
+                Complemento
+              </label>
+
+              <input type="text" id="complemento" name="complemento" maxlength="100" placeholder="Apartamento, bloco...">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="bairro">
+                Bairro
+              </label>
+
+              <input type="text" id="bairro" name="bairro" maxlength="120" placeholder="Digite o bairro">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="cidade">
+                Cidade
+              </label>
+
+              <input type="text" id="cidade" name="cidade" maxlength="120" placeholder="Digite a cidade">
+
+            </div>
+            <div class="form-item">
+
+              <label for="tituloEleitoral">
+                Título de Eleitor
+              </label>
+
+              <input type="text" id="tituloEleitoral" name="titulo_eleitoral" maxlength="20" placeholder="Número do título">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="zona">
+                Zona
+              </label>
+
+              <input type="text" id="zona" name="zona" maxlength="10" placeholder="Zona">
+
+            </div>
+
+            <div class="form-item">
+
+              <label for="secao">
+                Seção
+              </label>
+
+              <input type="text" id="secao" name="secao" maxlength="10" placeholder="Seção">
+
+            </div>
+
+            <div class="form-secao-titulo">
+              <span>📝</span>
+              <div>
+                <strong>Observações</strong>
+                <small>Informações complementares sobre o eleitor</small>
+              </div>
+            </div>
+            <div class="form-item coluna-3">
+
+              <label for="localVotacao">
+                Local de votação
+              </label>
+
+              <input type="text" id="localVotacao" name="local_votacao" maxlength="180" placeholder="Escola ou local de votação">
+
+            </div>
+
+            <div class="form-item coluna-3">
+
+              <label for="observacao">
+                Observações
+              </label>
+
+              <textarea id="observacao" name="observacao" placeholder="Informações adicionais sobre o eleitor..."></textarea>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="modal-rodape">
+
+          <button type="button" class="btn-secundario" onclick="fecharModalEleitor()">
+            Cancelar
+          </button>
+
+          <button type="submit" class="btn-primario" id="btnSalvarEleitor">
+            Salvar Eleitor
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <div id="mensagemSistema" class="mensagem-sistema"></div>
+
   <script>
-    const API_ELEITORES = "/api/eleitores";
 
-    document.addEventListener("DOMContentLoaded", () => {
-      carregarResumo();
-      carregarEleitores();
+    const API = "/api/eleitores";
 
-      const form = document.getElementById("formEleitor");
+    let eleitores = [];
 
-      if (form) {
-        form.addEventListener("submit", salvarEleitor);
-      }
+    let paginaAtual = 1;
+
+    const registrosPorPagina = 15;
+
+    let modoEdicao = false;
+
+    const tbody = document.getElementById("tabelaEleitoresBody");
+
+    const modal = document.getElementById("modalEleitor");
+
+    const form = document.getElementById("formEleitor");
+
+    const mensagemSistema = document.getElementById("mensagemSistema");
+
+    document.addEventListener("DOMContentLoaded", async () => {
+
+      configurarFiltros();
+
+      configurarCepAutomatico();
+      configurarMascaras();
+
+      await carregarUsuario();
+
+      await carregarResumo();
+
+      await carregarEleitores();
+
     });
 
-    async function carregarResumo() {
-      try {
-        const resposta = await fetch(`${API_ELEITORES}/resumo`, {
-          credentials: "include"
-        });
+    function abrirMenuMobile() {
 
-        const dados = await resposta.json();
+      document.body.classList.add("menu-aberto");
 
-        document.getElementById("cardEleitoresTotal").innerText = dados.total || 0;
-        document.getElementById("cardEleitoresEscolas").innerText = dados.escolas || 0;
-        document.getElementById("cardEleitoresZonas").innerText = dados.zonas || 0;
-        document.getElementById("cardEleitoresSecoes").innerText = dados.secoes || 0;
-        document.getElementById("cardEleitoresBairros").innerText = dados.bairros || 0;
-        document.getElementById("cardEleitoresRuas").innerText = dados.ruas || 0;
+      document.getElementById("sidebar").classList.add("active");
 
-        document.getElementById("cardTopEscola").innerText = dados.topEscolas?.[0]?.escola || "-";
-        document.getElementById("cardTopBairro").innerText = dados.topBairros?.[0]?.bairro || "-";
+      document.getElementById("sidebarOverlay").classList.add("active");
 
-        renderRanking("rankingEscolas", dados.topEscolas || [], item => ({
-          nome: item.escola || "Não informado",
-          total: item.total || 0
-        }));
-
-        renderRanking("rankingBairros", dados.topBairros || [], item => ({
-          nome: item.bairro || "Não informado",
-          total: item.total || 0
-        }));
-
-        renderRanking("rankingRuas", dados.topRuas || [], item => ({
-          nome: `${item.rua || "Rua não informada"}${item.bairro ? " - " + item.bairro : ""}`,
-          total: item.total || 0
-        }));
-
-        renderRanking("rankingSecoes", dados.topSecoes || [], item => ({
-          nome: `Zona ${item.zona || "-"} / Seção ${item.secao || "-"}${item.escola ? " - " + item.escola : ""}`,
-          total: item.total || 0
-        }));
-
-      } catch (erro) {
-        console.error("Erro ao carregar resumo:", erro);
-      }
     }
 
-    function renderRanking(id, lista, formatador) {
-      const div = document.getElementById(id);
+    function fecharMenuMobile() {
 
-      if (!div) return;
+      document.body.classList.remove("menu-aberto");
 
-      if (!lista || !lista.length) {
-        div.innerHTML = `<div class="ranking-vazio-eleitores">Nenhum registro.</div>`;
+      document.getElementById("sidebar").classList.remove("active");
+
+      document.getElementById("sidebarOverlay").classList.remove("active");
+
+    }
+
+    function abrirModalNovoEleitor() {
+
+      modoEdicao = false;
+
+      form.reset();
+
+      document.getElementById("eleitorId").value = "";
+
+      document.getElementById("tituloModalEleitor").textContent = "Novo Eleitor";
+
+      document.getElementById("subtituloModalEleitor").textContent =
+        "Preencha os dados para realizar o cadastro.";
+
+      modal.classList.add("ativo");
+
+      document.body.classList.add("modal-aberto");
+
+    }
+
+    function fecharModalEleitor() {
+
+      modal.classList.remove("ativo");
+
+      document.body.classList.remove("modal-aberto");
+
+    }
+
+    function fecharModalAoClicarFora(e) {
+
+      if (e.target === modal) {
+
+        fecharModalEleitor();
+
+      }
+
+    }
+
+    function mostrarMensagem(texto, tipo = "sucesso") {
+
+      mensagemSistema.textContent = texto;
+
+      mensagemSistema.className =
+        `mensagem-sistema ativo ${tipo}`;
+
+      setTimeout(() => {
+
+        mensagemSistema.classList.remove("ativo");
+
+      }, 3000);
+
+    }
+
+    function configurarCepAutomatico() {
+      const campoCep = document.getElementById("cep");
+
+      if (!campoCep) {
         return;
       }
 
-      const maior = Math.max(...lista.map(item => Number(item.total) || 0));
+      campoCep.addEventListener("blur", buscarEnderecoPorCep);
+    }
 
-      div.innerHTML = lista.slice(0, 10).map(item => {
-        const dados = formatador(item);
-        const percentual = maior > 0 ? (Number(dados.total) / maior) * 100 : 0;
+    async function buscarEnderecoPorCep() {
+      const campoCep = document.getElementById("cep");
+      const campoEndereco = document.getElementById("endereco");
+      const campoBairro = document.getElementById("bairro");
+      const campoCidade = document.getElementById("cidade");
 
-        return `
-          <div class="ranking-linha-eleitores">
-            <span title="${dados.nome}">${dados.nome}</span>
+      const cep = String(campoCep.value || "").replace(/\D/g, "");
 
-            <div class="barra-eleitores">
-              <b style="width:${percentual}%"></b>
-            </div>
+      if (cep.length === 0) {
+        return;
+      }
 
-            <strong>${dados.total}</strong>
-          </div>
-        `;
-      }).join("");
+      if (cep.length !== 8) {
+        mostrarMensagem("Digite um CEP válido com 8 números.", "erro");
+        campoCep.focus();
+        return;
+      }
+
+      const textoOriginal = campoCep.value;
+
+      campoCep.disabled = true;
+      campoCep.value = "Consultando...";
+
+      try {
+        const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+
+        if (!resposta.ok) {
+          throw new Error("Não foi possível consultar o CEP.");
+        }
+
+        const endereco = await resposta.json();
+
+        if (endereco.erro) {
+          throw new Error("CEP não encontrado.");
+        }
+
+        campoCep.value = formatarCep(cep);
+
+        if (campoEndereco && !campoEndereco.value.trim()) {
+          campoEndereco.value = endereco.logradouro || "";
+        }
+
+        if (campoBairro && !campoBairro.value.trim()) {
+          campoBairro.value = endereco.bairro || "";
+        }
+
+        if (campoCidade && !campoCidade.value.trim()) {
+          campoCidade.value = endereco.localidade || "";
+        }
+
+        const campoNumero = document.getElementById("numero");
+
+        if (campoNumero) {
+          campoNumero.focus();
+        }
+
+        mostrarMensagem("Endereço localizado com sucesso.", "sucesso");
+      } catch (erro) {
+        campoCep.value = formatarCep(cep) || textoOriginal;
+        mostrarMensagem(erro.message, "erro");
+      } finally {
+        campoCep.disabled = false;
+      }
+    }
+
+    function configurarMascaras() {
+      const campoCep = document.getElementById("cep");
+      const campoTelefone = document.getElementById("telefone");
+      const campoTitulo = document.getElementById("tituloEleitoral");
+
+      if (campoCep) {
+        campoCep.addEventListener("input", evento => {
+          evento.target.value = formatarCep(evento.target.value);
+        });
+      }
+
+      if (campoTelefone) {
+        campoTelefone.addEventListener("input", evento => {
+          evento.target.value = formatarTelefoneDigitado(evento.target.value);
+        });
+      }
+
+      if (campoTitulo) {
+        campoTitulo.addEventListener("input", evento => {
+          evento.target.value = String(evento.target.value || "")
+            .replace(/\D/g, "")
+            .slice(0, 12);
+        });
+      }
+    }
+
+    function formatarCep(valor) {
+      const numeros = String(valor || "")
+        .replace(/\D/g, "")
+        .slice(0, 8);
+
+      if (numeros.length <= 5) {
+        return numeros;
+      }
+
+      return `${numeros.slice(0, 5)}-${numeros.slice(5)}`;
+    }
+
+    function formatarTelefoneDigitado(valor) {
+      const numeros = String(valor || "")
+        .replace(/\D/g, "")
+        .slice(0, 11);
+
+      if (numeros.length === 0) {
+        return "";
+      }
+
+      if (numeros.length <= 2) {
+        return `(${numeros}`;
+      }
+
+      if (numeros.length <= 6) {
+        return `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+      }
+
+      if (numeros.length <= 10) {
+        return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+      }
+
+      return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+    }
+
+    function configurarFiltros() {
+
+      document
+        .getElementById("filtroBusca")
+        .addEventListener("input", aplicarFiltros);
+
+      document
+        .getElementById("filtroCidade")
+        .addEventListener("change", aplicarFiltros);
+
+      document
+        .getElementById("filtroBairro")
+        .addEventListener("change", aplicarFiltros);
+
+      document
+        .getElementById("filtroStatus")
+        .addEventListener("change", aplicarFiltros);
+
+    }
+
+    function limparFiltros() {
+
+      document.getElementById("filtroBusca").value = "";
+
+      document.getElementById("filtroCidade").value = "";
+
+      document.getElementById("filtroBairro").value = "";
+
+      document.getElementById("filtroStatus").value = "";
+
+      aplicarFiltros();
+
+    }
+
+    /*Parte 4A*/
+
+    async function carregarUsuario() {
+
+      try {
+
+        const resposta = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (resposta.status === 401 || resposta.status === 403) {
+
+          window.location.href = "index.html";
+
+          return;
+
+        }
+
+        if (!resposta.ok) {
+
+          throw new Error("Não foi possível carregar o usuário.");
+
+        }
+
+        const dados = await resposta.json();
+
+        const usuario = dados.usuario || dados;
+
+        document.getElementById("nomeUsuarioSidebar").textContent =
+          usuario.nome || "Usuário";
+
+        document.getElementById("perfilUsuarioSidebar").textContent =
+          formatarPerfil(usuario.perfil);
+
+        const menuUsuarios = document.getElementById("menuUsuarios");
+
+        const perfil = String(usuario.perfil || "").toUpperCase();
+
+        if (menuUsuarios && perfil !== "ADMIN") {
+
+          menuUsuarios.style.display = "none";
+
+        }
+
+      } catch (erro) {
+
+        console.error("Erro ao carregar usuário:", erro);
+
+      }
+
+    }
+
+    function formatarPerfil(perfil) {
+
+      const valor = String(perfil || "").toUpperCase();
+
+      const nomes = {
+        ADMIN: "Administrador",
+        ASSESSOR: "Assessor",
+        CANDIDATO: "Candidato",
+        USUARIO: "Usuário"
+      };
+
+      return nomes[valor] || perfil || "Usuário";
+
+    }
+
+    async function carregarResumo() {
+
+      try {
+
+        const resposta = await fetch(`${API}/resumo`, {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (resposta.status === 401 || resposta.status === 403) {
+
+          window.location.href = "index.html";
+
+          return;
+
+        }
+
+        if (!resposta.ok) {
+
+          throw new Error("Não foi possível carregar o resumo.");
+
+        }
+
+        const dados = await resposta.json();
+
+        const resumo = dados.resumo || dados;
+
+        const total =
+          resumo.total_eleitores ??
+          resumo.total ??
+          resumo.quantidade ??
+          0;
+
+        const ativos =
+          resumo.eleitores_ativos ??
+          resumo.ativos ??
+          resumo.total_ativos ??
+          0;
+
+        const bairros =
+          resumo.total_bairros ??
+          resumo.bairros ??
+          resumo.bairros_alcancados ??
+          0;
+
+        const cidades =
+          resumo.total_cidades ??
+          resumo.cidades ??
+          resumo.cidades_alcancadas ??
+          0;
+
+        document.getElementById("cardTotalEleitores").textContent =
+          formatarNumero(total);
+
+        document.getElementById("cardEleitoresAtivos").textContent =
+          formatarNumero(ativos);
+
+        document.getElementById("cardTotalBairros").textContent =
+          formatarNumero(bairros);
+
+        document.getElementById("cardTotalCidades").textContent =
+          formatarNumero(cidades);
+
+      } catch (erro) {
+
+        console.error("Erro ao carregar resumo:", erro);
+
+      }
+
     }
 
     async function carregarEleitores() {
+
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="9" class="estado-tabela">
+            Carregando eleitores...
+          </td>
+        </tr>
+      `;
+
       try {
-        const params = new URLSearchParams();
 
-        const filtros = {
-          busca: "filtroBusca",
-          titulo: "filtroTitulo",
-          zona: "filtroZona",
-          secao: "filtroSecao",
-          escola: "filtroEscola",
-          bairro: "filtroBairro",
-          rua: "filtroRua",
-          numero: "filtroNumero",
-          telefone: "filtroTelefone"
-        };
-
-        Object.entries(filtros).forEach(([param, id]) => {
-          const valor = document.getElementById(id)?.value?.trim();
-
-          if (valor) {
-            params.append(param, valor);
-          }
-        });
-
-        const url = params.toString()
-          ? `${API_ELEITORES}?${params.toString()}`
-          : API_ELEITORES;
-
-        const resposta = await fetch(url, {
+        const resposta = await fetch(API, {
+          method: "GET",
           credentials: "include"
         });
 
-        const dados = await resposta.json();
-        const tbody = document.getElementById("listaEleitores");
+        if (resposta.status === 401 || resposta.status === 403) {
 
-        if (!dados.length) {
-          tbody.innerHTML = `<tr><td colspan="9">Nenhum eleitor encontrado.</td></tr>`;
+          window.location.href = "index.html";
+
           return;
+
         }
 
-        tbody.innerHTML = dados.map(e => `
-          <tr>
-            <td>${e.nome || "-"}</td>
-            <td>${e.titulo_eleitor || "-"}</td>
-            <td>${e.zona || "-"}</td>
-            <td>${e.secao || "-"}</td>
-            <td>${e.escola_votacao || "-"}</td>
-            <td>${e.endereco_completo || "-"}</td>
-            <td>${e.bairro || "-"}</td>
-            <td>${e.telefone || "-"}</td>
-            <td>
-              <button class="btn-nova btn-tabela" onclick="editarEleitor(${e.id})">Editar</button>
-              <button class="btn-secundario btn-tabela" onclick="excluirEleitor(${e.id})">Excluir</button>
-            </td>
-          </tr>
-        `).join("");
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+
+          throw new Error(
+            dados.erro ||
+            dados.mensagem ||
+            "Não foi possível carregar os eleitores."
+          );
+
+        }
+
+        const listaRecebida =
+          dados.eleitores ||
+          dados.registros ||
+          dados.dados ||
+          dados.data ||
+          dados;
+
+        eleitores = Array.isArray(listaRecebida)
+          ? listaRecebida
+          : [];
+
+        paginaAtual = 1;
+
+        preencherFiltros();
+
+        aplicarFiltros();
+
+        await carregarResumo();
 
       } catch (erro) {
+
         console.error("Erro ao carregar eleitores:", erro);
 
-        document.getElementById("listaEleitores").innerHTML =
-          `<tr><td colspan="9">Erro ao carregar eleitores.</td></tr>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="estado-tabela">
+              ${escaparHtml(erro.message)}
+            </td>
+          </tr>
+        `;
+
+        document.getElementById("textoQuantidadeEleitores").textContent =
+          "Não foi possível carregar os registros.";
+
+        mostrarMensagem(erro.message, "erro");
+
       }
+
     }
 
-    async function salvarEleitor(evento) {
-      evento.preventDefault();
+    function preencherFiltros() {
 
-      const id = document.getElementById("eleitorId").value;
+      const selectCidade =
+        document.getElementById("filtroCidade");
 
-      const dados = {
-        nome: document.getElementById("nome").value.trim(),
-        titulo_eleitor: document.getElementById("titulo_eleitor").value.trim(),
-        zona: document.getElementById("zona").value.trim(),
-        secao: document.getElementById("secao").value.trim(),
-        escola_votacao: document.getElementById("escola_votacao").value.trim(),
-        endereco_completo: document.getElementById("endereco_completo").value.trim(),
-        rua: document.getElementById("rua").value.trim(),
-        numero: document.getElementById("numero").value.trim(),
-        complemento: document.getElementById("complemento").value.trim(),
-        bairro: document.getElementById("bairro").value.trim(),
-        telefone: document.getElementById("telefone").value.trim(),
-        observacao: document.getElementById("observacao").value.trim()
-      };
+      const selectBairro =
+        document.getElementById("filtroBairro");
 
-      if (!dados.nome) {
-        alert("Informe o nome do eleitor.");
-        return;
+      const cidadeSelecionada = selectCidade.value;
+
+      const bairroSelecionado = selectBairro.value;
+
+      const cidades = [
+        ...new Set(
+          eleitores
+            .map(eleitor => normalizarTextoExibicao(eleitor.cidade))
+            .filter(Boolean)
+        )
+      ].sort((a, b) =>
+        a.localeCompare(b, "pt-BR", {
+          sensitivity: "base"
+        })
+      );
+
+      const bairros = [
+        ...new Set(
+          eleitores
+            .map(eleitor => normalizarTextoExibicao(eleitor.bairro))
+            .filter(Boolean)
+        )
+      ].sort((a, b) =>
+        a.localeCompare(b, "pt-BR", {
+          sensitivity: "base"
+        })
+      );
+
+      selectCidade.innerHTML = `
+        <option value="">Todas as cidades</option>
+        ${cidades
+          .map(cidade => `
+            <option value="${escaparAtributo(cidade)}">
+              ${escaparHtml(cidade)}
+            </option>
+          `)
+          .join("")}
+      `;
+
+      selectBairro.innerHTML = `
+        <option value="">Todos os bairros</option>
+        ${bairros
+          .map(bairro => `
+            <option value="${escaparAtributo(bairro)}">
+              ${escaparHtml(bairro)}
+            </option>
+          `)
+          .join("")}
+      `;
+
+      if (cidades.includes(cidadeSelecionada)) {
+
+        selectCidade.value = cidadeSelecionada;
+
       }
 
-      const metodo = id ? "PUT" : "POST";
-      const url = id ? `${API_ELEITORES}/${id}` : API_ELEITORES;
+      if (bairros.includes(bairroSelecionado)) {
 
-      const resposta = await fetch(url, {
-        method: metodo,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify(dados)
+        selectBairro.value = bairroSelecionado;
+
+      }
+
+    }
+
+    function aplicarFiltros() {
+
+      paginaAtual = 1;
+
+      renderizarTabela();
+
+    }
+
+    function obterEleitoresFiltrados() {
+
+      const busca = normalizarBusca(
+        document.getElementById("filtroBusca").value
+      );
+
+      const status = String(
+        document.getElementById("filtroStatus").value || ""
+      ).toUpperCase();
+
+      const cidade = normalizarBusca(
+        document.getElementById("filtroCidade").value
+      );
+
+      const bairro = normalizarBusca(
+        document.getElementById("filtroBairro").value
+      );
+
+      return eleitores.filter(eleitor => {
+
+        const statusEleitor = String(
+          eleitor.status || "ATIVO"
+        ).toUpperCase();
+
+        const cidadeEleitor = normalizarBusca(eleitor.cidade);
+
+        const bairroEleitor = normalizarBusca(eleitor.bairro);
+
+        const conteudoBusca = normalizarBusca([
+          eleitor.nome,
+          eleitor.apelido,
+          eleitor.telefone,
+          eleitor.titulo_eleitoral,
+          eleitor.titulo_eleitor,
+          eleitor.cidade,
+          eleitor.bairro,
+          eleitor.zona,
+          eleitor.secao,
+          eleitor.local_votacao,
+          eleitor.escola_votacao
+        ].join(" "));
+
+        const correspondeBusca =
+          !busca || conteudoBusca.includes(busca);
+
+        const correspondeStatus =
+          !status || statusEleitor === status;
+
+        const correspondeCidade =
+          !cidade || cidadeEleitor === cidade;
+
+        const correspondeBairro =
+          !bairro || bairroEleitor === bairro;
+
+        return (
+          correspondeBusca &&
+          correspondeStatus &&
+          correspondeCidade &&
+          correspondeBairro
+        );
+
       });
 
-      const retorno = await resposta.json();
+    }
 
-      if (!resposta.ok) {
-        alert(retorno.erro || "Erro ao salvar eleitor.");
-        return;
+    function renderizarTabela() {
+
+      const listaFiltrada = obterEleitoresFiltrados();
+
+      const totalRegistros = listaFiltrada.length;
+
+      const totalPaginas = Math.max(
+        1,
+        Math.ceil(totalRegistros / registrosPorPagina)
+      );
+
+      if (paginaAtual > totalPaginas) {
+
+        paginaAtual = totalPaginas;
+
       }
 
-      alert(retorno.mensagem || "Eleitor salvo com sucesso.");
-      limparFormularioEleitor();
-      carregarResumo();
-      carregarEleitores();
+      const inicio =
+        (paginaAtual - 1) * registrosPorPagina;
+
+      const fim = inicio + registrosPorPagina;
+
+      const registrosPagina =
+        listaFiltrada.slice(inicio, fim);
+
+      if (totalRegistros === 0) {
+
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="estado-tabela">
+              Nenhum eleitor encontrado.
+            </td>
+          </tr>
+        `;
+
+      } else {
+
+        tbody.innerHTML = registrosPagina
+          .map(criarLinhaEleitor)
+          .join("");
+
+      }
+
+      document.getElementById("textoQuantidadeEleitores").textContent =
+        totalRegistros === 1
+          ? "1 eleitor encontrado."
+          : `${formatarNumero(totalRegistros)} eleitores encontrados.`;
+
+      const primeiroRegistro =
+        totalRegistros === 0 ? 0 : inicio + 1;
+
+      const ultimoRegistro =
+        Math.min(fim, totalRegistros);
+
+      document.getElementById("informacaoPaginacao").textContent =
+        totalRegistros === 0
+          ? "Nenhum registro para exibir."
+          : `Exibindo ${primeiroRegistro} a ${ultimoRegistro} de ${totalRegistros} registros.`;
+
+      document.getElementById("numeroPaginaAtual").textContent =
+        paginaAtual;
+
+      document.getElementById("btnPaginaAnterior").disabled =
+        paginaAtual <= 1;
+
+      document.getElementById("btnProximaPagina").disabled =
+        paginaAtual >= totalPaginas || totalRegistros === 0;
+
+    }
+
+    function criarLinhaEleitor(eleitor) {
+
+      const id = Number(eleitor.id);
+
+      const nome =
+        normalizarTextoExibicao(eleitor.nome) ||
+        "Nome não informado";
+
+      const apelido =
+        normalizarTextoExibicao(eleitor.apelido);
+
+      const status =
+        String(eleitor.status || "ATIVO").toUpperCase();
+
+      const telefone =
+        normalizarTextoExibicao(eleitor.telefone) || "Não informado";
+
+      const cidade =
+        normalizarTextoExibicao(eleitor.cidade) || "Não informada";
+
+      const bairro =
+        normalizarTextoExibicao(eleitor.bairro) || "Não informado";
+
+      const zona =
+        normalizarTextoExibicao(eleitor.zona) || "—";
+
+      const secao =
+        normalizarTextoExibicao(eleitor.secao) || "—";
+
+      const localVotacao =
+        normalizarTextoExibicao(
+          eleitor.local_votacao ||
+          eleitor.escola_votacao
+        ) || "Não informado";
+
+      const iniciais = obterIniciais(nome);
+
+      return `
+        <tr>
+
+          <td>
+
+            <div class="nome-eleitor">
+
+              <div class="avatar-eleitor">
+                ${escaparHtml(iniciais)}
+              </div>
+
+              <div>
+
+                <strong>
+                  ${escaparHtml(nome)}
+                </strong>
+
+                <span>
+                  ${apelido
+          ? escaparHtml(apelido)
+          : "Sem apelido"}
+                </span>
+
+              </div>
+
+            </div>
+
+          </td>
+
+          <td>
+
+            <span class="badge-status ${status === "INATIVO" ? "inativo" : ""}">
+              ${escaparHtml(status)}
+            </span>
+
+          </td>
+
+          <td>
+            ${escaparHtml(telefone)}
+          </td>
+
+          <td>
+            ${escaparHtml(cidade)}
+          </td>
+
+          <td>
+            ${escaparHtml(bairro)}
+          </td>
+
+          <td>
+            ${escaparHtml(zona)}
+          </td>
+
+          <td>
+            ${escaparHtml(secao)}
+          </td>
+
+          <td title="${escaparAtributo(localVotacao)}">
+            ${escaparHtml(localVotacao)}
+          </td>
+
+          <td>
+
+            <div class="acoes-tabela">
+
+              <button
+                type="button"
+                class="btn-icone editar"
+                onclick="editarEleitor(${id})"
+                title="Editar eleitor"
+                aria-label="Editar eleitor"
+              >
+                ✏️
+              </button>
+
+              <button
+                type="button"
+                class="btn-icone excluir"
+                onclick="excluirEleitor(${id})"
+                title="Excluir eleitor"
+                aria-label="Excluir eleitor"
+              >
+                🗑️
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+      `;
+
+    }
+
+    function paginaAnterior() {
+
+      if (paginaAtual > 1) {
+
+        paginaAtual -= 1;
+
+        renderizarTabela();
+
+        rolarAteTabela();
+
+      }
+
+    }
+
+    function proximaPagina() {
+
+      const totalRegistros =
+        obterEleitoresFiltrados().length;
+
+      const totalPaginas = Math.max(
+        1,
+        Math.ceil(totalRegistros / registrosPorPagina)
+      );
+
+      if (paginaAtual < totalPaginas) {
+
+        paginaAtual += 1;
+
+        renderizarTabela();
+
+        rolarAteTabela();
+
+      }
+
+    }
+
+    function rolarAteTabela() {
+
+      document
+        .querySelector(".tabela-container")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
     }
 
     async function editarEleitor(id) {
-      const resposta = await fetch(API_ELEITORES, {
-        credentials: "include"
-      });
 
-      const dados = await resposta.json();
-      const eleitor = dados.find(e => Number(e.id) === Number(id));
+      const botaoSalvar =
+        document.getElementById("btnSalvarEleitor");
 
-      if (!eleitor) return;
+      botaoSalvar.disabled = true;
 
-      document.getElementById("eleitorId").value = eleitor.id;
-      document.getElementById("nome").value = eleitor.nome || "";
-      document.getElementById("titulo_eleitor").value = eleitor.titulo_eleitor || "";
-      document.getElementById("zona").value = eleitor.zona || "";
-      document.getElementById("secao").value = eleitor.secao || "";
-      document.getElementById("escola_votacao").value = eleitor.escola_votacao || "";
-      document.getElementById("endereco_completo").value = eleitor.endereco_completo || "";
-      document.getElementById("rua").value = eleitor.rua || "";
-      document.getElementById("numero").value = eleitor.numero || "";
-      document.getElementById("complemento").value = eleitor.complemento || "";
-      document.getElementById("bairro").value = eleitor.bairro || "";
-      document.getElementById("telefone").value = eleitor.telefone || "";
-      document.getElementById("observacao").value = eleitor.observacao || "";
+      botaoSalvar.textContent = "Carregando...";
 
-      document.getElementById("btnSalvarEleitor").innerText = "Atualizar";
+      try {
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+        const resposta = await fetch(`${API}/${id}`, {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (resposta.status === 401 || resposta.status === 403) {
+
+          window.location.href = "index.html";
+
+          return;
+
+        }
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+
+          throw new Error(
+            dados.erro ||
+            dados.mensagem ||
+            "Não foi possível carregar o eleitor."
+          );
+
+        }
+
+        const eleitor =
+          dados.eleitor ||
+          dados.registro ||
+          dados.dados ||
+          dados;
+
+        modoEdicao = true;
+
+        form.reset();
+
+        preencherFormulario(eleitor);
+
+        document.getElementById("tituloModalEleitor").textContent =
+          "Editar Eleitor";
+
+        document.getElementById("subtituloModalEleitor").textContent =
+          "Atualize os dados necessários e salve as alterações.";
+
+        modal.classList.add("ativo");
+
+        document.body.classList.add("modal-aberto");
+
+      } catch (erro) {
+
+        console.error("Erro ao editar eleitor:", erro);
+
+        mostrarMensagem(erro.message, "erro");
+
+      } finally {
+
+        botaoSalvar.disabled = false;
+
+        botaoSalvar.textContent = "Salvar Eleitor";
+
+      }
+
     }
 
-    async function excluirEleitor(id) {
-      if (!confirm("Deseja excluir este eleitor?")) return;
+    function preencherFormulario(eleitor) {
 
-      const resposta = await fetch(`${API_ELEITORES}/${id}`, {
-        method: "DELETE",
-        credentials: "include"
+      document.getElementById("eleitorId").value =
+        eleitor.id || "";
+
+      document.getElementById("status").value =
+        String(eleitor.status || "ATIVO").toUpperCase();
+
+      document.getElementById("nome").value =
+        eleitor.nome || "";
+
+      document.getElementById("apelido").value =
+        eleitor.apelido || "";
+
+      document.getElementById("telefone").value =
+        formatarTelefone(eleitor.telefone || "");
+
+      document.getElementById("dataNascimento").value =
+        formatarDataParaInput(eleitor.data_nascimento);
+
+      document.getElementById("nomeMae").value =
+        eleitor.nome_mae || "";
+
+      document.getElementById("cep").value =
+        formatarCep(eleitor.cep || "");
+
+      document.getElementById("endereco").value =
+        eleitor.endereco ||
+        eleitor.rua ||
+        eleitor.endereco_completo ||
+        "";
+
+      document.getElementById("numero").value =
+        eleitor.numero || "";
+
+      document.getElementById("complemento").value =
+        eleitor.complemento || "";
+
+      document.getElementById("bairro").value =
+        eleitor.bairro || "";
+
+      document.getElementById("cidade").value =
+        eleitor.cidade || "";
+
+      document.getElementById("tituloEleitoral").value =
+        eleitor.titulo_eleitoral ||
+        eleitor.titulo_eleitor ||
+        "";
+
+      document.getElementById("zona").value =
+        eleitor.zona || "";
+
+      document.getElementById("secao").value =
+        eleitor.secao || "";
+
+      document.getElementById("localVotacao").value =
+        eleitor.local_votacao ||
+        eleitor.escola_votacao ||
+        "";
+
+      document.getElementById("observacao").value =
+        eleitor.observacao || "";
+
+    }
+    form.addEventListener("submit", async function (event) {
+
+      event.preventDefault();
+
+      const botaoSalvar =
+        document.getElementById("btnSalvarEleitor");
+
+      const id =
+        document.getElementById("eleitorId").value;
+
+      const dadosFormulario = {
+
+        status:
+          document.getElementById("status").value,
+
+        nome:
+          document.getElementById("nome").value.trim(),
+
+        apelido:
+          document.getElementById("apelido").value.trim(),
+
+        telefone:
+          somenteNumeros(
+            document.getElementById("telefone").value
+          ),
+
+        data_nascimento:
+          document.getElementById("dataNascimento").value || null,
+
+        nome_mae:
+          document.getElementById("nomeMae").value.trim(),
+
+        cep:
+          somenteNumeros(
+            document.getElementById("cep").value
+          ),
+
+        endereco:
+          document.getElementById("endereco").value.trim(),
+
+        numero:
+          document.getElementById("numero").value.trim(),
+
+        complemento:
+          document.getElementById("complemento").value.trim(),
+
+        bairro:
+          document.getElementById("bairro").value.trim(),
+
+        cidade:
+          document.getElementById("cidade").value.trim(),
+
+        titulo_eleitoral:
+          document.getElementById("tituloEleitoral").value.trim(),
+
+        zona:
+          document.getElementById("zona").value.trim(),
+
+        secao:
+          document.getElementById("secao").value.trim(),
+
+        local_votacao:
+          document.getElementById("localVotacao").value.trim(),
+
+        observacao:
+          document.getElementById("observacao").value.trim()
+
+      };
+
+      if (!dadosFormulario.nome) {
+
+        mostrarMensagem(
+          "Informe o nome do eleitor.",
+          "erro"
+        );
+
+        document.getElementById("nome").focus();
+
+        return;
+
+      }
+
+      botaoSalvar.disabled = true;
+
+      botaoSalvar.textContent = modoEdicao
+        ? "Salvando alterações..."
+        : "Salvando eleitor...";
+
+      try {
+
+        const url = modoEdicao
+          ? `${API}/${id}`
+          : API;
+
+        const metodo = modoEdicao
+          ? "PUT"
+          : "POST";
+
+        const resposta = await fetch(url, {
+
+          method: metodo,
+
+          credentials: "include",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify(dadosFormulario)
+
+        });
+
+        if (resposta.status === 401 || resposta.status === 403) {
+
+          window.location.href = "index.html";
+
+          return;
+
+        }
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+
+          throw new Error(
+            dados.erro ||
+            dados.mensagem ||
+            "Não foi possível salvar o eleitor."
+          );
+
+        }
+
+        fecharModalEleitor();
+
+        mostrarMensagem(
+          modoEdicao
+            ? "Eleitor atualizado com sucesso."
+            : "Eleitor cadastrado com sucesso.",
+          "sucesso"
+        );
+
+        await carregarEleitores();
+
+      } catch (erro) {
+
+        console.error("Erro ao salvar eleitor:", erro);
+
+        mostrarMensagem(erro.message, "erro");
+
+      } finally {
+
+        botaoSalvar.disabled = false;
+
+        botaoSalvar.textContent = "Salvar Eleitor";
+
+      }
+
+    });
+
+    async function excluirEleitor(id) {
+
+      const eleitor = eleitores.find(
+        item => Number(item.id) === Number(id)
+      );
+
+      const nome =
+        eleitor?.nome ||
+        "este eleitor";
+
+      const confirmar = window.confirm(
+        `Deseja realmente excluir o cadastro de ${nome}?`
+      );
+
+      if (!confirmar) {
+
+        return;
+
+      }
+
+      try {
+
+        const resposta = await fetch(`${API}/${id}`, {
+          method: "DELETE",
+          credentials: "include"
+        });
+
+        if (resposta.status === 401 || resposta.status === 403) {
+
+          window.location.href = "index.html";
+
+          return;
+
+        }
+
+        let dados = {};
+
+        try {
+
+          dados = await resposta.json();
+
+        } catch {
+
+          dados = {};
+
+        }
+
+        if (!resposta.ok) {
+
+          throw new Error(
+            dados.erro ||
+            dados.mensagem ||
+            "Não foi possível excluir o eleitor."
+          );
+
+        }
+
+        mostrarMensagem(
+          "Eleitor excluído com sucesso.",
+          "sucesso"
+        );
+
+        await carregarEleitores();
+
+      } catch (erro) {
+
+        console.error("Erro ao excluir eleitor:", erro);
+
+        mostrarMensagem(erro.message, "erro");
+
+      }
+
+    }
+
+    async function sairDoSistema(event) {
+
+      if (event) {
+
+        event.preventDefault();
+
+      }
+
+      try {
+
+        await fetch("/api/auth/logout", {
+
+          method: "POST",
+
+          credentials: "include"
+
+        });
+
+      } catch (erro) {
+
+        console.error("Erro ao encerrar sessão:", erro);
+
+      } finally {
+
+        window.location.href = "index.html";
+
+      }
+
+    }
+
+    function normalizarBusca(valor) {
+
+      return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
+
+    }
+
+    function normalizarTextoExibicao(valor) {
+
+      return String(valor || "").trim();
+
+    }
+
+    function somenteNumeros(valor) {
+
+      return String(valor || "")
+        .replace(/\D/g, "");
+
+    }
+
+    function formatarNumero(valor) {
+
+      const numero = Number(valor || 0);
+
+      return numero.toLocaleString("pt-BR");
+
+    }
+
+    function obterIniciais(nome) {
+
+      const partes = String(nome || "")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+      if (partes.length === 0) {
+
+        return "?";
+
+      }
+
+      if (partes.length === 1) {
+
+        return partes[0]
+          .slice(0, 2)
+          .toUpperCase();
+
+      }
+
+      return (
+        partes[0].charAt(0) +
+        partes[partes.length - 1].charAt(0)
+      ).toUpperCase();
+
+    }
+
+    function formatarDataParaInput(valor) {
+
+      if (!valor) {
+
+        return "";
+
+      }
+
+      const texto = String(valor);
+
+      if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+
+        return texto;
+
+      }
+
+      const data = new Date(valor);
+
+      if (Number.isNaN(data.getTime())) {
+
+        return "";
+
+      }
+
+      const ano = data.getFullYear();
+
+      const mes = String(
+        data.getMonth() + 1
+      ).padStart(2, "0");
+
+      const dia = String(
+        data.getDate()
+      ).padStart(2, "0");
+
+      return `${ano}-${mes}-${dia}`;
+
+    }
+
+    function formatarTelefone(valor) {
+
+      const numeros = somenteNumeros(valor).slice(0, 11);
+
+      if (numeros.length <= 2) {
+
+        return numeros;
+
+      }
+
+      if (numeros.length <= 6) {
+
+        return numeros.replace(
+          /^(\d{2})(\d+)/,
+          "($1) $2"
+        );
+
+      }
+
+      if (numeros.length <= 10) {
+
+        return numeros.replace(
+          /^(\d{2})(\d{4})(\d+)/,
+          "($1) $2-$3"
+        );
+
+      }
+
+      return numeros.replace(
+        /^(\d{2})(\d{5})(\d{4})/,
+        "($1) $2-$3"
+      );
+
+    }
+
+    function formatarCep(valor) {
+
+      const numeros = somenteNumeros(valor).slice(0, 8);
+
+      return numeros.replace(
+        /^(\d{5})(\d+)/,
+        "$1-$2"
+      );
+
+    }
+
+    function escaparHtml(valor) {
+
+      return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+    function escaparAtributo(valor) {
+
+      return escaparHtml(valor);
+
+    }
+
+    document
+      .getElementById("telefone")
+      .addEventListener("input", function () {
+
+        this.value = formatarTelefone(this.value);
+
       });
 
-      const dados = await resposta.json();
+    document
+      .getElementById("cep")
+      .addEventListener("input", function () {
 
-      if (!resposta.ok) {
-        alert(dados.erro || "Erro ao excluir eleitor.");
+        this.value = formatarCep(this.value);
+
+      });
+
+    document.addEventListener("keydown", function (event) {
+
+      if (event.key === "Escape") {
+
+        if (modal.classList.contains("ativo")) {
+
+          fecharModalEleitor();
+
+          return;
+
+        }
+
+        fecharMenuMobile();
+
+      }
+
+    });
+
+    window.addEventListener("resize", function () {
+
+      if (window.innerWidth > 900) {
+
+        fecharMenuMobile();
+
+      }
+
+    });
+
+    async function exportarEleitoresPdf() {
+      try {
+        mostrarMensagem(
+          "Preparando relatório em PDF...",
+          "sucesso"
+        );
+
+        const parametros = new URLSearchParams();
+
+        const busca = document
+          .getElementById("filtroBusca")
+          ?.value.trim();
+
+        const status = document
+          .getElementById("filtroStatus")
+          ?.value;
+
+        const cidade = document
+          .getElementById("filtroCidade")
+          ?.value;
+
+        const bairro = document
+          .getElementById("filtroBairro")
+          ?.value;
+
+        if (busca) parametros.set("busca", busca);
+        if (status) parametros.set("status", status);
+        if (cidade) parametros.set("cidade", cidade);
+        if (bairro) parametros.set("bairro", bairro);
+
+        const resposta = await fetch(
+          `${API}/exportar-pdf?${parametros.toString()}`,
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
+
+        if (!resposta.ok) {
+          const erro = await resposta
+            .json()
+            .catch(() => ({}));
+
+          throw new Error(
+            erro.erro ||
+            "Não foi possível gerar o PDF."
+          );
+        }
+
+        const arquivo = await resposta.blob();
+        const url = URL.createObjectURL(arquivo);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download =
+          `eleitores_sistema_lucas_${new Date()
+            .toISOString()
+            .slice(0, 10)}.pdf`;
+
+        document.body.appendChild(link);
+
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        mostrarMensagem(
+          "PDF exportado com sucesso.",
+          "sucesso"
+        );
+
+      } catch (erro) {
+        console.error(
+          "Erro ao exportar PDF:",
+          erro
+        );
+
+        mostrarMensagem(
+          erro.message ||
+          "Erro ao exportar o PDF.",
+          "erro"
+        );
+      }
+    }
+
+    async function exportarEleitoresExcel() {
+      try {
+        mostrarMensagem(
+          "Preparando planilha de eleitores...",
+          "sucesso"
+        );
+
+        const parametros = new URLSearchParams();
+
+        const busca = document
+          .getElementById("filtroBusca")
+          ?.value.trim();
+
+        const status = document
+          .getElementById("filtroStatus")
+          ?.value;
+
+        const cidade = document
+          .getElementById("filtroCidade")
+          ?.value;
+
+        const bairro = document
+          .getElementById("filtroBairro")
+          ?.value;
+
+        if (busca) parametros.set("busca", busca);
+        if (status) parametros.set("status", status);
+        if (cidade) parametros.set("cidade", cidade);
+        if (bairro) parametros.set("bairro", bairro);
+
+        const resposta = await fetch(
+          `${API}/exportar-excel?${parametros.toString()}`,
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
+
+        if (!resposta.ok) {
+          const erro = await resposta
+            .json()
+            .catch(() => ({}));
+
+          throw new Error(
+            erro.erro ||
+            "Não foi possível exportar os eleitores."
+          );
+        }
+
+        const arquivo = await resposta.blob();
+
+        const url = URL.createObjectURL(arquivo);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+
+        link.download =
+          `eleitores_sistema_lucas_${new Date()
+            .toISOString()
+            .slice(0, 10)}.xlsx`;
+
+        document.body.appendChild(link);
+
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        mostrarMensagem(
+          "Planilha exportada com sucesso.",
+          "sucesso"
+        );
+
+      } catch (erro) {
+        console.error(
+          "Erro ao exportar eleitores:",
+          erro
+        );
+
+        mostrarMensagem(
+          erro.message ||
+          "Erro ao exportar a planilha.",
+          "erro"
+        );
+      }
+    }
+
+    async function baixarModeloExcel() {
+      try {
+        mostrarMensagem("Preparando modelo Excel...", "sucesso");
+
+        const resposta = await fetch(
+          `${API}/modelo-excel`,
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
+
+        if (!resposta.ok) {
+          const erro = await resposta
+            .json()
+            .catch(() => ({}));
+
+          throw new Error(
+            erro.erro ||
+            "Não foi possível gerar o modelo Excel."
+          );
+        }
+
+        const arquivo = await resposta.blob();
+
+        const url = URL.createObjectURL(arquivo);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download =
+          "modelo_oficial_eleitores_sistema_lucas.xlsx";
+
+        document.body.appendChild(link);
+
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        mostrarMensagem(
+          "Modelo Excel baixado com sucesso.",
+          "sucesso"
+        );
+
+      } catch (error) {
+        console.error(
+          "Erro ao baixar modelo Excel:",
+          error
+        );
+
+        mostrarMensagem(
+          error.message ||
+          "Erro ao baixar o modelo Excel.",
+          "erro"
+        );
+      }
+    }
+
+    async function importarEleitoresExcel(evento) {
+      const input = evento.target;
+      const arquivo = input.files?.[0];
+
+      if (!arquivo) {
         return;
       }
 
-      alert(dados.mensagem || "Eleitor excluído com sucesso.");
-      carregarResumo();
-      carregarEleitores();
-    }
+      const extensaoValida = /\.(xlsx|xls)$/i.test(
+        arquivo.name
+      );
 
-    function limparFormularioEleitor() {
-      document.getElementById("formEleitor").reset();
-      document.getElementById("eleitorId").value = "";
-      document.getElementById("btnSalvarEleitor").innerText = "Salvar";
-    }
+      if (!extensaoValida) {
+        mostrarMensagem(
+          "Selecione uma planilha Excel válida.",
+          "erro"
+        );
 
-    function limparFiltrosEleitores() {
-      [
-        "filtroBusca",
-        "filtroTitulo",
-        "filtroZona",
-        "filtroSecao",
-        "filtroEscola",
-        "filtroBairro",
-        "filtroRua",
-        "filtroNumero",
-        "filtroTelefone"
-      ].forEach(id => {
-        const campo = document.getElementById(id);
+        input.value = "";
+        return;
+      }
 
-        if (campo) {
-          campo.value = "";
-        }
-      });
+      const confirmar = confirm(
+        `Deseja importar o arquivo "${arquivo.name}"?\n\n` +
+        "Registros existentes poderão ser atualizados."
+      );
 
-      carregarEleitores();
-    }
+      if (!confirmar) {
+        input.value = "";
+        return;
+      }
 
-    function toggleSidebar() {
-      const sidebar = document.querySelector(".sidebar");
-      const overlay = document.querySelector(".sidebar-overlay");
+      const formulario = new FormData();
 
-      if (sidebar) sidebar.classList.toggle("active");
-      if (overlay) overlay.classList.toggle("active");
+      formulario.append("arquivo", arquivo);
 
-      document.body.classList.toggle("menu-aberto");
-    }
-
-    function fecharSidebar() {
-      const sidebar = document.querySelector(".sidebar");
-      const overlay = document.querySelector(".sidebar-overlay");
-
-      if (sidebar) sidebar.classList.remove("active");
-      if (overlay) overlay.classList.remove("active");
-
-      document.body.classList.remove("menu-aberto");
-    }
-
-    async function sairSistema() {
       try {
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          credentials: "include"
-        });
-      } catch (erro) {
-        console.error("Erro ao sair:", erro);
-      }
+        mostrarMensagem(
+          "Importando eleitores. Aguarde...",
+          "sucesso"
+        );
 
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = "/index.html";
+        const resposta = await fetch(
+          `${API}/importar-excel`,
+          {
+            method: "POST",
+            credentials: "include",
+            body: formulario
+          }
+        );
+
+        const retorno = await resposta
+          .json()
+          .catch(() => ({}));
+
+        if (!resposta.ok) {
+          throw new Error(
+            retorno.erro ||
+            retorno.detalhe ||
+            "Não foi possível importar a planilha."
+          );
+        }
+
+        const resumo = retorno.resumo || {};
+
+        const mensagem =
+          `Importação concluída!\n\n` +
+          `Arquivo: ${resumo.arquivo || arquivo.name}\n` +
+          `Total de linhas: ${resumo.total_linhas || 0}\n` +
+          `Inseridos: ${resumo.inseridos || 0}\n` +
+          `Atualizados: ${resumo.atualizados || 0}\n` +
+          `Ignorados: ${resumo.ignorados || 0}\n` +
+          `Erros: ${resumo.erros || 0}`;
+
+        alert(mensagem);
+
+        mostrarMensagem(
+          "Planilha importada com sucesso.",
+          "sucesso"
+        );
+
+        paginaAtual = 1;
+
+        await Promise.all([
+          carregarEleitores(),
+          carregarResumo()
+        ]);
+
+      } catch (error) {
+        console.error(
+          "Erro na importação:",
+          error
+        );
+
+        mostrarMensagem(
+          error.message ||
+          "Erro ao importar a planilha.",
+          "erro"
+        );
+      } finally {
+        input.value = "";
+      }
     }
 
-    document.querySelectorAll(".menu a").forEach(link => {
-      const paginaAtual = window.location.pathname.split("/").pop();
-      const href = link.getAttribute("href");
-
-      if (href === paginaAtual) {
-        link.classList.add("active");
-      }
-
-      link.addEventListener("click", fecharSidebar);
-    });
   </script>
 
-  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
   <script src="js/app.js"></script>
 
 </body>

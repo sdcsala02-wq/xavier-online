@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mapa da Cidade | Xavier Online</title>
+  <title>Mapa da Cidade | Sala 02 - SDC</title>
 
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -101,6 +101,111 @@
         overflow-x: auto;
       }
     }
+
+    .status-mapa {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .status-ativo {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-inativo {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .status-indefinido {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .card-mod {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-mod::before {
+      content: "";
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .12);
+      left: 20px;
+      top: 26px;
+    }
+
+    .card-mod h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .card-mod strong {
+      font-size: 46px;
+      font-weight: 700;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      min-height: 42px;
+      padding: 0 13px;
+
+      border-radius: 10px;
+
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .menu a:hover {
+      background: rgba(59, 130, 246, 0.12);
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+
+    .menu a.active {
+      background: linear-gradient(135deg,
+          #2563eb,
+          #3b82f6);
+
+      color: #ffffff;
+
+      box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.25);
+    }
+
+    .menu-icone {
+      width: 20px;
+      min-width: 20px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 14px;
+    }
   </style>
 </head>
 
@@ -110,61 +215,7 @@
 
   <div class="app-layout">
 
-    <aside class="sidebar">
-
-      <div class="brand">
-        <div class="brand-icon">🏛️</div>
-
-        <div>
-          <h2>XAVIER ONLINE</h2>
-          <span>PRAIA GRANDE - SP</span>
-        </div>
-      </div>
-
-      <nav class="menu">
-
-        <a href="dashboard.html">▣ Dashboard</a>
-
-        <a href="demandas-gabinete.html">📋 Demandas</a>
-
-        <a href="nova-demanda.html">➕ Nova Demanda</a>
-
-        <a href="protocolo.html">🔎 Protocolo</a>
-
-        <a href="mapa.html">🗺️ Mapa da Cidade</a>
-
-        <a href="eleitores.html">🗳️ Eleitores</a>
-
-        <a href="relatorio-legislativo.html">📊 Relatório Legislativo</a>
-
-        <a href="interacoes.html">💬 Interações</a>
-
-        <a href="importar.html">⬆ Importar Planilha</a>
-
-        <a href="#" onclick="exportarExcel(); return false;">⬇ Exportar Excel</a>
-
-        <a href="#" onclick="exportarPDF(); return false;">📄 Exportar PDF</a>
-
-        <a href="secretarias.html">☷ Secretarias</a>
-
-        <a href="liderancas.html">👥 Lideranças</a>
-
-        <a href="configuracoes.html">⚙ Configurações</a>
-
-      </nav>
-
-      <div class="sidebar-phone">
-        <img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier">
-        <img class="celular-img" src="img/celular.png" alt="Xavier Online">
-      </div>
-
-      <div class="sidebar-footer">
-        <strong>XAVIER ONLINE</strong>
-        <p>Mapa de demandas por bairro de Praia Grande.</p>
-        <span>Versão 1.0.0</span>
-      </div>
-
-    </aside>
+    <aside class="sidebar"></aside>
 
     <main class="conteudo main-dashboard">
 
@@ -183,19 +234,30 @@
       <header class="topbar">
 
         <div>
-          <h2>🗺 Mapa da Cidade</h2>
+
+          <h1>Sala 02 - SDC</h1>
+
           <p class="subtitulo-dashboard">
-            Demandas por bairro
+            Mapa estratégico da base eleitoral por bairro
           </p>
+
         </div>
 
         <div class="topbar-right">
-          <a href="nova-demanda.html" class="btn-nova">+ Nova Demanda</a>
+          <a href="eleitores.html" class="btn-nova">
+            Ver Eleitores
+          </a>
         </div>
 
       </header>
 
       <section class="cards-modernos mapa-cards">
+
+        <div class="card-mod verde">
+          <h3>Total de Eleitores</h3>
+          <strong id="totalEleitoresMapa">0</strong>
+          <p>Eleitores cadastrados</p>
+        </div>
 
         <div class="card-mod azul">
           <h3>Total de Bairros</h3>
@@ -203,22 +265,18 @@
           <p>Bairros com registros</p>
         </div>
 
-        <div class="card-mod verde">
-          <h3>Total de Demandas</h3>
-          <strong id="totalDemandasMapa">0</strong>
-          <p>Demandas cadastradas</p>
-        </div>
-
         <div class="card-mod roxo">
           <h3>Bairro Destaque</h3>
           <strong id="bairroDestaque">-</strong>
-          <p>Maior volume de solicitações</p>
+          <p>Maior concentração de eleitores</p>
         </div>
 
         <div class="card-mod laranja">
           <h3>Selecionado</h3>
           <strong id="bairroSelecionado">-</strong>
-          <p id="infoBairroSelecionado">Bairro em análise</p>
+          <p id="infoBairroSelecionado">
+            Bairro em análise
+          </p>
         </div>
 
       </section>
@@ -254,9 +312,9 @@
           <div id="rankingBairros" class="ranking-bairros"></div>
 
           <div class="secretarias-bairro-box">
-            <h3>Secretarias no Bairro</h3>
+            <h3>Status dos Eleitores</h3>
 
-            <div id="secretariasDoBairro">
+            <div id="statusDoBairro">
               <p>Selecione um bairro no mapa.</p>
             </div>
           </div>
@@ -266,26 +324,31 @@
         <div class="painel painel-tabela demandas-bairro">
 
           <div class="painel-topo">
-            <h3 id="tituloDemandasBairro">Demandas do Bairro</h3>
-            <a href="demandas-gabinete.html">Ver todas</a>
+            <h3 id="tituloEleitoresBairro">
+              Eleitores do Bairro
+            </h3>
+
+            <a href="eleitores.html">
+              Ver todos
+            </a>
           </div>
 
           <table>
 
             <thead>
               <tr>
-                <th>Protocolo</th>
                 <th>Nome</th>
-                <th>Serviço</th>
-                <th>Secretaria</th>
+                <th>Telefone</th>
+                <th>Cidade</th>
+                <th>Local de Votação</th>
                 <th>Status</th>
               </tr>
             </thead>
 
-            <tbody id="listaDemandasBairro">
+            <tbody id="listaEleitoresBairro">
               <tr>
                 <td colspan="5">
-                  Clique em um bairro para visualizar as demandas.
+                  Clique em um bairro para visualizar os eleitores.
                 </td>
               </tr>
             </tbody>
@@ -293,7 +356,6 @@
           </table>
 
         </div>
-
       </section>
 
     </main>
@@ -301,9 +363,9 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/mapa-leaflet.js?v=7"></script>
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/mapa-leaflet.js?v=13"></script>
 
   <script>
     function toggleSidebar() {
@@ -352,6 +414,9 @@
       link.addEventListener("click", fecharSidebar);
     });
   </script>
+
+  <script src="js/sidebar.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 

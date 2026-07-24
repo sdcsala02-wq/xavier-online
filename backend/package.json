@@ -1,7 +1,7 @@
 {
-  "name": "xavier-online",
+  "name": "sistema-lucas",
   "version": "1.0.0",
-  "description": "Sistema Xavier Online",
+  "description": "Sistema Lucas",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

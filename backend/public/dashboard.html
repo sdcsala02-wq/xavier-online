@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Executivo | Xavier Online</title>
+  <title>Dashboard Executivo | SALA 02 SDC</title>
 
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/dashboard-executivo.css">
@@ -16,72 +16,7 @@
 
   <div class="app-layout">
 
-    <aside class="sidebar">
-
-      <div class="brand">
-        <div class="brand-icon">🏛️</div>
-
-        <div>
-          <h2>XAVIER ONLINE</h2>
-          <span>PRAIA GRANDE - SP</span>
-        </div>
-      </div>
-
-      <nav class="menu">
-
-        <a href="/dashboard.html">▣ Dashboard</a>
-
-        <a href="/demandas-gabinete.html">📋 Demandas</a>
-
-        <a href="/nova-demanda.html">➕ Nova Demanda</a>
-
-        <a href="/protocolo.html">🔎 Protocolo</a>
-
-        <a href="/mapa.html">🗺️ Mapa da Cidade</a>
-
-        <a href="/eleitores.html">🗳️ Eleitores</a>
-
-        <a href="/relatorio-legislativo.html">📊 Relatório Legislativo</a>
-
-        <a href="/interacoes.html">💬 Interações</a>
-
-        <a href="/importar.html">⬆ Importar Planilha</a>
-
-        <a href="#" onclick="exportarExcel(); return false;">
-          ⬇ Exportar Excel
-        </a>
-
-        <a href="#" onclick="exportarPDF(); return false;">
-          📄 Exportar PDF
-        </a>
-
-        <a href="/secretarias.html">☷ Secretarias</a>
-
-        <a href="/liderancas.html">👥 Lideranças</a>
-
-        <a href="/configuracoes.html">⚙ Configurações</a>
-
-      </nav>
-
-      <div class="sidebar-phone">
-        <img class="foto-edu" src="/img/edu.PNG" alt="Eduardo Xavier">
-
-        <img class="celular-img" src="/img/celular.png" alt="Xavier Online">
-      </div>
-
-      <div class="sidebar-footer">
-        <strong>XAVIER ONLINE</strong>
-
-        <p>
-          Gestão territorial de demandas comunitárias.
-        </p>
-
-        <span>Versão 1.0.0</span>
-      </div>
-
-    </aside>
-
-
+    <aside class="sidebar"></aside>
 
     <main class="conteudo main-dashboard">
 
@@ -96,10 +31,10 @@
       </header>
 
       <section class="dashboard-title-area">
-        <h2>Dashboard Executivo</h2>
+        <h2>SDC - Serviços de Dados e Comunicação</h2>
 
         <p class="subtitulo-dashboard">
-          Comparativo Xavier Online 2025 e 2026
+          Lucas e Cássio 2026
         </p>
 
         <span id="dataAtualDashboard"></span>
@@ -108,27 +43,27 @@
       <section class="cards-executivos">
 
         <div class="card-kpi azul">
-          <span>Demandas 2025</span>
-          <strong id="demandas2025">0</strong>
-          <small>Total de demandas</small>
+          <span>Total de Eleitores</span>
+          <strong id="totalEleitores">0</strong>
+          <small>Eleitores cadastrados</small>
         </div>
 
         <div class="card-kpi verde">
-          <span>Demandas 2026</span>
-          <strong id="demandas2026">0</strong>
-          <small>Total de demandas</small>
-        </div>
-
-        <div class="card-kpi roxo">
-          <span>Interações 2025</span>
-          <strong id="interacoes2025">0</strong>
-          <small>Total de interações</small>
+          <span>Total de Cidades</span>
+          <strong id="totalCidades">0</strong>
+          <small>Cidades com eleitores cadastrados</small>
         </div>
 
         <div class="card-kpi ciano">
-          <span>Interações 2026</span>
-          <strong id="interacoes2026">0</strong>
-          <small>Total de interações</small>
+          <span>Total de Bairros</span>
+          <strong id="bairrosAtendidos">0</strong>
+          <small>Bairros com eleitores cadastrados</small>
+        </div>
+
+        <div class="card-kpi roxo">
+          <span>Lideranças</span>
+          <strong id="totalLiderancas">0</strong>
+          <small>Lideranças cadastradas</small>
         </div>
 
       </section>
@@ -139,8 +74,8 @@
 
           <div class="painel-topo">
             <div>
-              <h3>Evolução Anual</h3>
-              <p>Comparativo consolidado por ano</p>
+              <h3>Evolução de Cadastros </h3>
+              <p>Base Eleitoral</p>
             </div>
 
             <span class="tag-bi">2025 • 2026</span>
@@ -156,8 +91,8 @@
 
           <div class="painel-topo">
             <div>
-              <h3>Status das Demandas</h3>
-              <p>Distribuição por situação</p>
+              <h3>Perfil da Base Eleitoral</h3>
+              <p>Distribuição geral dos eleitores cadastrados</p>
             </div>
           </div>
 
@@ -182,11 +117,9 @@
 
           <div class="painel-topo">
             <div>
-              <h3>Demandas por Secretaria</h3>
-              <p>Top 10 setores acionados</p>
+              <h3>Eleitores por Bairro</h3>
+              <p>Bairros com maior número de eleitores</p>
             </div>
-
-            <a href="demandas-gabinete.html">📋 Demandas</a>
           </div>
 
           <div id="rankingSecretarias" class="ranking-bi">
@@ -199,8 +132,8 @@
 
           <div class="painel-topo">
             <div>
-              <h3>Top Bairros</h3>
-              <p>Regiões com maior volume</p>
+              <h3>Eleitores por Cidade</h3>
+              <p>Distribuição geográfica da base eleitoral</p>
             </div>
           </div>
 
@@ -214,8 +147,7 @@
 
           <div class="painel-topo">
             <div>
-              <h3>Evolução Mensal</h3>
-              <p>Distribuição mensal organizada por ano</p>
+              <p>Quantidade de novos eleitores cadastrados por mês</p>
             </div>
 
             <span class="tag-bi">2025 • 2026</span>
@@ -231,27 +163,26 @@
 
           <div class="painel-topo">
             <div>
-              <h3>Últimas Demandas</h3>
-              <p>Registros mais recentes importados</p>
+              <h3>Últimos Eleitores Cadastrados</h3>
+              <p>Cadastros eleitorais adicionados recentemente</p>
             </div>
-
-            <a href="demandas-gabinete.html">📋 Demandas</a>
           </div>
 
           <table>
+
             <thead>
               <tr>
-                <th>Protocolo</th>
                 <th>Nome</th>
-                <th>Serviço</th>
-                <th>Secretaria</th>
-                <th>Status</th>
+                <th>Telefone</th>
+                <th>Bairro</th>
+                <th>Cidade</th>
+                <th>Liderança</th>
               </tr>
             </thead>
 
-            <tbody id="listaDemandas">
+            <tbody id="listaEleitores">
               <tr>
-                <td colspan="5">Nenhuma solicitação encontrada</td>
+                <td colspan="5">Nenhum eleitor cadastrado</td>
               </tr>
             </tbody>
           </table>
@@ -265,7 +196,109 @@
   </div>
 
   <script src="js/auth.js"></script>
-  <script src="js/app.js"></script>
+
+  <script>
+    function escaparHTML(valor) {
+      return String(valor ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function textoOuTraco(valor) {
+      const texto = String(valor ?? "").trim();
+      return texto || "-";
+    }
+
+    async function carregarDashboardEleitoral() {
+      try {
+        const resposta = await fetch("/api/dashboard/resumo", {
+          method: "GET",
+          credentials: "include"
+        });
+
+        const dados = await resposta.json();
+
+        if (resposta.status === 401 || resposta.status === 403) {
+          window.location.href = "/index.html";
+          return;
+        }
+
+        if (!resposta.ok || !dados.ok) {
+          throw new Error(
+            dados.mensagem || "Não foi possível carregar o dashboard."
+          );
+        }
+
+        const resumo = dados.resumo || {};
+
+        document.getElementById("totalEleitores").textContent =
+          resumo.total_eleitores ?? 0;
+
+        document.getElementById("totalCidades").textContent =
+          resumo.total_cidades ??
+          resumo.cidades_atendidas ??
+          resumo.cidades ??
+          0;
+
+        document.getElementById("bairrosAtendidos").textContent =
+          resumo.bairros_atendidos ??
+          resumo.total_bairros ??
+          0;
+
+        document.getElementById("totalLiderancas").textContent =
+          resumo.total_liderancas ?? 0;
+
+        preencherUltimosEleitores(dados.ultimos_eleitores || []);
+
+      } catch (erro) {
+        console.error("Erro ao carregar dashboard eleitoral:", erro);
+
+        const tabela = document.getElementById("listaEleitores");
+
+        if (tabela) {
+          tabela.innerHTML = `
+          <tr>
+            <td colspan="5">
+              Não foi possível carregar os dados do dashboard.
+            </td>
+          </tr>
+        `;
+        }
+      }
+    }
+
+    function preencherUltimosEleitores(eleitores) {
+      const tabela = document.getElementById("listaEleitores");
+
+      if (!tabela) {
+        return;
+      }
+
+      if (!Array.isArray(eleitores) || eleitores.length === 0) {
+        tabela.innerHTML = `
+        <tr>
+          <td colspan="5">Nenhum eleitor cadastrado</td>
+        </tr>
+      `;
+        return;
+      }
+
+      tabela.innerHTML = eleitores.map(eleitor => `
+      <tr>
+        <td>${escaparHTML(textoOuTraco(eleitor.nome))}</td>
+        <td>${escaparHTML(textoOuTraco(eleitor.telefone))}</td>
+        <td>${escaparHTML(textoOuTraco(eleitor.bairro))}</td>
+        <td>${escaparHTML(textoOuTraco(eleitor.cidade))}</td>
+        <td>-</td>
+      </tr>
+    `).join("");
+    }
+
+    carregarDashboardEleitoral();
+  </script>
 
   <script>
     function toggleSidebar() {
@@ -337,6 +370,10 @@
       dataElemento.textContent = dataAtual;
     }
   </script>
+
+  <script src="js/app.js"></script>
+  <script src="js/sidebar.js"></script>
+
 
 </body>
 

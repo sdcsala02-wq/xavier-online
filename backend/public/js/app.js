@@ -23,8 +23,6 @@ async function carregarUsuarioLogado() {
     localStorage.setItem("usuario", JSON.stringify(dados.usuario));
     localStorage.setItem("usuarioLogado", "true");
 
-    aplicarPermissoesMenu(dados.usuario.perfil);
-
     return dados.usuario;
 
   } catch (erro) {
@@ -34,91 +32,6 @@ async function carregarUsuarioLogado() {
     window.location.href = "index.html";
     return null;
   }
-}
-
-function aplicarPermissoesMenu(perfil) {
-  const perfilNormalizado = String(perfil || "").toUpperCase();
-
-  const regras = {
-    ADMIN: [
-      "dashboard.html",
-      "demandas-gabinete.html",
-      "nova-demanda.html",
-      "protocolo.html",
-      "mapa.html",
-      "eleitores.html",
-      "relatorio-legislativo.html",
-      "interacoes.html",
-      "importar.html",
-      "secretarias.html",
-      "liderancas.html",
-      "configuracoes.html"
-    ],
-
-    ASSESSOR: [
-      "dashboard.html",
-      "demandas-gabinete.html",
-      "nova-demanda.html",
-      "protocolo.html",
-      "mapa.html",
-      "eleitores.html",
-      "relatorio-legislativo.html",
-      "interacoes.html",
-      "importar.html",
-      "secretarias.html",
-      "liderancas.html"
-    ],
-
-    LIDERANCA: [
-      "dashboard.html",
-      "demandas-gabinete.html",
-      "nova-demanda.html",
-      "protocolo.html",
-      "mapa.html",
-      "liderancas.html"
-    ],
-
-    CONSULTA: [
-      "dashboard.html",
-      "protocolo.html",
-      "mapa.html",
-      "relatorio-legislativo.html"
-    ]
-  };
-
-  const permitidos = regras[perfilNormalizado] || regras.CONSULTA;
-
-  document.querySelectorAll(".menu a").forEach(link => {
-
-    const href = link.getAttribute("href");
-
-    if (!href || href === "#" || href.startsWith("http")) return;
-
-    // Remove a barra inicial (/dashboard.html -> dashboard.html)
-    const pagina = href.replace(/^\//, "");
-
-    if (!permitidos.includes(pagina)) {
-      link.style.display = "none";
-    } else {
-      link.style.display = "";
-    }
-
-  });
-}
-
-function marcarPaginaAtiva() {
-  const paginaAtual = window.location.pathname.split("/").pop();
-
-  document.querySelectorAll(".menu a").forEach(link => {
-    const href = link.getAttribute("href");
-
-    link.classList.remove("active");
-    link.classList.remove("ativo");
-
-    if (href === paginaAtual) {
-      link.classList.add("active");
-    }
-  });
 }
 
 async function logoutSistema() {
@@ -638,24 +551,35 @@ function configurarCampoTelefone() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const pagina = window.location.pathname.split("/").pop();
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+    const pagina =
+      window.location.pathname
+        .split("/")
+        .pop();
 
-  if (pagina !== "index.html" && pagina !== "") {
-    await carregarUsuarioLogado();
+    if (
+      pagina !== "index.html" &&
+      pagina !== ""
+    ) {
+      await carregarUsuarioLogado();
+    }
+
+    configurarCampoTelefone();
+
+    if (
+      document.getElementById(
+        "demandas2025"
+      ) ||
+      document.getElementById(
+        "rankingSecretarias"
+      ) ||
+      document.getElementById(
+        "evolucaoMensal"
+      )
+    ) {
+      carregarDashboard();
+    }
   }
-
-  marcarPaginaAtiva();
-
-  // Ativa a máscara e a validação do telefone
-  configurarCampoTelefone();
-
-
-  if (
-    document.getElementById("demandas2025") ||
-    document.getElementById("rankingSecretarias") ||
-    document.getElementById("evolucaoMensal")
-  ) {
-    carregarDashboard();
-  }
-});
+);

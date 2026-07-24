@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Xavier Online 2027</title>
+  <title>Lucas e Cássio 2027</title>
 
   <link rel="stylesheet" href="css/style.css">
 
@@ -18,22 +18,21 @@
     <div class="overlay"></div>
 
     <div class="conteudo centro-index">
-      <div class="logo-x">X</div>
+      <div class="logo-x">SDC</div>
 
-      <h1>Xavier Online</h1>
+      <h1>Sistema de Lideranças</h1>
 
       <p>
-        Canal Oficial de Atendimento do Gabinete
-        do Vereador Eduardo Xavier
+        Sala SDC — Serviços de Dados e Comunicação
       </p>
 
       <div class="botoes">
 
-        <a href="/nova-demanda.html" class="btn-principal">
-          Registrar Solicitação
-        </a>
+        <button type="button" class="btn-principal" onclick="abrirLogin()">
+          Acessar Plataforma
+        </button>
 
-        <button class="btn-secundario" onclick="abrirLoginTransparencia()">
+        <button type="button" class="btn-secundario" onclick="abrirLogin()">
           Painel de Transparência
         </button>
 
@@ -42,162 +41,512 @@
   </div>
 
 
-  <div id="modalLogin" class="modal-login">
+  <div id="modalLogin" class="modal-login" role="dialog" aria-modal="true" aria-labelledby="tituloLogin">
 
     <div class="login-box">
-      <button class="fechar-login" onclick="fecharLoginTransparencia()">✕</button>
 
-      <h2>Painel de Transparência</h2>
-      <p>Acesse com CPF e senha cadastrados.</p>
+      <button type="button" class="fechar-login" onclick="fecharLogin()" aria-label="Fechar login">
+        ✕
+      </button>
 
-      <label for="loginCpf">CPF</label>
-      <input type="text" id="loginCpf" maxlength="14" placeholder="000.000.000-00" autocomplete="username" required oninput="formatarCPF(this)" onkeydown="entrarComEnter(event)">
+      <h2 id="tituloLogin">
+        Acesso ao Sistema
+      </h2>
 
-      <label for="loginSenha">Senha</label>
-      <input type="password" id="loginSenha" placeholder="Digite sua senha" autocomplete="current-password" onkeydown="entrarComEnter(event)">
+      <p>
+        Entre utilizando seu CPF, login ou e-mail.
+      </p>
 
-      <button class="btn-login" onclick="validarLoginTransparencia()">
+      <label for="loginIdentificador">
+        CPF, login ou e-mail
+      </label>
+
+      <input type="text" id="loginIdentificador" placeholder="Digite seu CPF, login ou e-mail" autocomplete="username" required oninput="formatarIdentificador(this)" onkeydown="entrarComEnter(event)">
+
+      <label for="loginSenha">
+        Senha
+      </label>
+
+      <div class="campo-senha">
+
+        <input type="password" id="loginSenha" placeholder="Digite sua senha" autocomplete="current-password" required onkeydown="entrarComEnter(event)">
+
+        <button type="button" id="btnMostrarSenha" class="btn-mostrar-senha" onclick="alternarSenha()" aria-label="Mostrar senha" title="Mostrar senha">
+          👁
+        </button>
+
+      </div>
+
+      <div class="login-opcoes">
+
+        <label class="lembrar-login">
+
+          <input type="checkbox" id="lembrarLogin">
+
+          <span>Lembrar usuário</span>
+
+        </label>
+
+        <button type="button" class="link-recuperar-senha" onclick="recuperarSenha()">
+          Esqueci minha senha
+        </button>
+
+      </div>
+
+      <button type="button" id="btnEntrar" class="btn-login" onclick="validarLogin()">
         Entrar
       </button>
 
-      <small id="erroLogin"></small>
+      <div id="loadingLogin" style="display: none; margin-top: 15px; text-align: center;">
+        Entrando...
+      </div>
+
+      <small id="erroLogin" role="alert" aria-live="polite"></small>
+
     </div>
 
   </div>
 
+
   <script>
-    function abrirLoginTransparencia() {
-      document.getElementById("modalLogin").style.display = "flex";
+    const CHAVE_LOGIN_LEMBRADO = "loginLembrado";
+
+
+    function obterElemento(id) {
+      return document.getElementById(id);
+    }
+
+
+    function abrirLogin() {
+      const modal = obterElemento("modalLogin");
+      const identificador = obterElemento("loginIdentificador");
+
+      modal.style.display = "flex";
+
+      carregarLoginLembrado();
 
       setTimeout(() => {
-        document.getElementById("loginCpf").focus();
+        identificador.focus();
       }, 100);
     }
 
-    function fecharLoginTransparencia() {
-      document.getElementById("modalLogin").style.display = "none";
-      document.getElementById("erroLogin").innerText = "";
-      document.getElementById("loginCpf").value = "";
-      document.getElementById("loginSenha").value = "";
+
+    function fecharLogin() {
+      const modal = obterElemento("modalLogin");
+      const identificador = obterElemento("loginIdentificador");
+      const senha = obterElemento("loginSenha");
+      const erro = obterElemento("erroLogin");
+
+      modal.style.display = "none";
+      erro.innerText = "";
+      senha.value = "";
+
+      if (!obterElemento("lembrarLogin").checked) {
+        identificador.value = "";
+      }
+
+      redefinirCampoSenha();
+      definirCarregamento(false);
     }
+
 
     function entrarComEnter(event) {
       if (event.key === "Enter") {
-        validarLoginTransparencia();
+        event.preventDefault();
+        validarLogin();
+      }
+
+      if (event.key === "Escape") {
+        fecharLogin();
       }
     }
+
 
     function limparCPF(valor) {
       return String(valor || "").replace(/\D/g, "");
     }
 
-    function formatarCPF(input) {
-      let valor = limparCPF(input.value).slice(0, 11);
 
-      valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-      valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-      valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-
-      input.value = valor;
+    function somenteNumerosEPontuacaoCPF(valor) {
+      return /^[\d.\-\s]*$/.test(String(valor || ""));
     }
 
-    function cpfTemOnzeNumeros(cpf) {
-      return limparCPF(cpf).length === 11;
+
+    function pareceCPF(valor) {
+      const texto = String(valor || "").trim();
+      const numeros = limparCPF(texto);
+
+      return (
+        numeros.length <= 11 &&
+        somenteNumerosEPontuacaoCPF(texto)
+      );
     }
+
+
+    function formatarCPF(valor) {
+      let numeros = limparCPF(valor).slice(0, 11);
+
+      numeros = numeros.replace(
+        /(\d{3})(\d)/,
+        "$1.$2"
+      );
+
+      numeros = numeros.replace(
+        /(\d{3})(\d)/,
+        "$1.$2"
+      );
+
+      numeros = numeros.replace(
+        /(\d{3})(\d{1,2})$/,
+        "$1-$2"
+      );
+
+      return numeros;
+    }
+
+
+    function formatarIdentificador(input) {
+      const valor = input.value;
+
+      if (pareceCPF(valor)) {
+        input.value = formatarCPF(valor);
+      }
+    }
+
+
+    function normalizarIdentificador(valor) {
+      const texto = String(valor || "").trim();
+
+      if (
+        limparCPF(texto).length === 11 &&
+        somenteNumerosEPontuacaoCPF(texto)
+      ) {
+        return limparCPF(texto);
+      }
+
+      return texto.toLowerCase();
+    }
+
+
+    function alternarSenha() {
+      const campoSenha = obterElemento("loginSenha");
+      const botao = obterElemento("btnMostrarSenha");
+
+      const senhaEstaVisivel =
+        campoSenha.type === "text";
+
+      campoSenha.type =
+        senhaEstaVisivel
+          ? "password"
+          : "text";
+
+      botao.innerText =
+        senhaEstaVisivel
+          ? "👁"
+          : "🙈";
+
+      botao.setAttribute(
+        "aria-label",
+        senhaEstaVisivel
+          ? "Mostrar senha"
+          : "Ocultar senha"
+      );
+
+      botao.setAttribute(
+        "title",
+        senhaEstaVisivel
+          ? "Mostrar senha"
+          : "Ocultar senha"
+      );
+    }
+
+
+    function redefinirCampoSenha() {
+      const campoSenha = obterElemento("loginSenha");
+      const botao = obterElemento("btnMostrarSenha");
+
+      campoSenha.type = "password";
+      botao.innerText = "👁";
+      botao.setAttribute("aria-label", "Mostrar senha");
+      botao.setAttribute("title", "Mostrar senha");
+    }
+
+
+    function salvarLoginLembrado(identificador) {
+      const lembrar = obterElemento("lembrarLogin").checked;
+
+      if (lembrar) {
+        localStorage.setItem(
+          CHAVE_LOGIN_LEMBRADO,
+          identificador
+        );
+
+        return;
+      }
+
+      localStorage.removeItem(CHAVE_LOGIN_LEMBRADO);
+    }
+
+
+    function carregarLoginLembrado() {
+      const identificadorSalvo =
+        localStorage.getItem(CHAVE_LOGIN_LEMBRADO);
+
+      const campoIdentificador =
+        obterElemento("loginIdentificador");
+
+      const checkbox =
+        obterElemento("lembrarLogin");
+
+      if (identificadorSalvo) {
+        campoIdentificador.value =
+          identificadorSalvo;
+
+        checkbox.checked = true;
+
+        obterElemento("loginSenha").focus();
+        return;
+      }
+
+      checkbox.checked = false;
+    }
+
+
+    function definirCarregamento(carregando) {
+      const botao = obterElemento("btnEntrar");
+      const loading = obterElemento("loadingLogin");
+      const identificador = obterElemento("loginIdentificador");
+      const senha = obterElemento("loginSenha");
+
+      botao.disabled = carregando;
+      identificador.disabled = carregando;
+      senha.disabled = carregando;
+
+      botao.innerText =
+        carregando
+          ? "Aguarde..."
+          : "Entrar";
+
+      loading.style.display =
+        carregando
+          ? "block"
+          : "none";
+    }
+
+
+    function recuperarSenha() {
+      const identificador =
+        obterElemento("loginIdentificador").value.trim();
+
+      const erro =
+        obterElemento("erroLogin");
+
+      erro.innerText = "";
+
+      if (!identificador) {
+        erro.innerText =
+          "Informe seu CPF, login ou e-mail para solicitar a redefinição da senha.";
+
+        obterElemento("loginIdentificador").focus();
+        return;
+      }
+
+      erro.innerText =
+        "A recuperação de senha será disponibilizada na próxima etapa.";
+    }
+
 
     function redirecionarPorPerfil(perfil) {
-      const perfilNormalizado = String(perfil || "").toUpperCase();
-
-      if (perfilNormalizado === "ADMIN") {
-        window.location.href = "dashboard.html";
-        return;
-      }
-
-      if (perfilNormalizado === "ASSESSOR") {
-        window.location.href = "dashboard.html";
-        return;
-      }
+      const perfilNormalizado =
+        String(perfil || "").trim().toUpperCase();
 
       if (perfilNormalizado === "LIDERANCA") {
         window.location.href = "mapa.html";
         return;
       }
 
-      if (perfilNormalizado === "CONSULTA") {
-        window.location.href = "dashboard.html";
-        return;
-      }
-
       window.location.href = "dashboard.html";
     }
 
-    async function validarLoginTransparencia() {
-      const cpf = document.getElementById("loginCpf").value.trim();
-      const senha = document.getElementById("loginSenha").value.trim();
-      const erro = document.getElementById("erroLogin");
+
+    async function validarLogin() {
+      const campoIdentificador =
+        obterElemento("loginIdentificador");
+
+      const campoSenha =
+        obterElemento("loginSenha");
+
+      const erro =
+        obterElemento("erroLogin");
+
+      const identificadorDigitado =
+        campoIdentificador.value.trim();
+
+      const identificador =
+        normalizarIdentificador(
+          identificadorDigitado
+        );
+
+      const senha =
+        campoSenha.value;
 
       erro.innerText = "";
 
-      if (!cpf || !senha) {
-        erro.innerText = "Informe CPF e senha.";
+      if (!identificador || !senha) {
+        erro.innerText =
+          "Informe seu CPF, login ou e-mail e sua senha.";
+
         return;
       }
 
-      if (!cpfTemOnzeNumeros(cpf)) {
-        erro.innerText = "CPF inválido. Informe 11 números.";
-        return;
-      }
+      definirCarregamento(true);
 
       try {
-        const resposta = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            cpf: limparCPF(cpf),
-            senha: senha
-          })
-        });
+        const resposta = await fetch(
+          "/api/auth/login",
+          {
+            method: "POST",
 
-        const dados = await resposta.json();
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            credentials: "include",
+
+            body: JSON.stringify({
+              identificador: identificador,
+              senha: senha
+            })
+          }
+        );
+
+        let dados = {};
+
+        try {
+          dados = await resposta.json();
+        } catch (erroLeitura) {
+          dados = {};
+        }
 
         if (!resposta.ok || !dados.ok) {
-          erro.innerText = dados.mensagem || "CPF ou senha inválidos.";
+          erro.innerText =
+            dados.mensagem ||
+            "Usuário ou senha inválidos.";
+
+          campoSenha.value = "";
+          campoSenha.focus();
+
           return;
         }
 
-        localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+        salvarLoginLembrado(
+          identificadorDigitado
+        );
 
-        redirecionarPorPerfil(dados.usuario.perfil);
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify(dados.usuario)
+        );
 
-      } catch (e) {
-        console.error(e);
-        erro.innerText = "Erro ao conectar com o servidor.";
+        if (
+          dados.precisa_alterar_senha ||
+          dados.usuario?.precisa_alterar_senha
+        ) {
+          window.location.href =
+            "alterar-senha.html";
+
+          return;
+        }
+
+        redirecionarPorPerfil(
+          dados.usuario?.perfil
+        );
+
+      } catch (erroRequisicao) {
+        console.error(
+          "Erro ao realizar login:",
+          erroRequisicao
+        );
+
+        erro.innerText =
+          "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.";
+
+      } finally {
+        definirCarregamento(false);
       }
     }
 
+
     async function verificarSessaoAtiva() {
       try {
-        const resposta = await fetch("/api/auth/me", {
-          method: "GET",
-          credentials: "include"
-        });
+        const resposta = await fetch(
+          "/api/auth/me",
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
+
+        if (!resposta.ok) {
+          localStorage.removeItem("usuario");
+          return;
+        }
 
         const dados = await resposta.json();
 
-        if (resposta.ok && dados.ok && dados.usuario) {
-          localStorage.setItem("usuario", JSON.stringify(dados.usuario));
-          redirecionarPorPerfil(dados.usuario.perfil);
+        if (
+          dados.ok &&
+          dados.usuario
+        ) {
+          localStorage.setItem(
+            "usuario",
+            JSON.stringify(dados.usuario)
+          );
+
+          if (
+            dados.usuario.precisa_alterar_senha
+          ) {
+            window.location.href =
+              "alterar-senha.html";
+
+            return;
+          }
+
+          redirecionarPorPerfil(
+            dados.usuario.perfil
+          );
         }
 
       } catch (erro) {
+        console.error(
+          "Erro ao verificar sessão:",
+          erro
+        );
+
         localStorage.removeItem("usuario");
       }
     }
 
-    verificarSessaoAtiva();
+
+    window.addEventListener(
+      "click",
+      function (event) {
+        const modal = obterElemento("modalLogin");
+
+        if (event.target === modal) {
+          fecharLogin();
+        }
+      }
+    );
+
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+        carregarLoginLembrado();
+        verificarSessaoAtiva();
+      }
+    );
   </script>
 
   <script src="js/app.js"></script>

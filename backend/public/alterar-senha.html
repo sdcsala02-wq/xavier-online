@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Alterar Senha | Lucas e Cássio 2027</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+      background:
+        radial-gradient(circle at top left,
+          rgba(37, 99, 235, 0.22),
+          transparent 38%),
+        linear-gradient(145deg,
+          #071126,
+          #0d1730);
+      font-family: "Poppins", sans-serif;
+    }
+
+    .pagina-alterar-senha {
+      width: 100%;
+      max-width: 490px;
+    }
+
+    .senha-card {
+      padding: 34px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 24px;
+      background: rgba(10, 18, 39, 0.96);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    .senha-marca {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .senha-logo {
+      display: flex;
+      width: 54px;
+      height: 54px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      background:
+        linear-gradient(135deg,
+          #2563eb,
+          #0ea5e9);
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      box-shadow:
+        0 12px 28px rgba(37, 99, 235, 0.28);
+    }
+
+    .senha-marca strong {
+      display: block;
+      color: #f8fafc;
+      font-size: 15px;
+    }
+
+    .senha-marca span {
+      color: #8294af;
+      font-size: 11px;
+    }
+
+    .senha-card h1 {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 25px;
+    }
+
+    .senha-card>p {
+      margin: 8px 0 28px;
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .grupo-campo {
+      margin-bottom: 18px;
+    }
+
+    .grupo-campo label {
+      display: block;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .campo-senha-alteracao {
+      position: relative;
+    }
+
+    .campo-senha-alteracao input {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 48px 0 14px;
+      box-sizing: border-box;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 12px;
+      outline: none;
+      background: rgba(15, 23, 42, 0.78);
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 13px;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .campo-senha-alteracao input:focus {
+      border-color: #3b82f6;
+      box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.13);
+    }
+
+    .campo-senha-alteracao button {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      width: 36px;
+      height: 36px;
+      transform: translateY(-50%);
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .requisitos-senha {
+      margin: 4px 0 22px;
+      padding: 15px;
+      border: 1px solid rgba(148, 163, 184, 0.13);
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.52);
+    }
+
+    .requisitos-senha strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-size: 11px;
+    }
+
+    .requisitos-senha ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #7f91ac;
+      font-size: 10px;
+      line-height: 1.8;
+    }
+
+    .btn-salvar-senha {
+      width: 100%;
+      min-height: 49px;
+      border: none;
+      border-radius: 13px;
+      background:
+        linear-gradient(135deg,
+          #2563eb,
+          #0ea5e9);
+      color: white;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .btn-salvar-senha:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-salvar-senha:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+      transform: none;
+    }
+
+    .mensagem-senha {
+      display: none;
+      margin-top: 17px;
+      padding: 12px 14px;
+      border-radius: 11px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .mensagem-senha.erro {
+      display: block;
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      background: rgba(127, 29, 29, 0.22);
+      color: #fca5a5;
+    }
+
+    .mensagem-senha.sucesso {
+      display: block;
+      border: 1px solid rgba(74, 222, 128, 0.24);
+      background: rgba(20, 83, 45, 0.25);
+      color: #86efac;
+    }
+
+    .btn-sair {
+      width: 100%;
+      margin-top: 14px;
+      border: none;
+      background: transparent;
+      color: #8294af;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 14px;
+      }
+
+      .senha-card {
+        padding: 25px 20px;
+        border-radius: 19px;
+      }
+
+      .senha-card h1 {
+        font-size: 21px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="pagina-alterar-senha">
+
+    <section class="senha-card">
+
+      <div class="senha-marca">
+
+        <div class="senha-logo">
+          SDC
+        </div>
+
+        <div>
+          <strong>
+            Sistema de Lideranças
+          </strong>
+
+          <span>
+            Lucas e Cássio 2027
+          </span>
+        </div>
+
+      </div>
+
+      <h1>
+        Altere sua senha
+      </h1>
+
+      <p>
+        Por segurança, você precisa cadastrar uma nova senha antes de acessar o sistema.
+      </p>
+
+      <div class="grupo-campo">
+
+        <label for="senhaAtual">
+          Senha atual
+        </label>
+
+        <div class="campo-senha-alteracao">
+
+          <input type="password" id="senhaAtual" placeholder="Digite sua senha atual" autocomplete="current-password" onkeydown="enviarComEnter(event)">
+
+          <button type="button" onclick="alternarVisibilidade('senhaAtual', this)" aria-label="Mostrar senha atual">
+            👁
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="grupo-campo">
+
+        <label for="novaSenha">
+          Nova senha
+        </label>
+
+        <div class="campo-senha-alteracao">
+
+          <input type="password" id="novaSenha" placeholder="Digite a nova senha" autocomplete="new-password" onkeydown="enviarComEnter(event)">
+
+          <button type="button" onclick="alternarVisibilidade('novaSenha', this)" aria-label="Mostrar nova senha">
+            👁
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="grupo-campo">
+
+        <label for="confirmarSenha">
+          Confirmar nova senha
+        </label>
+
+        <div class="campo-senha-alteracao">
+
+          <input type="password" id="confirmarSenha" placeholder="Digite novamente a nova senha" autocomplete="new-password" onkeydown="enviarComEnter(event)">
+
+          <button type="button" onclick="alternarVisibilidade('confirmarSenha', this)" aria-label="Mostrar confirmação da senha">
+            👁
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="requisitos-senha">
+
+        <strong>
+          A nova senha deve conter:
+        </strong>
+
+        <ul>
+          <li>Pelo menos 8 caracteres.</li>
+          <li>Uma letra maiúscula.</li>
+          <li>Uma letra minúscula.</li>
+          <li>Um número.</li>
+          <li>Um caractere especial.</li>
+        </ul>
+
+      </div>
+
+      <button type="button" id="btnSalvarSenha" class="btn-salvar-senha" onclick="alterarSenha()">
+        Salvar nova senha
+      </button>
+
+      <div id="mensagemSenha" class="mensagem-senha" role="alert" aria-live="polite"></div>
+
+      <button type="button" class="btn-sair" onclick="sairDoSistema()">
+        Sair e voltar ao login
+      </button>
+
+    </section>
+
+  </main>
+
+  <script>
+    function obterElemento(id) {
+      return document.getElementById(id);
+    }
+
+
+    function alternarVisibilidade(
+      idCampo,
+      botao
+    ) {
+      const campo =
+        obterElemento(idCampo);
+
+      const visivel =
+        campo.type === "text";
+
+      campo.type =
+        visivel
+          ? "password"
+          : "text";
+
+      botao.innerText =
+        visivel
+          ? "👁"
+          : "🙈";
+    }
+
+
+    function enviarComEnter(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        alterarSenha();
+      }
+    }
+
+
+    function mostrarMensagem(
+      texto,
+      tipo
+    ) {
+      const mensagem =
+        obterElemento("mensagemSenha");
+
+      mensagem.innerText = texto;
+      mensagem.className =
+        `mensagem-senha ${tipo}`;
+    }
+
+
+    function limparMensagem() {
+      const mensagem =
+        obterElemento("mensagemSenha");
+
+      mensagem.innerText = "";
+      mensagem.className =
+        "mensagem-senha";
+    }
+
+
+    function definirCarregamento(
+      carregando
+    ) {
+      const botao =
+        obterElemento("btnSalvarSenha");
+
+      const senhaAtual =
+        obterElemento("senhaAtual");
+
+      const novaSenha =
+        obterElemento("novaSenha");
+
+      const confirmarSenha =
+        obterElemento("confirmarSenha");
+
+      botao.disabled = carregando;
+      senhaAtual.disabled = carregando;
+      novaSenha.disabled = carregando;
+      confirmarSenha.disabled = carregando;
+
+      botao.innerText =
+        carregando
+          ? "Salvando..."
+          : "Salvar nova senha";
+    }
+
+
+    function validarNovaSenha(
+      novaSenha
+    ) {
+      if (novaSenha.length < 8) {
+        return "A nova senha deve possuir pelo menos 8 caracteres.";
+      }
+
+      if (!/[A-Z]/.test(novaSenha)) {
+        return "A nova senha deve possuir uma letra maiúscula.";
+      }
+
+      if (!/[a-z]/.test(novaSenha)) {
+        return "A nova senha deve possuir uma letra minúscula.";
+      }
+
+      if (!/\d/.test(novaSenha)) {
+        return "A nova senha deve possuir pelo menos um número.";
+      }
+
+      if (!/[^A-Za-z0-9]/.test(novaSenha)) {
+        return "A nova senha deve possuir um caractere especial.";
+      }
+
+      return null;
+    }
+
+
+    async function alterarSenha() {
+      limparMensagem();
+
+      const senhaAtual =
+        obterElemento("senhaAtual").value;
+
+      const novaSenha =
+        obterElemento("novaSenha").value;
+
+      const confirmarSenha =
+        obterElemento("confirmarSenha").value;
+
+      if (
+        !senhaAtual ||
+        !novaSenha ||
+        !confirmarSenha
+      ) {
+        mostrarMensagem(
+          "Preencha todos os campos.",
+          "erro"
+        );
+
+        return;
+      }
+
+      if (novaSenha !== confirmarSenha) {
+        mostrarMensagem(
+          "A nova senha e a confirmação não são iguais.",
+          "erro"
+        );
+
+        return;
+      }
+
+      if (senhaAtual === novaSenha) {
+        mostrarMensagem(
+          "A nova senha deve ser diferente da senha atual.",
+          "erro"
+        );
+
+        return;
+      }
+
+      const erroValidacao =
+        validarNovaSenha(
+          novaSenha
+        );
+
+      if (erroValidacao) {
+        mostrarMensagem(
+          erroValidacao,
+          "erro"
+        );
+
+        return;
+      }
+
+      definirCarregamento(true);
+
+      try {
+        const resposta = await fetch(
+          "/api/auth/alterar-senha",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            credentials: "include",
+
+            body: JSON.stringify({
+              senhaAtual,
+              novaSenha,
+              confirmarSenha
+            })
+          }
+        );
+
+        let dados = {};
+
+        try {
+          dados = await resposta.json();
+        } catch (erroLeitura) {
+          dados = {};
+        }
+
+        if (!resposta.ok || !dados.ok) {
+          mostrarMensagem(
+            dados.mensagem ||
+            "Não foi possível alterar a senha.",
+            "erro"
+          );
+
+          return;
+        }
+
+        mostrarMensagem(
+          dados.mensagem ||
+          "Senha alterada com sucesso.",
+          "sucesso"
+        );
+
+        obterElemento("senhaAtual").value = "";
+        obterElemento("novaSenha").value = "";
+        obterElemento("confirmarSenha").value = "";
+
+        const usuarioSalvo =
+          localStorage.getItem("usuario");
+
+        if (usuarioSalvo) {
+          try {
+            const usuario =
+              JSON.parse(usuarioSalvo);
+
+            usuario.precisa_alterar_senha =
+              false;
+
+            localStorage.setItem(
+              "usuario",
+              JSON.stringify(usuario)
+            );
+          } catch (erroLocalStorage) {
+            localStorage.removeItem(
+              "usuario"
+            );
+          }
+        }
+
+        setTimeout(() => {
+          window.location.href =
+            "dashboard.html";
+        }, 1400);
+
+      } catch (erro) {
+        console.error(
+          "Erro ao alterar senha:",
+          erro
+        );
+
+        mostrarMensagem(
+          "Erro ao conectar com o servidor.",
+          "erro"
+        );
+
+      } finally {
+        definirCarregamento(false);
+      }
+    }
+
+
+    async function verificarSessao() {
+      try {
+        const resposta = await fetch(
+          "/api/auth/me",
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
+
+        if (!resposta.ok) {
+          window.location.href =
+            "index.html";
+
+          return;
+        }
+
+        const dados =
+          await resposta.json();
+
+        if (
+          !dados.ok ||
+          !dados.usuario
+        ) {
+          window.location.href =
+            "index.html";
+
+          return;
+        }
+
+        localStorage.setItem(
+          "usuario",
+          JSON.stringify(
+            dados.usuario
+          )
+        );
+
+        if (
+          !dados.usuario
+            .precisa_alterar_senha
+        ) {
+          window.location.href =
+            "dashboard.html";
+        }
+
+      } catch (erro) {
+        console.error(
+          "Erro ao verificar sessão:",
+          erro
+        );
+
+        window.location.href =
+          "index.html";
+      }
+    }
+
+
+    async function sairDoSistema() {
+      try {
+        await fetch(
+          "/api/auth/logout",
+          {
+            method: "POST",
+            credentials: "include"
+          }
+        );
+
+      } catch (erro) {
+        console.error(
+          "Erro ao sair:",
+          erro
+        );
+
+      } finally {
+        localStorage.removeItem(
+          "usuario"
+        );
+
+        window.location.href =
+          "index.html";
+      }
+    }
+
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+        verificarSessao();
+
+        obterElemento(
+          "senhaAtual"
+        ).focus();
+      }
+    );
+  </script>
+
+</body>
+
+</html>
