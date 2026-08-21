@@ -198,7 +198,7 @@
   </div>
 
   <script>
-    const API_URL = "/api/demandas";
+    const API_URL = "/api/demandas-gabinete";
 
     async function buscarProtocolo() {
       const protocolo = document.getElementById("inputProtocolo").value.trim();
@@ -261,7 +261,7 @@
 
             <div class="modal-item descricao">
               <strong>Serviço</strong>
-              ${demanda.servico || "-"}
+              ${demanda.assunto || demanda.servico || "-"}
             </div>
 
             <div class="modal-item descricao">

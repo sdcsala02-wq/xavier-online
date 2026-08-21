@@ -1,5 +1,5 @@
 const API_LIDERANCAS_XAVIER = "/api/liderancas";
-const API_DEMANDAS_LIDERANCAS_XAVIER = "/api/demandas";
+const API_DEMANDAS_LIDERANCAS_XAVIER = "/api/demandas-gabinete";
 
 let liderancaEditandoId = null;
 
