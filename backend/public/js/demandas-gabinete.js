@@ -69,7 +69,7 @@ function montarTabelaDemandasGabinete(dados) {
       <td>${item.nome || "-"}</td>
       <td>${item.telefone || "-"}</td>
       <td>${item.bairro || "-"}</td>
-      <td>${item.demanda || "-"}</td>
+      <td>${item.assunto || item.demanda || "-"}</td>
       <td>${item.secretaria || "-"}</td>
       <td>${item.status || "-"}</td>
     </tr>

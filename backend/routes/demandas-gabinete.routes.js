@@ -910,6 +910,8 @@ router.get("/", async (req, res) => {
         dg.cidadao_id,
         dg.protocolo,
         dg.assunto,
+        dg.assunto AS demanda,
+        dg.assunto AS servico,
         dg.descricao,
         dg.secretaria,
         dg.bairro,
@@ -953,6 +955,430 @@ router.get("/", async (req, res) => {
   }
 });
 
+const PERFIS_EDICAO_DEMANDAS = new Set([
+  "ADMIN",
+  "ASSESSOR"
+]);
+
+const STATUS_CANONICOS_DEMANDA = {
+  RECEBIDA: "RECEBIDA",
+  ENCAMINHADA: "ENCAMINHADA",
+  PENDENTE: "PENDENTE",
+  "EM ANDAMENTO": "EM ANDAMENTO",
+  CONCLUIDO: "CONCLUÍDO",
+  CONCLUIDA: "CONCLUÍDO",
+  RESOLVIDA: "CONCLUÍDO",
+  RESOLVIDO: "CONCLUÍDO",
+  RECESSO: "Recesso"
+};
+
+function exigirEdicaoDemandas(req, res, next) {
+  const perfil = normalizarTexto(
+    req.usuario?.perfil
+  );
+
+  if (!PERFIS_EDICAO_DEMANDAS.has(perfil)) {
+    return res.status(403).json({
+      erro:
+        "Seu perfil não possui permissão para editar demandas."
+    });
+  }
+
+  next();
+}
+
+function campoInformado(objeto, campo) {
+  return Object.prototype.hasOwnProperty.call(
+    objeto,
+    campo
+  );
+}
+
+function normalizarStatusParaBanco(valor) {
+  const chave = normalizarTexto(valor);
+
+  return (
+    STATUS_CANONICOS_DEMANDA[chave] ||
+    null
+  );
+}
+
+router.put(
+  "/:id",
+  exigirEdicaoDemandas,
+  async (req, res) => {
+    const id = Number(req.params.id);
+
+    if (
+      !Number.isInteger(id) ||
+      id <= 0
+    ) {
+      return res.status(400).json({
+        erro: "ID da demanda inválido."
+      });
+    }
+
+    const dados = req.body || {};
+
+    const possuiCampoEditavel = [
+      "nome",
+      "telefone",
+      "bairro",
+      "endereco",
+      "assunto",
+      "servico",
+      "secretaria",
+      "status",
+      "descricao"
+    ].some((campo) =>
+      campoInformado(dados, campo)
+    );
+
+    if (!possuiCampoEditavel) {
+      return res.status(400).json({
+        erro:
+          "Nenhum campo válido foi informado para atualização."
+      });
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const resultadoAtual =
+        await client.query(
+          `
+          SELECT
+            id,
+            cidadao_id
+          FROM demandas_gabinete
+          WHERE id = $1
+          FOR UPDATE
+          `,
+          [id]
+        );
+
+      if (
+        resultadoAtual.rows.length === 0
+      ) {
+        await client.query("ROLLBACK");
+
+        return res.status(404).json({
+          erro: "Demanda não encontrada."
+        });
+      }
+
+      const demandaAtual =
+        resultadoAtual.rows[0];
+
+      const setsDemanda = [];
+      const valoresDemanda = [id];
+
+      function adicionarCampoDemanda(
+        coluna,
+        valor
+      ) {
+        valoresDemanda.push(valor);
+
+        setsDemanda.push(
+          `${coluna} = $${valoresDemanda.length}`
+        );
+      }
+
+      if (
+        campoInformado(dados, "assunto") ||
+        campoInformado(dados, "servico")
+      ) {
+        const assunto =
+          campoInformado(dados, "assunto")
+            ? dados.assunto
+            : dados.servico;
+
+        adicionarCampoDemanda(
+          "assunto",
+          limitarTexto(assunto, 200)
+        );
+      }
+
+      if (
+        campoInformado(
+          dados,
+          "descricao"
+        )
+      ) {
+        adicionarCampoDemanda(
+          "descricao",
+          limitarTexto(
+            dados.descricao,
+            5000
+          )
+        );
+      }
+
+      if (
+        campoInformado(
+          dados,
+          "secretaria"
+        )
+      ) {
+        adicionarCampoDemanda(
+          "secretaria",
+          limitarTexto(
+            dados.secretaria,
+            200
+          )
+        );
+      }
+
+      if (
+        campoInformado(
+          dados,
+          "bairro"
+        )
+      ) {
+        adicionarCampoDemanda(
+          "bairro",
+          limitarTexto(
+            dados.bairro,
+            150
+          )
+        );
+      }
+
+      if (
+        campoInformado(
+          dados,
+          "status"
+        )
+      ) {
+        const status =
+          normalizarStatusParaBanco(
+            dados.status
+          );
+
+        if (!status) {
+          await client.query(
+            "ROLLBACK"
+          );
+
+          return res.status(400).json({
+            erro: "Status inválido.",
+            statusPermitidos: [
+              "RECEBIDA",
+              "ENCAMINHADA",
+              "PENDENTE",
+              "EM ANDAMENTO",
+              "CONCLUÍDO",
+              "Recesso"
+            ]
+          });
+        }
+
+        adicionarCampoDemanda(
+          "status",
+          status
+        );
+      }
+
+      if (setsDemanda.length > 0) {
+        await client.query(
+          `
+          UPDATE demandas_gabinete
+          SET
+            ${setsDemanda.join(", ")}
+          WHERE id = $1
+          `,
+          valoresDemanda
+        );
+      }
+
+      const camposCidadaoSolicitados =
+        [
+          "nome",
+          "telefone",
+          "endereco",
+          "bairro"
+        ].some((campo) =>
+          campoInformado(
+            dados,
+            campo
+          )
+        );
+
+      if (
+        camposCidadaoSolicitados &&
+        !demandaAtual.cidadao_id
+      ) {
+        await client.query("ROLLBACK");
+
+        return res.status(409).json({
+          erro:
+            "A demanda não possui cidadão vinculado para atualização cadastral."
+        });
+      }
+
+      if (
+        camposCidadaoSolicitados
+      ) {
+        const setsCidadao = [];
+        const valoresCidadao = [
+          demandaAtual.cidadao_id
+        ];
+
+        function adicionarCampoCidadao(
+          coluna,
+          valor
+        ) {
+          valoresCidadao.push(valor);
+
+          setsCidadao.push(
+            `${coluna} = $${valoresCidadao.length}`
+          );
+        }
+
+        if (
+          campoInformado(
+            dados,
+            "nome"
+          )
+        ) {
+          adicionarCampoCidadao(
+            "nome",
+            limitarTexto(
+              dados.nome,
+              200
+            )
+          );
+        }
+
+        if (
+          campoInformado(
+            dados,
+            "telefone"
+          )
+        ) {
+          adicionarCampoCidadao(
+            "telefone",
+            limitarTexto(
+              limparTelefone(
+                dados.telefone
+              ),
+              30
+            )
+          );
+        }
+
+        if (
+          campoInformado(
+            dados,
+            "endereco"
+          )
+        ) {
+          adicionarCampoCidadao(
+            "endereco",
+            limitarTexto(
+              dados.endereco,
+              300
+            )
+          );
+        }
+
+        if (
+          campoInformado(
+            dados,
+            "bairro"
+          )
+        ) {
+          adicionarCampoCidadao(
+            "bairro",
+            limitarTexto(
+              dados.bairro,
+              150
+            )
+          );
+        }
+
+        if (
+          setsCidadao.length > 0
+        ) {
+          await client.query(
+            `
+            UPDATE cidadaos
+            SET
+              ${setsCidadao.join(", ")}
+            WHERE id = $1
+            `,
+            valoresCidadao
+          );
+        }
+      }
+
+      const atualizado =
+        await client.query(
+          `
+          SELECT
+            dg.id,
+            dg.cidadao_id,
+            dg.protocolo,
+            dg.assunto,
+            dg.assunto AS demanda,
+            dg.assunto AS servico,
+            dg.descricao,
+            dg.secretaria,
+            dg.bairro,
+            dg.status,
+            dg.data,
+            dg.criado_em,
+            dg.hash_registro,
+            c.nome,
+            c.telefone,
+            c.endereco,
+            c.bairro AS bairro_cidadao
+          FROM demandas_gabinete dg
+          LEFT JOIN cidadaos c
+            ON c.id = dg.cidadao_id
+          WHERE dg.id = $1
+          `,
+          [id]
+        );
+
+      await client.query("COMMIT");
+
+      res.json({
+        mensagem:
+          "Demanda atualizada com sucesso.",
+        demanda:
+          atualizado.rows[0]
+      });
+    } catch (error) {
+      try {
+        await client.query(
+          "ROLLBACK"
+        );
+      } catch (erroRollback) {
+        console.error(
+          "Erro no rollback da edição:",
+          erroRollback
+        );
+      }
+
+      console.error(
+        "Erro ao atualizar demanda:",
+        error
+      );
+
+      res.status(500).json({
+        erro:
+          "Erro ao atualizar demanda.",
+        detalhe:
+          error.message
+      });
+    } finally {
+      client.release();
+    }
+  }
+);
 //Parte 03
 
 router.post(

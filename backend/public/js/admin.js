@@ -147,14 +147,65 @@ function aplicarFiltros() {
 }
 
 async function atualizarStatus(id, status) {
-  const demanda = demandasAdmin.find(d => Number(d.id) === Number(id));
+  const demanda = demandasAdmin.find(
+    (d) =>
+      Number(d.id) === Number(id)
+  );
 
   if (!demanda) return;
 
-  demanda.status = status;
+  try {
+    const resposta = await fetch(
+      `${API_ADMIN}/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          status
+        })
+      }
+    );
 
-  renderizarTabela(demandasAdmin);
-  atualizarCards(demandasAdmin);
+    const retorno =
+      await resposta.json();
+
+    if (!resposta.ok) {
+      alert(
+        retorno.erro ||
+        retorno.mensagem ||
+        "Erro ao atualizar status."
+      );
+
+      await carregarAdmin();
+      return;
+    }
+
+    if (retorno.demanda) {
+      Object.assign(
+        demanda,
+        retorno.demanda
+      );
+    }
+
+    renderizarTabela(
+      demandasAdmin
+    );
+
+    atualizarCards(
+      demandasAdmin
+    );
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "Erro ao conectar com a API."
+    );
+
+    await carregarAdmin();
+  }
 }
 
 function abrirModal(id) {
@@ -250,7 +301,7 @@ async function salvarEdicaoDemanda(event) {
     telefone: document.getElementById("editarTelefone").value,
     bairro: document.getElementById("editarBairro").value,
     endereco: document.getElementById("editarEndereco").value,
-    servico: document.getElementById("editarServico").value,
+    assunto: document.getElementById("editarServico").value,
     secretaria: document.getElementById("editarSecretaria").value,
     status: document.getElementById("editarStatus").value,
     descricao: document.getElementById("editarDescricao").value
