@@ -4,3 +4,4 @@ backend/node_modules/
 .env.local
 npm-debug.log
 .DS_Store
+databaseschema.sql.txt.bkp
