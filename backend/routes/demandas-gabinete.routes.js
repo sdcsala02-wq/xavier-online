@@ -224,21 +224,43 @@ function obterAnoDaAba(nomeAba) {
   const nomeNormalizado =
     normalizarTexto(nomeAba);
 
-  if (
-    nomeNormalizado === "DEMANDAS 2025" ||
-    nomeNormalizado === "2025"
-  ) {
-    return 2025;
+  const correspondencia =
+    nomeNormalizado.match(
+      /\b(\d{4})\b/
+    );
+
+  if (!correspondencia) {
+    return null;
   }
 
+  const ano =
+    Number(correspondencia[1]);
+
   if (
-    nomeNormalizado === "DEMANDAS 2026" ||
-    nomeNormalizado === "2026"
+    !Number.isInteger(ano) ||
+    ano < 2000 ||
+    ano > 2999
   ) {
-    return 2026;
+    return null;
   }
 
-  return null;
+  const somenteAno =
+    nomeNormalizado ===
+    String(ano);
+
+  const abaDemandas =
+    nomeNormalizado.startsWith(
+      "DEMANDAS"
+    );
+
+  if (
+    !somenteAno &&
+    !abaDemandas
+  ) {
+    return null;
+  }
+
+  return ano;
 }
 
 function linhaEstaVazia(dados) {

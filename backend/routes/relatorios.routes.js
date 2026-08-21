@@ -36,6 +36,30 @@ function converterData(valor) {
   return null;
 }
 
+function extrairAnoDaAba(nomeAba) {
+  const correspondencia =
+    String(nomeAba || "")
+      .match(
+        /(?:^|\D)(\d{4})(?:\D|$)/
+      );
+
+  if (!correspondencia) {
+    return null;
+  }
+
+  const ano =
+    Number(correspondencia[1]);
+
+  if (
+    !Number.isInteger(ano) ||
+    ano < 2000 ||
+    ano > 2999
+  ) {
+    return null;
+  }
+
+  return ano;
+}
 function localizarCampo(linha, nomes) {
   for (const nome of nomes) {
     const chave = Object.keys(linha).find(k =>
@@ -186,8 +210,15 @@ router.post("/atividades/importar", upload.single("arquivo"), async (req, res) =
         const numero = limpar(localizarCampo(linha, ["NUMERO", "NÚMERO"]));
 
         const ano = data_atividade
-          ? Number(data_atividade.substring(0, 4))
-          : 2026;
+          ? Number(
+              data_atividade.substring(
+                0,
+                4
+              )
+            )
+          : extrairAnoDaAba(
+              nomeAba
+            );
 
         if (!data_atividade && !propositura && !secretaria && !bairro) {
           totalIgnorado++;

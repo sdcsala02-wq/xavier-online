@@ -22,6 +22,12 @@ function extrairProtocolo(texto) {
     : null;
 }
 
+function gerarExemploProtocolo() {
+  const anoAtual =
+    new Date().getFullYear();
+
+  return `XAV-${anoAtual}-000059`;
+}
 function ehSaudacao(texto) {
   const mensagem = normalizarMensagem(texto);
 
@@ -110,7 +116,7 @@ async function responderOpcaoMenu({
         `Certo. Para consultar sua solicitação, envie o número completo do protocolo.
 
 Exemplo:
-XAV-2026-000059`
+${gerarExemploProtocolo()}`
       );
       return true;
 
@@ -199,7 +205,7 @@ async function responderPorProtocolo(
 Verifique se o número foi digitado corretamente.
 
 Exemplo:
-XAV-2026-000059
+${gerarExemploProtocolo()}
 
 Para voltar ao início, digite MENU.`
     );

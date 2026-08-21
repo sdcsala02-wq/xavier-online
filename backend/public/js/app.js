@@ -139,7 +139,11 @@ async function logoutSistema() {
 
 async function carregarDashboard() {
   try {
-    const [resDemandas, resInteracoes, resLista] = await Promise.all([
+    const [
+      resDemandas,
+      resInteracoes,
+      resLista
+    ] = await Promise.all([
       fetch(`${API_DEMANDAS}/resumo`, {
         credentials: "include",
         cache: "no-store"
@@ -174,64 +178,48 @@ async function carregarDashboard() {
       );
     }
 
-    const demandas = await resDemandas.json();
-    const interacoes = await resInteracoes.json();
-    const retornoLista = await resLista.json();
+    const demandas =
+      await resDemandas.json();
 
-    const lista = Array.isArray(retornoLista)
-      ? retornoLista
-      : Array.isArray(retornoLista.dados)
-        ? retornoLista.dados
-        : Array.isArray(retornoLista.demandas)
-          ? retornoLista.demandas
-          : [];
+    const interacoes =
+      await resInteracoes.json();
 
-    const evolucaoMensal = Array.isArray(demandas.evolucaoMensal)
-      ? demandas.evolucaoMensal
-      : [];
+    const retornoLista =
+      await resLista.json();
 
-    const demandas2025 = evolucaoMensal
-      .filter(item => Number(item.ano) === 2025)
-      .reduce(
-        (total, item) => total + Number(item.total || 0),
-        0
+    const lista =
+      Array.isArray(retornoLista)
+        ? retornoLista
+        : Array.isArray(retornoLista.dados)
+          ? retornoLista.dados
+          : Array.isArray(retornoLista.demandas)
+            ? retornoLista.demandas
+            : [];
+
+    const evolucaoMensal =
+      Array.isArray(demandas.evolucaoMensal)
+        ? demandas.evolucaoMensal
+        : [];
+
+    const interacoesPorAno =
+      Array.isArray(interacoes.porAno)
+        ? interacoes.porAno
+        : [];
+
+    const resumoAnual =
+      consolidarResumoAnualDashboard(
+        evolucaoMensal,
+        interacoesPorAno
       );
 
-    const demandas2026 = evolucaoMensal
-      .filter(item => Number(item.ano) === 2026)
-      .reduce(
-        (total, item) => total + Number(item.total || 0),
-        0
-      );
-
-    const interacoes2025 = totalAno(
-      interacoes.porAno,
-      2025
+    renderizarCardsAnuais(
+      resumoAnual
     );
 
-    const interacoes2026 = totalAno(
-      interacoes.porAno,
-      2026
-    );
-
-    preencherTexto(
-      "demandas2025",
-      demandas2025
-    );
-
-    preencherTexto(
-      "demandas2026",
-      demandas2026
-    );
-
-    preencherTexto(
-      "interacoes2025",
-      interacoes2025
-    );
-
-    preencherTexto(
-      "interacoes2026",
-      interacoes2026
+    atualizarPeriodoDashboard(
+      resumoAnual.map(
+        (item) => item.ano
+      )
     );
 
     preencherTexto(
@@ -239,16 +227,14 @@ async function carregarDashboard() {
       demandas.total || 0
     );
 
-    montarEvolucaoAnual([
-      {
-        ano: 2025,
-        total: demandas2025 + interacoes2025
-      },
-      {
-        ano: 2026,
-        total: demandas2026 + interacoes2026
-      }
-    ]);
+    montarEvolucaoAnual(
+      resumoAnual.map((item) => ({
+        ano: item.ano,
+        total:
+          item.demandas +
+          item.interacoes
+      }))
+    );
 
     montarGraficoStatus(
       Array.isArray(demandas.porStatus)
@@ -259,7 +245,9 @@ async function carregarDashboard() {
 
     montarRanking(
       "rankingSecretarias",
-      Array.isArray(demandas.porSecretaria)
+      Array.isArray(
+        demandas.porSecretaria
+      )
         ? demandas.porSecretaria
         : [],
       "secretaria"
@@ -267,7 +255,9 @@ async function carregarDashboard() {
 
     montarRanking(
       "rankingBairros",
-      Array.isArray(demandas.topBairros)
+      Array.isArray(
+        demandas.topBairros
+      )
         ? demandas.topBairros
         : [],
       "bairro"
@@ -281,15 +271,16 @@ async function carregarDashboard() {
       lista
     );
 
-    console.log("Dashboard carregado:", {
-      demandas2025,
-      demandas2026,
-      interacoes2025,
-      interacoes2026,
-      totalDemandas: demandas.total,
-      registros: lista.length
-    });
-
+    console.log(
+      "Dashboard carregado:",
+      {
+        anos: resumoAnual,
+        totalDemandas:
+          demandas.total,
+        registros:
+          lista.length
+      }
+    );
   } catch (erro) {
     console.error(
       "Erro ao carregar dashboard:",
@@ -298,7 +289,173 @@ async function carregarDashboard() {
   }
 }
 
+function consolidarResumoAnualDashboard(
+  evolucaoMensal,
+  interacoesPorAno
+) {
+  const mapa = new Map();
 
+  function garantirAno(valor) {
+    const ano = Number(valor);
+
+    if (
+      !Number.isInteger(ano) ||
+      ano < 2000 ||
+      ano > 2999
+    ) {
+      return null;
+    }
+
+    if (!mapa.has(ano)) {
+      mapa.set(ano, {
+        ano,
+        demandas: 0,
+        interacoes: 0
+      });
+    }
+
+    return mapa.get(ano);
+  }
+
+  evolucaoMensal.forEach(
+    (item) => {
+      const registro =
+        garantirAno(item.ano);
+
+      if (!registro) return;
+
+      registro.demandas +=
+        Number(item.total || 0);
+    }
+  );
+
+  interacoesPorAno.forEach(
+    (item) => {
+      const registro =
+        garantirAno(item.ano);
+
+      if (!registro) return;
+
+      registro.interacoes +=
+        Number(item.total || 0);
+    }
+  );
+
+  garantirAno(
+    new Date().getFullYear()
+  );
+
+  return [...mapa.values()]
+    .sort(
+      (a, b) =>
+        a.ano - b.ano
+    );
+}
+
+function renderizarCardsAnuais(
+  dados
+) {
+  const container =
+    document.getElementById(
+      "cardsExecutivos"
+    );
+
+  if (!container) return;
+
+  if (!dados.length) {
+    container.innerHTML =
+      "<p>Nenhum indicador anual disponível.</p>";
+
+    return;
+  }
+
+  const coresDemandas = [
+    "azul",
+    "verde",
+    "ciano",
+    "roxo"
+  ];
+
+  const coresInteracoes = [
+    "roxo",
+    "ciano",
+    "verde",
+    "azul"
+  ];
+
+  container.innerHTML =
+    dados.flatMap(
+      (item, index) => [
+        `
+        <div class="card-kpi ${coresDemandas[index % coresDemandas.length]}">
+          <span>Demandas ${item.ano}</span>
+          <strong>${formatarNumero(item.demandas)}</strong>
+          <small>Total de demandas</small>
+        </div>
+        `,
+        `
+        <div class="card-kpi ${coresInteracoes[index % coresInteracoes.length]}">
+          <span>Interações ${item.ano}</span>
+          <strong>${formatarNumero(item.interacoes)}</strong>
+          <small>Total de interações</small>
+        </div>
+        `
+      ]
+    ).join("");
+}
+
+function atualizarPeriodoDashboard(
+  anos
+) {
+  const lista =
+    [...new Set(
+      anos
+        .map(Number)
+        .filter(Number.isInteger)
+    )].sort(
+      (a, b) => a - b
+    );
+
+  let periodo =
+    "Sem período disponível";
+
+  if (lista.length === 1) {
+    periodo =
+      String(lista[0]);
+  }
+
+  if (
+    lista.length > 1 &&
+    lista.length <= 4
+  ) {
+    periodo =
+      lista.join(" • ");
+  }
+
+  if (lista.length > 4) {
+    periodo =
+      `${lista[0]} a ${lista[lista.length - 1]}`;
+  }
+
+  const subtitulo =
+    document.querySelector(
+      ".subtitulo-dashboard"
+    );
+
+  if (subtitulo) {
+    subtitulo.textContent =
+      `Visão consolidada por período: ${periodo}`;
+  }
+
+  document
+    .querySelectorAll(
+      ".periodo-dashboard"
+    )
+    .forEach((elemento) => {
+      elemento.textContent =
+        periodo;
+    });
+}
 
 function totalAno(lista, ano) {
   if (!Array.isArray(lista)) return 0;
@@ -406,63 +563,162 @@ function montarRanking(id, dados, campoNome) {
 }
 
 function montarEvolucaoMensal(dados) {
-  const container = document.getElementById("evolucaoMensal");
+  const container =
+    document.getElementById(
+      "evolucaoMensal"
+    );
+
   if (!container) return;
 
-  const anosPermitidos = ["2025", "2026"];
   const mesesOrdem = [
-    "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",
-    "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"
+    "JANEIRO",
+    "FEVEREIRO",
+    "MARÇO",
+    "ABRIL",
+    "MAIO",
+    "JUNHO",
+    "JULHO",
+    "AGOSTO",
+    "SETEMBRO",
+    "OUTUBRO",
+    "NOVEMBRO",
+    "DEZEMBRO"
   ];
 
-  const porAno = { "2025": [], "2026": [] };
+  const anosSet =
+    new Set(
+      dados
+        .map(
+          (item) =>
+            Number(item.ano)
+        )
+        .filter(
+          (ano) =>
+            Number.isInteger(ano) &&
+            ano >= 2000 &&
+            ano <= 2999
+        )
+    );
 
-  dados.forEach(item => {
-    const ano = String(item.ano);
-    if (!anosPermitidos.includes(ano)) return;
+  anosSet.add(
+    new Date().getFullYear()
+  );
+
+  const anos =
+    [...anosSet].sort(
+      (a, b) => a - b
+    );
+
+  const porAno =
+    Object.fromEntries(
+      anos.map(
+        (ano) => [
+          String(ano),
+          []
+        ]
+      )
+    );
+
+  dados.forEach((item) => {
+    const ano =
+      String(
+        Number(item.ano)
+      );
+
+    if (!porAno[ano]) {
+      return;
+    }
 
     porAno[ano].push({
-      mes: String(item.mes || "").toUpperCase(),
-      total: Number(item.total || 0)
+      mes:
+        String(
+          item.mes || ""
+        ).toUpperCase(),
+
+      total:
+        Number(
+          item.total || 0
+        )
     });
   });
 
-  container.innerHTML = anosPermitidos.map(ano => {
-    const meses = porAno[ano].sort(
-      (a, b) => mesesOrdem.indexOf(a.mes) - mesesOrdem.indexOf(b.mes)
-    );
+  container.innerHTML =
+    anos.map((anoNumero) => {
+      const ano =
+        String(anoNumero);
 
-    const totalAno = meses.reduce((acc, item) => acc + item.total, 0);
-    const maiorMes = Math.max(...meses.map(item => item.total), 1);
+      const meses =
+        porAno[ano].sort(
+          (a, b) =>
+            mesesOrdem.indexOf(
+              a.mes
+            ) -
+            mesesOrdem.indexOf(
+              b.mes
+            )
+        );
 
-    return `
-      <div class="evolucao-card-ano">
-        <div class="evolucao-card-topo">
-          <div>
-            <h4>${ano}</h4>
-            <span>Total anual</span>
-          </div>
-          <strong>${formatarNumero(totalAno)}</strong>
-        </div>
+      const totalAno =
+        meses.reduce(
+          (acc, item) =>
+            acc + item.total,
+          0
+        );
 
-        <div class="evolucao-meses">
-          ${meses.map(item => {
-      const largura = (item.total / maiorMes) * 100;
+      const maiorMes =
+        Math.max(
+          ...meses.map(
+            (item) =>
+              item.total
+          ),
+          1
+        );
 
-      return `
-              <div class="evolucao-mes-linha">
-                <span>${abreviarMes(item.mes)}</span>
-                <div class="evolucao-barra">
-                  <b style="width:${largura}%"></b>
+      const linhas =
+        meses.length
+          ? meses.map((item) => {
+              const largura =
+                (
+                  item.total /
+                  maiorMes
+                ) * 100;
+
+              return `
+                <div class="evolucao-mes-linha">
+                  <span>${abreviarMes(item.mes)}</span>
+                  <div class="evolucao-barra">
+                    <b style="width:${largura}%"></b>
+                  </div>
+                  <strong>${formatarNumero(item.total)}</strong>
                 </div>
-                <strong>${formatarNumero(item.total)}</strong>
+              `;
+            }).join("")
+          : `
+              <div class="evolucao-mes-linha">
+                <span>SEM DADOS</span>
+                <div class="evolucao-barra">
+                  <b style="width:0%"></b>
+                </div>
+                <strong>0</strong>
               </div>
             `;
-    }).join("")}
+
+      return `
+        <div class="evolucao-card-ano">
+          <div class="evolucao-card-topo">
+            <div>
+              <h4>${ano}</h4>
+              <span>Total anual</span>
+            </div>
+            <strong>${formatarNumero(totalAno)}</strong>
+          </div>
+
+          <div class="evolucao-meses">
+            ${linhas}
+          </div>
         </div>
-      </div>
-    `;
-  }).join("");
+      `;
+    }).join("");
 }
 
 function montarUltimasDemandas(demandas) {
@@ -652,7 +908,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   if (
-    document.getElementById("demandas2025") ||
+    document.getElementById("cardsExecutivos") ||
     document.getElementById("rankingSecretarias") ||
     document.getElementById("evolucaoMensal")
   ) {
