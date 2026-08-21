@@ -1,4 +1,4 @@
-const API_DEMANDAS_GABINETE = "http://localhost:3000/api/demandas-gabinete";
+const API_DEMANDAS_GABINETE = "/api/demandas-gabinete";
 
 async function carregarDemandasGabinete() {
   const tbody = document.getElementById("listaDemandasGabinete");

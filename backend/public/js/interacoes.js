@@ -1,4 +1,4 @@
-const API_INTERACOES = "http://localhost:3000/api/interacoes";
+const API_INTERACOES = "/api/interacoes";
 
 let interacoesAtuais = [];
 

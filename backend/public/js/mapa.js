@@ -1,4 +1,4 @@
-const API_URL_MAPA = "http://localhost:3000/api/demandas-gabinete";
+const API_URL_MAPA = "/api/demandas-gabinete";
 
 const bairrosPraiaGrande = [
   "Boqueirão",

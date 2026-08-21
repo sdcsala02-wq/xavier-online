@@ -1,4 +1,4 @@
-const API_ATIVIDADES = "http://localhost:3000/api/relatorios/atividades/dashboard";
+const API_ATIVIDADES = "/api/relatorios/atividades/dashboard";
 
 async function carregarRelatorioLegislativo() {
   try {
