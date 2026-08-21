@@ -1,317 +1,549 @@
 const API_INTERACOES = "/api/interacoes";
 
-let interacoesAtuais = [];
+const NOMES_MESES = [
+  "",
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro"
+];
 
-document.addEventListener("DOMContentLoaded", () => {
-  carregarInteracoes();
-  configurarFiltrosInteracoes();
-  configurarImportadorExcel();
-});
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+    configurarFiltrosInteracoes();
+    configurarImportadorExcel();
+    carregarInteracoes();
+  }
+);
 
 function configurarFiltrosInteracoes() {
-  [
-    "filtroAno",
-    "filtroMes",
-    "filtroBairro",
-    "filtroSecretaria",
-    "filtroStatus",
-    "filtroContato",
-    "filtroNome"
-  ].forEach(id => {
-    const campo = document.getElementById(id);
+  ["filtroAno", "filtroMes"].forEach(
+    (id) => {
+      const campo =
+        document.getElementById(id);
 
-    if (campo) {
-      campo.addEventListener("change", carregarInteracoes);
-      campo.addEventListener("input", debounce(carregarInteracoes, 400));
+      if (campo) {
+        campo.addEventListener(
+          "change",
+          carregarInteracoes
+        );
+      }
     }
-  });
+  );
 }
 
 function configurarImportadorExcel() {
-  const inputArquivo = document.getElementById("arquivoExcel");
+  const input =
+    document.getElementById(
+      "arquivoExcel"
+    );
 
-  if (!inputArquivo) return;
+  if (!input) return;
 
-  inputArquivo.addEventListener("change", importarExcelInteligente);
+  input.addEventListener(
+    "change",
+    importarExcelInteracoes
+  );
 }
 
 function montarQueryInteracoes() {
-  const params = new URLSearchParams();
+  const params =
+    new URLSearchParams();
 
-  const filtros = {
-    ano: document.getElementById("filtroAno")?.value,
-    mes: document.getElementById("filtroMes")?.value,
-    bairro: document.getElementById("filtroBairro")?.value,
-    secretaria: document.getElementById("filtroSecretaria")?.value,
-    status: document.getElementById("filtroStatus")?.value,
-    contato: document.getElementById("filtroContato")?.value,
-    nome: document.getElementById("filtroNome")?.value
-  };
+  const ano =
+    document.getElementById(
+      "filtroAno"
+    )?.value;
 
-  Object.entries(filtros).forEach(([chave, valor]) => {
-    if (valor && String(valor).trim() !== "") {
-      params.append(chave, String(valor).trim());
-    }
-  });
+  const mes =
+    document.getElementById(
+      "filtroMes"
+    )?.value;
+
+  if (ano) {
+    params.set("ano", ano);
+  }
+
+  if (mes) {
+    params.set("mes", mes);
+  }
 
   return params.toString();
 }
 
 async function carregarInteracoes() {
-  const tbody = document.getElementById("listaInteracoes");
+  const tbody =
+    document.getElementById(
+      "listaInteracoes"
+    );
 
   try {
-    const query = montarQueryInteracoes();
+    const query =
+      montarQueryInteracoes();
 
-    const urlLista = query
-      ? `${API_INTERACOES}?${query}`
-      : API_INTERACOES;
+    const sufixo =
+      query ? `?${query}` : "";
 
-    const urlResumo = query
-      ? `${API_INTERACOES}/resumo?${query}`
-      : `${API_INTERACOES}/resumo`;
+    const [
+      respostaLista,
+      respostaResumo
+    ] = await Promise.all([
+      fetch(
+        `${API_INTERACOES}${sufixo}`
+      ),
+      fetch(
+        `${API_INTERACOES}/resumo${sufixo}`
+      )
+    ]);
 
-    const respostaLista = await fetch(urlLista);
-    const lista = await respostaLista.json();
+    if (
+      !respostaLista.ok ||
+      !respostaResumo.ok
+    ) {
+      throw new Error(
+        "A API de interações retornou erro."
+      );
+    }
 
-    const respostaResumo = await fetch(urlResumo);
-    const resumo = await respostaResumo.json();
+    const lista =
+      await respostaLista.json();
 
-    interacoesAtuais = lista;
+    const resumo =
+      await respostaResumo.json();
 
-    atualizarCardsInteracoes(lista, resumo);
-    montarResumoAnoInteracoes(resumo.porAno || []);
-    montarTabelaInteracoes(lista);
+    preencherFiltroAnos(
+      resumo.anosDisponiveis || []
+    );
 
+    atualizarCardsInteracoes(
+      lista,
+      resumo
+    );
+
+    montarResumoAnoInteracoes(
+      resumo.porAno || []
+    );
+
+    montarTabelaInteracoes(
+      lista
+    );
   } catch (erro) {
-    console.error("Erro ao carregar interações:", erro);
+    console.error(
+      "Erro ao carregar interações:",
+      erro
+    );
 
     if (tbody) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="9">Erro ao carregar interações.</td>
+          <td colspan="3">
+            Erro ao carregar interações.
+          </td>
         </tr>
       `;
     }
   }
 }
 
-function atualizarCardsInteracoes(lista, resumo) {
-  const bairros = new Set(lista.map(item => normalizar(item.bairro)));
-  const secretarias = new Set(lista.map(item => normalizar(item.secretaria)));
+function preencherFiltroAnos(
+  anosBanco
+) {
+  const select =
+    document.getElementById(
+      "filtroAno"
+    );
 
-  document.getElementById("totalInteracoes").innerText = resumo.total || 0;
+  if (!select) return;
 
-  document.getElementById("anoSelecionadoCard").innerText =
-    document.getElementById("filtroAno")?.value || "Todos";
+  const selecionado =
+    select.value;
 
-  document.getElementById("totalBairrosInteracoes").innerText =
-    [...bairros].filter(Boolean).length;
+  const anoAtual =
+    new Date().getFullYear();
 
-  document.getElementById("totalSecretariasInteracoes").innerText =
-    [...secretarias].filter(Boolean).length;
+  const anos = new Set(
+    [
+      ...anosBanco.map(Number),
+      anoAtual,
+      anoAtual + 1
+    ].filter(Number.isInteger)
+  );
+
+  const ordenados =
+    [...anos].sort(
+      (a, b) => b - a
+    );
+
+  select.innerHTML =
+    '<option value="">Todos os anos</option>';
+
+  ordenados.forEach((ano) => {
+    const option =
+      document.createElement(
+        "option"
+      );
+
+    option.value =
+      String(ano);
+
+    option.textContent =
+      String(ano);
+
+    select.appendChild(option);
+  });
+
+  if (
+    selecionado &&
+    anos.has(Number(selecionado))
+  ) {
+    select.value = selecionado;
+  }
 }
 
-function montarResumoAnoInteracoes(porAno) {
-  const container = document.getElementById("resumoAnoInteracoes");
+function atualizarCardsInteracoes(
+  lista,
+  resumo
+) {
+  const total =
+    Number(resumo.total || 0);
+
+  const ano =
+    document.getElementById(
+      "filtroAno"
+    )?.value || "Todos";
+
+  const mesesComDados =
+    lista.length;
+
+  const maior =
+    lista.reduce(
+      (atual, item) => {
+        if (
+          !atual ||
+          Number(item.quantidade) >
+            Number(
+              atual.quantidade
+            )
+        ) {
+          return item;
+        }
+
+        return atual;
+      },
+      null
+    );
+
+  definirTexto(
+    "totalInteracoes",
+    total
+  );
+
+  definirTexto(
+    "anoSelecionadoCard",
+    ano
+  );
+
+  definirTexto(
+    "totalMesesInteracoes",
+    mesesComDados
+  );
+
+  definirTexto(
+    "maiorMesInteracoes",
+    maior
+      ? `${maior.mesNome}: ${maior.quantidade}`
+      : "-"
+  );
+}
+
+function montarResumoAnoInteracoes(
+  porAno
+) {
+  const container =
+    document.getElementById(
+      "resumoAnoInteracoes"
+    );
 
   if (!container) return;
 
+  container.replaceChildren();
+
   if (!porAno.length) {
-    container.innerHTML = "<p>Nenhum dado encontrado.</p>";
+    const p =
+      document.createElement("p");
+
+    p.textContent =
+      "Nenhum dado encontrado.";
+
+    container.appendChild(p);
     return;
   }
 
-  const maior = Math.max(...porAno.map(item => Number(item.total)));
+  const maior =
+    Math.max(
+      ...porAno.map(
+        (item) =>
+          Number(item.total)
+      )
+    );
 
-  container.innerHTML = porAno.map(item => {
-    const total = Number(item.total);
-    const largura = maior ? (total / maior) * 100 : 0;
+  porAno.forEach((item) => {
+    const total =
+      Number(item.total);
 
-    return `
-      <div class="ranking-item">
-        <span>${item.ano || "Sem ano"}</span>
-        <div class="barra-ranking">
-          <b style="width:${largura}%"></b>
-        </div>
-        <strong>${total}</strong>
-      </div>
-    `;
-  }).join("");
+    const largura =
+      maior
+        ? (total / maior) * 100
+        : 0;
+
+    const linha =
+      document.createElement(
+        "div"
+      );
+
+    linha.className =
+      "ranking-item";
+
+    const ano =
+      document.createElement(
+        "span"
+      );
+
+    ano.textContent =
+      String(item.ano);
+
+    const barra =
+      document.createElement(
+        "div"
+      );
+
+    barra.className =
+      "barra-ranking";
+
+    const preenchimento =
+      document.createElement("b");
+
+    preenchimento.style.width =
+      `${largura}%`;
+
+    barra.appendChild(
+      preenchimento
+    );
+
+    const valor =
+      document.createElement(
+        "strong"
+      );
+
+    valor.textContent =
+      String(total);
+
+    linha.append(
+      ano,
+      barra,
+      valor
+    );
+
+    container.appendChild(
+      linha
+    );
+  });
 }
 
-function montarTabelaInteracoes(lista) {
-  const tbody = document.getElementById("listaInteracoes");
+function montarTabelaInteracoes(
+  lista
+) {
+  const tbody =
+    document.getElementById(
+      "listaInteracoes"
+    );
 
   if (!tbody) return;
 
+  tbody.replaceChildren();
+
   if (!lista.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="9">Nenhuma interação encontrada.</td>
-      </tr>
-    `;
+    const tr =
+      document.createElement("tr");
+
+    const td =
+      document.createElement("td");
+
+    td.colSpan = 3;
+    td.textContent =
+      "Nenhuma interação encontrada.";
+
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+
     return;
   }
 
-  tbody.innerHTML = lista.map(item => `
-    <tr>
-      <td>${formatarData(item.data)}</td>
-      <td>${item.hora || "-"}</td>
-      <td>${item.nome || "-"}</td>
-      <td>${item.telefone || "-"}</td>
-      <td>${item.bairro || "-"}</td>
-      <td title="${escaparHtml(item.demanda || "")}">
-        ${limitarTexto(item.demanda || "-", 80)}
-      </td>
-      <td>${item.secretaria || "-"}</td>
-      <td>
-        <span class="status-badge ${classeStatusInteracao(item.status)}">
-          ${item.status || "-"}
-        </span>
-      </td>
-      <td>${item.contato || "-"}</td>
-    </tr>
-  `).join("");
+  lista.forEach((item) => {
+    const tr =
+      document.createElement("tr");
+
+    [
+      item.ano,
+      item.mesNome ||
+        nomeMes(item.mes),
+      item.quantidade
+    ].forEach((valor) => {
+      const td =
+        document.createElement(
+          "td"
+        );
+
+      td.textContent =
+        String(
+          valor ?? "-"
+        );
+
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
 }
 
 function limparFiltrosInteracoes() {
-  [
-    "filtroAno",
-    "filtroMes",
-    "filtroBairro",
-    "filtroSecretaria",
-    "filtroStatus",
-    "filtroContato",
-    "filtroNome"
-  ].forEach(id => {
-    const campo = document.getElementById(id);
-    if (campo) campo.value = "";
-  });
+  const ano =
+    document.getElementById(
+      "filtroAno"
+    );
+
+  const mes =
+    document.getElementById(
+      "filtroMes"
+    );
+
+  if (ano) ano.value = "";
+  if (mes) mes.value = "";
 
   carregarInteracoes();
 }
 
 function exportarExcelInteracoes() {
-  const query = montarQueryInteracoes();
-  const url = query
-    ? `${API_INTERACOES}/exportar/excel?${query}`
-    : `${API_INTERACOES}/exportar/excel`;
+  const query =
+    montarQueryInteracoes();
 
-  window.open(url, "_blank");
+  const url =
+    query
+      ? `${API_INTERACOES}/exportar/excel?${query}`
+      : `${API_INTERACOES}/exportar/excel`;
+
+  window.open(
+    url,
+    "_blank",
+    "noopener"
+  );
 }
 
 function exportarPdfInteracoes() {
-  const query = montarQueryInteracoes();
-  const url = query
-    ? `${API_INTERACOES}/exportar/pdf?${query}`
-    : `${API_INTERACOES}/exportar/pdf`;
+  const query =
+    montarQueryInteracoes();
 
-  window.open(url, "_blank");
+  const url =
+    query
+      ? `${API_INTERACOES}/exportar/pdf?${query}`
+      : `${API_INTERACOES}/exportar/pdf`;
+
+  window.open(
+    url,
+    "_blank",
+    "noopener"
+  );
 }
 
-async function importarExcelInteligente(event) {
-  const arquivo = event.target.files[0];
+async function importarExcelInteracoes(
+  event
+) {
+  const arquivo =
+    event.target.files[0];
 
   if (!arquivo) return;
 
-  const formData = new FormData();
-  formData.append("arquivo", arquivo);
+  const formData =
+    new FormData();
+
+  formData.append(
+    "arquivo",
+    arquivo
+  );
 
   try {
-    const resposta = await fetch(
-      `${API_INTERACOES}/importar-inteligente`,
-      {
-        method: "POST",
-        body: formData
-      }
-    );
+    const resposta =
+      await fetch(
+        `${API_INTERACOES}/importar`,
+        {
+          method: "POST",
+          body: formData
+        }
+      );
 
-    const dados = await resposta.json();
+    const dados =
+      await resposta.json();
 
     event.target.value = "";
 
     if (!resposta.ok) {
-      alert(dados.erro || "Erro ao importar planilha.");
+      alert(
+        dados.erro ||
+        "Erro ao importar planilha."
+      );
+
       return;
     }
 
     alert(
-      `Importação inteligente concluída!\n\n` +
+      "Importação concluída!\n\n" +
       `Arquivo: ${dados.arquivo}\n` +
-      `Lote: ${dados.lote}\n\n` +
-      `Cidadãos: ${dados.cidadaos}\n` +
-      `Demandas: ${dados.demandas}\n` +
-      `Histórico: ${dados.historico}\n` +
-      `Estatísticas: ${dados.estatisticas}`
+      `Linhas: ${dados.totalLinhas}\n` +
+      `Novos: ${dados.totalInserido}\n` +
+      `Atualizados: ${dados.totalAtualizado}\n` +
+      `Sem alteração: ${dados.totalSemAlteracao}\n` +
+      `Ignorados: ${dados.totalIgnorado}`
     );
 
     carregarInteracoes();
-
   } catch (erro) {
-    console.error("Erro ao importar planilha:", erro);
-    alert("Erro ao conectar com a API de importação.");
+    console.error(
+      "Erro ao importar planilha:",
+      erro
+    );
+
+    alert(
+      "Erro ao conectar com a API de importação."
+    );
   }
 }
 
-function formatarData(data) {
-  if (!data) return "-";
+function definirTexto(
+  id,
+  valor
+) {
+  const elemento =
+    document.getElementById(id);
 
-  const d = new Date(data);
-
-  if (Number.isNaN(d.getTime())) return data;
-
-  return d.toLocaleDateString("pt-BR");
-}
-
-function normalizar(texto) {
-  return String(texto || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
-
-function classeStatusInteracao(status) {
-  const texto = String(status || "").toUpperCase();
-
-  if (texto === "CONCLUÍDO" || texto === "CONCLUIDO" || texto === "RESOLVIDA") {
-    return "status-ok";
+  if (elemento) {
+    elemento.textContent =
+      String(valor);
   }
-
-  if (texto === "PENDENTE") {
-    return "status-analise";
-  }
-
-  if (texto === "EM ANDAMENTO") {
-    return "status-execucao";
-  }
-
-  return "status-padrao";
 }
 
-function limitarTexto(texto, limite = 80) {
-  const valor = String(texto || "");
-
-  if (valor.length <= limite) return valor;
-
-  return `${valor.substring(0, limite)}...`;
-}
-
-function escaparHtml(texto) {
-  return String(texto || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function debounce(funcao, tempo = 400) {
-  let timer;
-
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => funcao(...args), tempo);
-  };
+function nomeMes(mes) {
+  return (
+    NOMES_MESES[
+      Number(mes)
+    ] || "-"
+  );
 }

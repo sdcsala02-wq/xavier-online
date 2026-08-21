@@ -236,24 +236,22 @@
 
           <select id="filtroAno">
             <option value="">Todos os anos</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
           </select>
 
           <select id="filtroMes">
             <option value="">Todos os meses</option>
-            <option value="JANEIRO">Janeiro</option>
-            <option value="FEVEREIRO">Fevereiro</option>
-            <option value="MARÇO">Março</option>
-            <option value="ABRIL">Abril</option>
-            <option value="MAIO">Maio</option>
-            <option value="JUNHO">Junho</option>
-            <option value="JULHO">Julho</option>
-            <option value="AGOSTO">Agosto</option>
-            <option value="SETEMBRO">Setembro</option>
-            <option value="OUTUBRO">Outubro</option>
-            <option value="NOVEMBRO">Novembro</option>
-            <option value="DEZEMBRO">Dezembro</option>
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
           </select>
 
           <input type="file" id="arquivoExcel" accept=".xlsx,.xls" style="display:none">
@@ -262,11 +260,11 @@
             📥 Importar Excel
           </button>
 
-          <input type="text" id="filtroBairro" placeholder="Bairro">
-          <input type="text" id="filtroSecretaria" placeholder="Secretaria">
-          <input type="text" id="filtroStatus" placeholder="Status">
-          <input type="text" id="filtroContato" placeholder="Contato">
-          <input type="text" id="filtroNome" placeholder="Nome">
+
+
+
+
+
 
           <button class="btn-nova" onclick="carregarInteracoes()">Filtrar</button>
           <button class="btn-limpar" onclick="limparFiltrosInteracoes()">Limpar</button>
@@ -290,28 +288,22 @@
       <section class="painel painel-tabela">
 
         <div class="painel-topo">
-          <h3>Registros de Interações</h3>
+          <h3>Interações Mensais</h3>
         </div>
 
         <table>
 
           <thead>
             <tr>
-              <th>Data</th>
-              <th>Hora</th>
-              <th>Nome</th>
-              <th>Telefone</th>
-              <th>Bairro</th>
-              <th>Demanda</th>
-              <th>Secretaria</th>
-              <th>Status</th>
-              <th>Contato</th>
+              <th>Ano</th>
+              <th>Mês</th>
+              <th>Quantidade</th>
             </tr>
           </thead>
 
           <tbody id="listaInteracoes">
             <tr>
-              <td colspan="9">Carregando interações...</td>
+              <td colspan="3">Carregando interações...</td>
             </tr>
           </tbody>
 
