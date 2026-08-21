@@ -1,4 +1,4 @@
-﻿-- Xavier Online 2027
+-- Xavier Online 2027
 -- Migration 001
 -- Baseline marker.
 --

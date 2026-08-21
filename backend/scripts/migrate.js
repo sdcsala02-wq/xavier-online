@@ -1,4 +1,4 @@
-﻿const fs = require("fs");
+const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const pool = require("../db");
@@ -76,7 +76,8 @@ async function main() {
 
     for (const file of files) {
       const fullPath = path.join(migrationsDir, file);
-      const sql = fs.readFileSync(fullPath, "utf8");
+      const rawSql = fs.readFileSync(fullPath, "utf8");
+      const sql = rawSql.replace(/^\uFEFF/, "");
       const checksum = sha256(sql);
 
       if (applied.has(file)) {
