@@ -1,5 +1,6 @@
 const express = require("express");
-const cors = require("cors");
+const helmet = require("helmet");
+const { rateLimit } = require("express-rate-limit");
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
@@ -54,11 +55,33 @@ const frontendPath =
     "public"
   );
 
+const emProducao =
+  process.env.NODE_ENV ===
+  "production";
+
+if (emProducao) {
+  app.set(
+    "trust proxy",
+    1
+  );
+}
+
+app.disable(
+  "x-powered-by"
+);
+
+const opcoesHelmet = {
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+};
+
+if (!emProducao) {
+  opcoesHelmet.strictTransportSecurity =
+    false;
+}
+
 app.use(
-  cors({
-    origin: true,
-    credentials: true
-  })
+  helmet(opcoesHelmet)
 );
 
 app.use(
@@ -549,8 +572,36 @@ app.get(
   }
 );
 
+const limitadorLogin = rateLimit({
+  windowMs:
+    emProducao
+      ? 15 * 60 * 1000
+      : 60 * 1000,
+
+  limit:
+    emProducao
+      ? 10
+      : 30,
+
+  standardHeaders:
+    "draft-7",
+
+  legacyHeaders:
+    false,
+
+  skipSuccessfulRequests:
+    true,
+
+  message: {
+    ok: false,
+    mensagem:
+      "Muitas tentativas de login. Aguarde e tente novamente."
+  }
+});
+
 app.post(
   "/api/auth/login",
+  limitadorLogin,
   async (req, res) => {
     try {
       const {
