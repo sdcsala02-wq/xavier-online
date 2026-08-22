@@ -23,7 +23,7 @@ const {
   normalizarTelefoneBR
 } = require("./services/whatsapp.service");
 
-const demandasRoutes = require("./routes/demandas.routes");
+const demandasExportacoesRoutes = require("./routes/demandas-exportacoes.routes");
 const relatoriosRoutes = require("./routes/relatorios.routes");
 const dashboardRoutes = require("./routes/relatorios.dashboard.routes");
 const liderancasRoutes = require("./routes/liderancas.routes");
@@ -1160,11 +1160,6 @@ app.post("/api/teste-ia", async (req, res) => {
 });
 
 
-app.use(
-  "/api/demandas",
-  autenticar,
-  demandasRoutes
-);
 
 // ======================================================
 // CONSULTA PÚBLICA DE PROTOCOLO
@@ -1359,6 +1354,12 @@ app.use(
   "/api/cidadaos",
   autenticar,
   cidadaosRoutes
+);
+
+app.use(
+  "/api/demandas-gabinete",
+  autenticar,
+  demandasExportacoesRoutes
 );
 
 app.use(

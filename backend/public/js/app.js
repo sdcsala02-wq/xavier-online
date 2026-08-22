@@ -775,11 +775,11 @@ function limitarTexto(texto, limite = 40) {
 }
 
 function exportarExcel() {
-  window.open("/api/demandas/exportar/excel", "_blank");
+  window.open("/api/demandas-gabinete/exportar/excel", "_blank");
 }
 
 function exportarPDF() {
-  window.open("/api/demandas/exportar/pdf", "_blank");
+  window.open("/api/demandas-gabinete/exportar/pdf", "_blank");
 }
 
 function mostrarSecretaria() {
