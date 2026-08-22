@@ -77,7 +77,9 @@ async function main() {
     for (const file of files) {
       const fullPath = path.join(migrationsDir, file);
       const rawSql = fs.readFileSync(fullPath, "utf8");
-      const sql = rawSql.replace(/^\uFEFF/, "");
+      const sql = rawSql
+        .replace(/^\uFEFF/, "")
+        .replace(/\r\n/g, "\n");
       const checksum = sha256(sql);
 
       if (applied.has(file)) {
