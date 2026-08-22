@@ -245,9 +245,24 @@ router.get("/exportar/excel", async (req, res) => {
         status,
         descricao,
         data_criacao
-      FROM demandas
+      FROM (
+        SELECT
+          dg.protocolo,
+          c.nome,
+          c.telefone,
+          COALESCE(c.bairro, dg.bairro) AS bairro,
+          c.endereco,
+          dg.assunto AS servico,
+          dg.secretaria,
+          dg.status,
+          dg.descricao,
+          COALESCE(dg.data, dg.criado_em) AS data_criacao
+        FROM demandas_gabinete dg
+        LEFT JOIN cidadaos c
+          ON c.id = dg.cidadao_id
+      ) demandas_exportacao
       ${where}
-      ORDER BY data_criacao DESC
+      ORDER BY data_criacao DESC NULLS LAST
       `,
       valores
     );
@@ -346,9 +361,24 @@ router.get("/exportar/pdf", async (req, res) => {
         status,
         descricao,
         data_criacao
-      FROM demandas
+      FROM (
+        SELECT
+          dg.protocolo,
+          c.nome,
+          c.telefone,
+          COALESCE(c.bairro, dg.bairro) AS bairro,
+          c.endereco,
+          dg.assunto AS servico,
+          dg.secretaria,
+          dg.status,
+          dg.descricao,
+          COALESCE(dg.data, dg.criado_em) AS data_criacao
+        FROM demandas_gabinete dg
+        LEFT JOIN cidadaos c
+          ON c.id = dg.cidadao_id
+      ) demandas_exportacao
       ${where}
-      ORDER BY data_criacao DESC
+      ORDER BY data_criacao DESC NULLS LAST
       `,
       valores
     );
