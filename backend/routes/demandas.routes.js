@@ -247,6 +247,7 @@ router.get("/exportar/excel", async (req, res) => {
         data_criacao
       FROM (
         SELECT
+          dg.id AS ordem_id,
           dg.protocolo,
           c.nome,
           c.telefone,
@@ -262,7 +263,10 @@ router.get("/exportar/excel", async (req, res) => {
           ON c.id = dg.cidadao_id
       ) demandas_exportacao
       ${where}
-      ORDER BY data_criacao DESC NULLS LAST
+      ORDER BY
+        NULLIF(BTRIM(protocolo), '') ASC NULLS LAST,
+        data_criacao ASC NULLS LAST,
+        ordem_id ASC
       `,
       valores
     );
@@ -363,6 +367,7 @@ router.get("/exportar/pdf", async (req, res) => {
         data_criacao
       FROM (
         SELECT
+          dg.id AS ordem_id,
           dg.protocolo,
           c.nome,
           c.telefone,
@@ -378,7 +383,10 @@ router.get("/exportar/pdf", async (req, res) => {
           ON c.id = dg.cidadao_id
       ) demandas_exportacao
       ${where}
-      ORDER BY data_criacao DESC NULLS LAST
+      ORDER BY
+        NULLIF(BTRIM(protocolo), '') ASC NULLS LAST,
+        data_criacao ASC NULLS LAST,
+        ordem_id ASC
       `,
       valores
     );
@@ -392,76 +400,272 @@ router.get("/exportar/pdf", async (req, res) => {
       margin: 40
     });
 
-    res.setHeader("Content-Type", "application/pdf");
+    const geradoEm =
+      new Date().toLocaleString("pt-BR");
+
+    const desenharCabecalho = () => {
+      const larguraPagina = doc.page.width;
+
+      doc.save();
+
+      doc
+        .rect(0, 0, larguraPagina, 108)
+        .fill("#0F2747");
+
+      doc
+        .rect(0, 104, larguraPagina, 4)
+        .fill("#19A7CE");
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(21)
+        .fillColor("#FFFFFF")
+        .text(
+          "XAVIER ONLINE",
+          40,
+          27,
+          {
+            width: 300
+          }
+        );
+
+      doc
+        .font("Helvetica")
+        .fontSize(11)
+        .fillColor("#DCEAF7")
+        .text(
+          "Gabinete do Vereador Eduardo Xavier",
+          40,
+          56,
+          {
+            width: 320
+          }
+        );
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .fillColor("#FFFFFF")
+        .text(
+          "RELATÓRIO DE DEMANDAS",
+          larguraPagina - 235,
+          30,
+          {
+            width: 195,
+            align: "right"
+          }
+        );
+
+      doc
+        .font("Helvetica")
+        .fontSize(8)
+        .fillColor("#DCEAF7")
+        .text(
+          `Gerado em: ${geradoEm}`,
+          larguraPagina - 235,
+          57,
+          {
+            width: 195,
+            align: "right"
+          }
+        );
+
+      doc.restore();
+
+      doc.x = 40;
+      doc.y = 128;
+    };
+
+    res.setHeader(
+      "Content-Type",
+      "application/pdf"
+    );
+
     res.setHeader(
       "Content-Disposition",
       "attachment; filename=Demandas_Xavier_Online.pdf"
     );
 
+    doc.on(
+      "pageAdded",
+      desenharCabecalho
+    );
+
     doc.pipe(res);
 
-    doc
-      .fontSize(20)
-      .fillColor("#0f172a")
-      .text("XAVIER ONLINE", { align: "center" });
+    desenharCabecalho();
+
+    const larguraResumo =
+      doc.page.width - 80;
 
     doc
-      .fontSize(13)
-      .fillColor("#334155")
-      .text("Relatório de Demandas", { align: "center" });
-
-    doc.moveDown();
-
-    doc
-      .fontSize(9)
-      .fillColor("#64748b")
-      .text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, {
-        align: "right"
-      });
-
-    doc.moveDown();
+      .roundedRect(
+        40,
+        128,
+        larguraResumo,
+        68,
+        7
+      )
+      .fill("#EAF4FB");
 
     doc
-      .fontSize(11)
-      .fillColor("#0f172a")
-      .text(`Total de demandas: ${total}`)
-      .text(`Resolvidas: ${resolvidas}`)
-      .text(`Pendentes: ${pendentes}`);
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .fillColor("#0F2747")
+      .text(
+        "RESUMO EXECUTIVO",
+        55,
+        141
+      );
 
-    doc.moveDown();
+    const larguraIndicador =
+      larguraResumo / 3;
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(17)
+      .fillColor("#0F2747")
+      .text(
+        String(total),
+        55,
+        161,
+        {
+          width: larguraIndicador - 20
+        }
+      );
+
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .fillColor("#52677D")
+      .text(
+        "TOTAL DE DEMANDAS",
+        55,
+        181,
+        {
+          width: larguraIndicador - 20
+        }
+      );
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(17)
+      .fillColor("#16825D")
+      .text(
+        String(resolvidas),
+        55 + larguraIndicador,
+        161,
+        {
+          width: larguraIndicador - 20
+        }
+      );
+
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .fillColor("#52677D")
+      .text(
+        "RESOLVIDAS",
+        55 + larguraIndicador,
+        181,
+        {
+          width: larguraIndicador - 20
+        }
+      );
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(17)
+      .fillColor("#B45309")
+      .text(
+        String(pendentes),
+        55 + larguraIndicador * 2,
+        161,
+        {
+          width: larguraIndicador - 20
+        }
+      );
+
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .fillColor("#52677D")
+      .text(
+        "PENDENTES",
+        55 + larguraIndicador * 2,
+        181,
+        {
+          width: larguraIndicador - 20
+        }
+      );
+
+    doc.x = 40;
+    doc.y = 218;
 
     resultado.rows.forEach((item, index) => {
-      if (doc.y > 720) {
+      if (doc.y > doc.page.height - 125) {
         doc.addPage();
       }
 
-      doc
-        .fontSize(10)
-        .fillColor("#0f172a")
-        .text(`${index + 1}. ${item.protocolo || "-"} | ${item.nome || "-"}`, {
-          underline: true
-        });
+      const inicioRegistro = doc.y;
 
       doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .fillColor("#0F2747")
+        .text(
+          `${index + 1}. ${item.protocolo || "-"} | ${item.nome || "-"}`
+        );
+
+      doc
+        .font("Helvetica")
         .fontSize(9)
         .fillColor("#334155")
-        .text(`Telefone: ${item.telefone || "-"}`)
-        .text(`Bairro: ${item.bairro || "-"} | Serviço: ${item.servico || "-"}`)
-        .text(`Secretaria: ${item.secretaria || "-"} | Status: ${item.status || "-"}`)
-        .text(`Endereço: ${item.endereco || "-"}`)
-        .text(`Descrição: ${item.descricao || "-"}`);
+        .text(
+          `Telefone: ${item.telefone || "-"}`
+        )
+        .text(
+          `Bairro: ${item.bairro || "-"} | Serviço: ${item.servico || "-"}`
+        )
+        .text(
+          `Secretaria: ${item.secretaria || "-"} | Status: ${item.status || "-"}`
+        )
+        .text(
+          `Endereço: ${item.endereco || "-"}`
+        )
+        .text(
+          `Descrição: ${item.descricao || "-"}`
+        );
 
       doc
+        .font("Helvetica")
         .fontSize(8)
-        .fillColor("#64748b")
+        .fillColor("#64748B")
         .text(
-          `Data: ${item.data_criacao
-            ? new Date(item.data_criacao).toLocaleString("pt-BR")
-            : "-"
+          `Data: ${
+            item.data_criacao
+              ? new Date(
+                  item.data_criacao
+                ).toLocaleString("pt-BR")
+              : "-"
           }`
         );
 
-      doc.moveDown();
+      doc
+        .moveTo(40, doc.y + 5)
+        .lineTo(
+          doc.page.width - 40,
+          doc.y + 5
+        )
+        .lineWidth(0.5)
+        .strokeColor("#D7E3ED")
+        .stroke();
+
+      doc.y += 13;
+
+      if (doc.y <= inicioRegistro) {
+        doc.y = inicioRegistro + 20;
+      }
     });
 
     doc.end();
