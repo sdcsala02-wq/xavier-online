@@ -521,4 +521,776 @@ router.post(
   }
 );
 
+function criarErroHttp(
+  status,
+  mensagem
+) {
+  const erro =
+    new Error(mensagem);
+
+  erro.statusHttp = status;
+
+  return erro;
+}
+
+function responderErroAdministrativo(
+  res,
+  erro,
+  operacao
+) {
+  if (
+    Number.isInteger(
+      erro.statusHttp
+    )
+  ) {
+    return res
+      .status(erro.statusHttp)
+      .json({
+        ok: false,
+        mensagem:
+          erro.message
+      });
+  }
+
+  return responderErro(
+    res,
+    erro,
+    operacao
+  );
+}
+
+async function buscarUsuarioPorId(
+  client,
+  usuarioId,
+  bloquear = false
+) {
+  const resultado =
+    await client.query(
+      `
+      SELECT
+        id,
+        nome,
+        email,
+        cpf,
+        perfil,
+        secretaria,
+        ativo,
+        senha_temporaria,
+        ultimo_login_em,
+        criado_em,
+        atualizado_em
+      FROM usuarios
+      WHERE id = $1
+      ${bloquear ? "FOR UPDATE" : ""}
+      `,
+      [usuarioId]
+    );
+
+  return (
+    resultado.rows[0] ||
+    null
+  );
+}
+
+async function contarAdministradoresAtivos(
+  client
+) {
+  const resultado =
+    await client.query(`
+      SELECT id
+      FROM usuarios
+      WHERE perfil = 'ADMIN'
+        AND ativo = TRUE
+      ORDER BY id
+      FOR UPDATE
+    `);
+
+  return resultado.rows.length;
+}
+
+function validarIdUsuario(valor) {
+  const id = Number(valor);
+
+  return (
+    Number.isInteger(id) &&
+    id > 0
+  )
+    ? id
+    : null;
+}
+
+router.put(
+  "/:id",
+  async (req, res) => {
+    const usuarioId =
+      validarIdUsuario(
+        req.params.id
+      );
+
+    if (!usuarioId) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Identificador de usuário inválido."
+      });
+    }
+
+    const nome =
+      normalizarTexto(
+        req.body.nome
+      );
+
+    const email =
+      normalizarEmail(
+        req.body.email
+      );
+
+    const cpf =
+      limparCPF(
+        req.body.cpf
+      );
+
+    const perfil =
+      normalizarPerfil(
+        req.body.perfil
+      );
+
+    const secretariaRecebida =
+      normalizarTexto(
+        req.body.secretaria
+      );
+
+    if (!nome) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Informe o nome do usuário."
+      });
+    }
+
+    if (cpf.length !== 11) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "O CPF deve possuir 11 números."
+      });
+    }
+
+    if (!validarEmail(email)) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Informe um e-mail válido."
+      });
+    }
+
+    if (!PERFIS_VALIDOS.has(perfil)) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Selecione um perfil válido."
+      });
+    }
+
+    if (
+      perfil === "SECRETARIA" &&
+      !secretariaRecebida
+    ) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Informe a secretaria vinculada ao usuário."
+      });
+    }
+
+    const secretaria =
+      perfil === "SECRETARIA"
+        ? secretariaRecebida
+        : null;
+
+    let client = null;
+    let transacaoAtiva = false;
+
+    try {
+      client =
+        await db.connect();
+
+      await client.query("BEGIN");
+      transacaoAtiva = true;
+
+      const usuarioAnterior =
+        await buscarUsuarioPorId(
+          client,
+          usuarioId,
+          true
+        );
+
+      if (!usuarioAnterior) {
+        throw criarErroHttp(
+          404,
+          "Usuário não encontrado."
+        );
+      }
+
+      if (
+        usuarioId ===
+          req.usuario.id &&
+        perfil !== "ADMIN"
+      ) {
+        throw criarErroHttp(
+          400,
+          "O administrador não pode retirar o próprio perfil administrativo."
+        );
+      }
+
+      if (
+        usuarioAnterior.perfil ===
+          "ADMIN" &&
+        usuarioAnterior.ativo ===
+          true &&
+        perfil !== "ADMIN"
+      ) {
+        const totalAdministradores =
+          await contarAdministradoresAtivos(
+            client
+          );
+
+        if (
+          totalAdministradores <= 1
+        ) {
+          throw criarErroHttp(
+            400,
+            "Não é permitido remover o perfil do último administrador ativo."
+          );
+        }
+      }
+
+      const resultado =
+        await client.query(
+          `
+          UPDATE usuarios
+          SET
+            nome = $1,
+            email = $2,
+            cpf = $3,
+            perfil = $4,
+            secretaria = $5
+          WHERE id = $6
+          RETURNING
+            id,
+            nome,
+            email,
+            cpf,
+            perfil,
+            secretaria,
+            ativo,
+            senha_temporaria,
+            ultimo_login_em,
+            criado_em,
+            atualizado_em
+          `,
+          [
+            nome,
+            email,
+            cpf,
+            perfil,
+            secretaria,
+            usuarioId
+          ]
+        );
+
+      const usuarioAtual =
+        prepararUsuario(
+          resultado.rows[0]
+        );
+
+      await registrarAuditoria(
+        client,
+        req,
+        {
+          usuarioAlvoId:
+            usuarioId,
+          acao:
+            "USUARIO_ATUALIZADO",
+          dadosAnteriores:
+            prepararUsuario(
+              usuarioAnterior
+            ),
+          dadosNovos:
+            usuarioAtual
+        }
+      );
+
+      await client.query("COMMIT");
+      transacaoAtiva = false;
+
+      return res.json({
+        ok: true,
+        mensagem:
+          "Usuário atualizado com sucesso.",
+        usuario:
+          usuarioAtual
+      });
+    } catch (erro) {
+      if (
+        transacaoAtiva &&
+        client
+      ) {
+        await client.query(
+          "ROLLBACK"
+        );
+      }
+
+      return responderErroAdministrativo(
+        res,
+        erro,
+        "atualizar usuário"
+      );
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+);
+
+router.patch(
+  "/:id/status",
+  async (req, res) => {
+    const usuarioId =
+      validarIdUsuario(
+        req.params.id
+      );
+
+    if (!usuarioId) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Identificador de usuário inválido."
+      });
+    }
+
+    if (
+      typeof req.body.ativo !==
+      "boolean"
+    ) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Informe um status válido."
+      });
+    }
+
+    const ativo =
+      req.body.ativo;
+
+    let client = null;
+    let transacaoAtiva = false;
+
+    try {
+      client =
+        await db.connect();
+
+      await client.query("BEGIN");
+      transacaoAtiva = true;
+
+      const usuarioAnterior =
+        await buscarUsuarioPorId(
+          client,
+          usuarioId,
+          true
+        );
+
+      if (!usuarioAnterior) {
+        throw criarErroHttp(
+          404,
+          "Usuário não encontrado."
+        );
+      }
+
+      if (
+        usuarioId ===
+          req.usuario.id &&
+        ativo === false
+      ) {
+        throw criarErroHttp(
+          400,
+          "O administrador não pode inativar a própria conta."
+        );
+      }
+
+      if (
+        usuarioAnterior.perfil ===
+          "ADMIN" &&
+        usuarioAnterior.ativo ===
+          true &&
+        ativo === false
+      ) {
+        const totalAdministradores =
+          await contarAdministradoresAtivos(
+            client
+          );
+
+        if (
+          totalAdministradores <= 1
+        ) {
+          throw criarErroHttp(
+            400,
+            "Não é permitido inativar o último administrador ativo."
+          );
+        }
+      }
+
+      if (
+        usuarioAnterior.ativo ===
+        ativo
+      ) {
+        await client.query("COMMIT");
+        transacaoAtiva = false;
+
+        return res.json({
+          ok: true,
+          mensagem:
+            ativo
+              ? "O usuário já está ativo."
+              : "O usuário já está inativo.",
+          usuario:
+            prepararUsuario(
+              usuarioAnterior
+            )
+        });
+      }
+
+      const resultado =
+        await client.query(
+          `
+          UPDATE usuarios
+          SET ativo = $1
+          WHERE id = $2
+          RETURNING
+            id,
+            nome,
+            email,
+            cpf,
+            perfil,
+            secretaria,
+            ativo,
+            senha_temporaria,
+            ultimo_login_em,
+            criado_em,
+            atualizado_em
+          `,
+          [
+            ativo,
+            usuarioId
+          ]
+        );
+
+      const usuarioAtual =
+        prepararUsuario(
+          resultado.rows[0]
+        );
+
+      await registrarAuditoria(
+        client,
+        req,
+        {
+          usuarioAlvoId:
+            usuarioId,
+          acao:
+            ativo
+              ? "USUARIO_ATIVADO"
+              : "USUARIO_INATIVADO",
+          dadosAnteriores: {
+            ativo:
+              usuarioAnterior.ativo
+          },
+          dadosNovos: {
+            ativo:
+              usuarioAtual.ativo
+          }
+        }
+      );
+
+      await client.query("COMMIT");
+      transacaoAtiva = false;
+
+      return res.json({
+        ok: true,
+        mensagem:
+          ativo
+            ? "Usuário ativado com sucesso."
+            : "Usuário inativado com sucesso.",
+        usuario:
+          usuarioAtual
+      });
+    } catch (erro) {
+      if (
+        transacaoAtiva &&
+        client
+      ) {
+        await client.query(
+          "ROLLBACK"
+        );
+      }
+
+      return responderErroAdministrativo(
+        res,
+        erro,
+        "alterar status do usuário"
+      );
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+);
+
+router.patch(
+  "/:id/senha",
+  async (req, res) => {
+    const usuarioId =
+      validarIdUsuario(
+        req.params.id
+      );
+
+    if (!usuarioId) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Identificador de usuário inválido."
+      });
+    }
+
+    const senha =
+      String(
+        req.body.senha || ""
+      );
+
+    if (!validarSenha(senha)) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "A nova senha deve possuir ao menos 8 caracteres, uma letra e um número."
+      });
+    }
+
+    let client = null;
+    let transacaoAtiva = false;
+
+    try {
+      client =
+        await db.connect();
+
+      await client.query("BEGIN");
+      transacaoAtiva = true;
+
+      const usuarioAnterior =
+        await buscarUsuarioPorId(
+          client,
+          usuarioId,
+          true
+        );
+
+      if (!usuarioAnterior) {
+        throw criarErroHttp(
+          404,
+          "Usuário não encontrado."
+        );
+      }
+
+      const senhaHash =
+        await bcrypt.hash(
+          senha,
+          12
+        );
+
+      const resultado =
+        await client.query(
+          `
+          UPDATE usuarios
+          SET
+            senha_hash = $1,
+            senha_temporaria = TRUE
+          WHERE id = $2
+          RETURNING
+            id,
+            nome,
+            email,
+            cpf,
+            perfil,
+            secretaria,
+            ativo,
+            senha_temporaria,
+            ultimo_login_em,
+            criado_em,
+            atualizado_em
+          `,
+          [
+            senhaHash,
+            usuarioId
+          ]
+        );
+
+      const usuarioAtual =
+        prepararUsuario(
+          resultado.rows[0]
+        );
+
+      await registrarAuditoria(
+        client,
+        req,
+        {
+          usuarioAlvoId:
+            usuarioId,
+          acao:
+            "SENHA_REDEFINIDA",
+          dadosAnteriores: {
+            senhaTemporaria:
+              usuarioAnterior
+                .senha_temporaria
+          },
+          dadosNovos: {
+            senhaTemporaria:
+              true
+          }
+        }
+      );
+
+      await client.query("COMMIT");
+      transacaoAtiva = false;
+
+      return res.json({
+        ok: true,
+        mensagem:
+          "Senha temporária definida com sucesso.",
+        usuario:
+          usuarioAtual
+      });
+    } catch (erro) {
+      if (
+        transacaoAtiva &&
+        client
+      ) {
+        await client.query(
+          "ROLLBACK"
+        );
+      }
+
+      return responderErroAdministrativo(
+        res,
+        erro,
+        "redefinir senha"
+      );
+    } finally {
+      if (client) {
+        client.release();
+      }
+    }
+  }
+);
+
+router.get(
+  "/:id/auditoria",
+  async (req, res) => {
+    const usuarioId =
+      validarIdUsuario(
+        req.params.id
+      );
+
+    if (!usuarioId) {
+      return res.status(400).json({
+        ok: false,
+        mensagem:
+          "Identificador de usuário inválido."
+      });
+    }
+
+    try {
+      const usuario =
+        await buscarUsuarioPorId(
+          db,
+          usuarioId
+        );
+
+      if (!usuario) {
+        return res.status(404).json({
+          ok: false,
+          mensagem:
+            "Usuário não encontrado."
+        });
+      }
+
+      const resultado =
+        await db.query(
+          `
+          SELECT
+            ua.id,
+            ua.acao,
+            ua.dados_anteriores,
+            ua.dados_novos,
+            ua.endereco_ip,
+            ua.criado_em,
+            executor.id AS executor_id,
+            executor.nome AS executor_nome
+          FROM usuarios_auditoria ua
+          LEFT JOIN usuarios executor
+            ON executor.id =
+               ua.usuario_executor_id
+          WHERE ua.usuario_alvo_id = $1
+          ORDER BY
+            ua.criado_em DESC,
+            ua.id DESC
+          LIMIT 100
+          `,
+          [
+            usuarioId
+          ]
+        );
+
+      return res.json({
+        ok: true,
+        usuario: {
+          id:
+            usuario.id,
+          nome:
+            usuario.nome
+        },
+        total:
+          resultado.rows.length,
+        auditoria:
+          resultado.rows.map(
+            (item) => ({
+              id:
+                item.id,
+              acao:
+                item.acao,
+              dadosAnteriores:
+                item.dados_anteriores,
+              dadosNovos:
+                item.dados_novos,
+              enderecoIp:
+                item.endereco_ip,
+              criadoEm:
+                item.criado_em,
+              executor: {
+                id:
+                  item.executor_id,
+                nome:
+                  item.executor_nome
+              }
+            })
+          )
+      });
+    } catch (erro) {
+      return responderErroAdministrativo(
+        res,
+        erro,
+        "consultar auditoria do usuário"
+      );
+    }
+  }
+);
+
 module.exports = router;
