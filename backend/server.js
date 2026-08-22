@@ -32,6 +32,7 @@ const interacoesRoutes = require("./routes/interacoes.routes");
 const cidadaosRoutes = require("./routes/cidadaos.routes");
 const demandasGabineteRoutes = require("./routes/demandas-gabinete.routes");
 const eleitoresRoutes = require("./routes/eleitores.routes");
+const usuariosRoutes = require("./routes/usuarios.routes");
 
 const app = express();
 
@@ -1567,6 +1568,15 @@ app.use(
   "/api/demandas-gabinete",
   autenticar,
   demandasGabineteRoutes
+);
+
+app.use(
+  "/api/usuarios",
+  autenticar,
+  autorizarPerfis(
+    "ADMIN"
+  ),
+  usuariosRoutes
 );
 
 app.use(
