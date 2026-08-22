@@ -1,17 +1,16 @@
 const express = require("express");
-const multer = require("multer");
-const XLSX = require("xlsx");
+const {
+  carregarPlanilhaXlsx,
+  converterDataSerialExcel,
+  criarUploadXlsx,
+  planilhaParaObjetos
+} = require("../utils/planilha-xlsx");
 const crypto = require("crypto");
 const pool = require("../db");
 
 const router = express.Router();
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 15 * 1024 * 1024
-  }
-});
+const upload = criarUploadXlsx();
 
 const TAMANHO_LOTE_CIDADAOS = 300;
 const TAMANHO_LOTE_DEMANDAS = 300;
@@ -122,17 +121,7 @@ function converterData(valor) {
   }
 
   if (typeof valor === "number") {
-    const data = XLSX.SSF.parse_date_code(valor);
-
-    if (!data) {
-      return null;
-    }
-
-    return [
-      String(data.y).padStart(4, "0"),
-      String(data.m).padStart(2, "0"),
-      String(data.d).padStart(2, "0")
-    ].join("-");
+    return converterDataSerialExcel(valor);
   }
 
   const texto = String(valor).trim();
@@ -1418,13 +1407,10 @@ router.post(
 
       const inicioImportacao = Date.now();
 
-      const workbook = XLSX.read(
-        req.file.buffer,
-        {
-          type: "buffer",
-          cellDates: true
-        }
-      );
+      const workbook =
+        await carregarPlanilhaXlsx(
+          req.file.buffer
+        );
 
       const hashArquivo = crypto
         .createHash("sha256")
@@ -1446,7 +1432,9 @@ router.post(
        * 1. Lê todas as abas de demandas.
        * Nenhuma consulta ao banco é feita dentro deste laço.
        */
-      for (const nomeAba of workbook.SheetNames) {
+      for (const sheet of workbook.worksheets) {
+        const nomeAba = sheet.name;
+
         const anoAba =
           obterAnoDaAba(nomeAba);
 
@@ -1455,11 +1443,8 @@ router.post(
           continue;
         }
 
-        const sheet =
-          workbook.Sheets[nomeAba];
-
         const linhas =
-          XLSX.utils.sheet_to_json(
+          planilhaParaObjetos(
             sheet,
             {
               defval: "",

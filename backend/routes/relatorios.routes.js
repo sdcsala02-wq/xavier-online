@@ -1,10 +1,14 @@
 const express = require("express");
-const multer = require("multer");
-const XLSX = require("xlsx");
+const {
+  carregarPlanilhaXlsx,
+  converterDataSerialExcel,
+  criarUploadXlsx,
+  planilhaParaObjetos
+} = require("../utils/planilha-xlsx");
 const pool = require("../db");
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = criarUploadXlsx();
 
 function limpar(valor) {
   if (valor === undefined || valor === null) return null;
@@ -14,11 +18,19 @@ function limpar(valor) {
 function converterData(valor) {
   if (!valor) return null;
 
-  if (typeof valor === "number") {
-    const data = XLSX.SSF.parse_date_code(valor);
-    if (!data) return null;
+  if (valor instanceof Date) {
+    return [
+      String(valor.getUTCFullYear())
+        .padStart(4, "0"),
+      String(valor.getUTCMonth() + 1)
+        .padStart(2, "0"),
+      String(valor.getUTCDate())
+        .padStart(2, "0")
+    ].join("-");
+  }
 
-    return `${data.y}-${String(data.m).padStart(2, "0")}-${String(data.d).padStart(2, "0")}`;
+  if (typeof valor === "number") {
+    return converterDataSerialExcel(valor);
   }
 
   const texto = String(valor).trim();
@@ -80,20 +92,23 @@ router.post("/importar", upload.single("arquivo"), async (req, res) => {
       });
     }
 
-    const workbook = XLSX.read(req.file.buffer, {
-      type: "buffer",
-      cellDates: false
-    });
+    const workbook =
+      await carregarPlanilhaXlsx(
+        req.file.buffer
+      );
 
     let totalImportado = 0;
     let totalIgnorado = 0;
 
-    for (const nomeAba of workbook.SheetNames) {
-      const sheet = workbook.Sheets[nomeAba];
+    for (const sheet of workbook.worksheets) {
+      const nomeAba = sheet.name;
 
-      const linhas = XLSX.utils.sheet_to_json(sheet, {
-        defval: null
-      });
+      const linhas = planilhaParaObjetos(
+        sheet,
+        {
+          defval: null
+        }
+      );
 
       for (const linha of linhas) {
         const nome = limpar(localizarCampo(linha, ["NOME", "MUNÍCIPE", "MUNICIPE"]));
@@ -184,20 +199,23 @@ router.post("/atividades/importar", upload.single("arquivo"), async (req, res) =
       });
     }
 
-    const workbook = XLSX.read(req.file.buffer, {
-      type: "buffer",
-      cellDates: false
-    });
+    const workbook =
+      await carregarPlanilhaXlsx(
+        req.file.buffer
+      );
 
     let totalImportado = 0;
     let totalIgnorado = 0;
 
-    for (const nomeAba of workbook.SheetNames) {
-      const sheet = workbook.Sheets[nomeAba];
+    for (const sheet of workbook.worksheets) {
+      const nomeAba = sheet.name;
 
-      const linhas = XLSX.utils.sheet_to_json(sheet, {
-        defval: null
-      });
+      const linhas = planilhaParaObjetos(
+        sheet,
+        {
+          defval: null
+        }
+      );
 
       for (const linha of linhas) {
         const dataBruta = localizarCampo(linha, ["DATA"]);

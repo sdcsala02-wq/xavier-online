@@ -1,15 +1,16 @@
 const express = require("express");
-const multer = require("multer");
-const XLSX = require("xlsx");
 const ExcelJS = require("exceljs");
+const {
+  carregarPlanilhaXlsx,
+  criarUploadXlsx,
+  planilhaParaObjetos
+} = require("../utils/planilha-xlsx");
 const PDFDocument = require("pdfkit");
 const pool = require("../db");
 
 const router = express.Router();
 
-const upload = multer({
-  storage: multer.memoryStorage()
-});
+const upload = criarUploadXlsx();
 
 const MESES = [
   "",
@@ -548,30 +549,25 @@ router.post(
         });
       }
 
-      const workbook = XLSX.read(
-        req.file.buffer,
-        {
-          type: "buffer"
-        }
+      const workbook =
+        await carregarPlanilhaXlsx(
+          req.file.buffer
+        );
+
+      const sheet = workbook.worksheets.find(
+        (aba) =>
+          normalizarTexto(aba.name) === "INTERACOES"
       );
 
-      const nomeAba = workbook.SheetNames.find(
-        (nome) =>
-          normalizarTexto(nome) === "INTERACOES"
-      );
-
-      if (!nomeAba) {
+      if (!sheet) {
         return res.status(400).json({
           erro:
             "A aba INTERAÇÕES não foi encontrada."
         });
       }
 
-      const sheet =
-        workbook.Sheets[nomeAba];
-
       const linhas =
-        XLSX.utils.sheet_to_json(
+        planilhaParaObjetos(
           sheet,
           {
             defval: "",
