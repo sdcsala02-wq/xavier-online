@@ -1,0 +1,12 @@
+﻿{
+    "schema":  1,
+    "chave":  "XAVIER-ONLINE-2027-5H1-871DC3C-20260821",
+    "projeto":  "Xavier Online 2027",
+    "repositorio":  "https://github.com/sdcsala02-wq/xavier-online.git",
+    "branchOficial":  "feature/xavier-2027-consolidacao-20260821",
+    "commitAncora":  "871dc3c",
+    "checkpoint":  "Etapa 5H.1 Consumidores Legados Direcionados à Fonte Canônica",
+    "criadoEm":  "2026-08-21T16:40:00-03:00",
+    "proximaEtapa":  "5H.2",
+    "objetivoProximo":  "Corrigir exportações Excel e PDF que ainda dependem da tabela legada demandas"
+}
