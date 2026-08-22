@@ -38,9 +38,15 @@ const PORT =
   process.env.PORT ||
   3000;
 
-const JWT_SECRET =
-  process.env.JWT_SECRET ||
-  "xavier_online_segredo_temporario";
+const JWT_SECRET = String(
+  process.env.JWT_SECRET || ""
+).trim();
+
+if (JWT_SECRET.length < 32) {
+  throw new Error(
+    "JWT_SECRET obrigatório com pelo menos 32 caracteres."
+  );
+}
 
 const frontendPath =
   path.join(
@@ -376,6 +382,8 @@ app.get(
 
 app.get(
   "/api/teste-ia",
+  autenticar,
+  autorizarPerfis("ADMIN"),
   async (req, res) => {
     try {
       const resposta =
@@ -1128,7 +1136,11 @@ ${descricao
   }
 );
 
-app.post("/api/teste-ia", async (req, res) => {
+app.post(
+  "/api/teste-ia",
+  autenticar,
+  autorizarPerfis("ADMIN"),
+  async (req, res) => {
   try {
 
     const { mensagem } = req.body;
@@ -1157,7 +1169,8 @@ app.post("/api/teste-ia", async (req, res) => {
     });
 
   }
-});
+  }
+);
 
 
 
