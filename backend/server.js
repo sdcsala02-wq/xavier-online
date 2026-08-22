@@ -100,13 +100,21 @@ function cpfValido(valor) {
   return limparCPF(valor).length === 11;
 }
 
+function normalizarPerfil(valor) {
+  return String(valor || "")
+    .trim()
+    .toUpperCase();
+}
+
 function gerarToken(usuario) {
   return jwt.sign(
     {
       id: usuario.id,
       nome: usuario.nome,
       cpf: limparCPF(usuario.cpf),
-      perfil: usuario.perfil
+      perfil: normalizarPerfil(
+        usuario.perfil
+      )
     },
     JWT_SECRET,
     {
@@ -115,35 +123,138 @@ function gerarToken(usuario) {
   );
 }
 
-function autenticar(req, res, next) {
-  try {
-    const token =
-      req.cookies?.token ||
-      req.headers.authorization?.replace(
-        "Bearer ",
-        ""
-      );
+async function obterUsuarioAtivoPorToken(
+  token
+) {
+  const payload = jwt.verify(
+    token,
+    JWT_SECRET
+  );
 
-    if (!token) {
-      return res.status(401).json({
-        ok: false,
-        mensagem:
-          "Acesso não autorizado."
-      });
+  const usuarioId = Number(
+    payload?.id
+  );
+
+  if (
+    !Number.isInteger(usuarioId) ||
+    usuarioId <= 0
+  ) {
+    throw new Error(
+      "TOKEN_SEM_USUARIO_VALIDO"
+    );
+  }
+
+  const resultado = await db.query(
+    `
+    SELECT
+      id,
+      nome,
+      email,
+      cpf,
+      perfil,
+      ativo
+    FROM usuarios
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [usuarioId]
+  );
+
+  if (resultado.rows.length === 0) {
+    throw new Error(
+      "USUARIO_NAO_ENCONTRADO"
+    );
+  }
+
+  const usuario =
+    resultado.rows[0];
+
+  if (usuario.ativo !== true) {
+    throw new Error(
+      "USUARIO_INATIVO"
+    );
+  }
+
+  return {
+    id: usuario.id,
+    nome: usuario.nome,
+    email: usuario.email,
+    cpf: usuario.cpf,
+    perfil: normalizarPerfil(
+      usuario.perfil
+    ),
+    ativo: true
+  };
+}
+
+function extrairTokenRequisicao(req) {
+  const tokenCookie =
+    req.cookies?.token;
+
+  const autorizacao = String(
+    req.headers.authorization || ""
+  );
+
+  const tokenBearer =
+    autorizacao.startsWith(
+      "Bearer "
+    )
+      ? autorizacao
+          .slice(7)
+          .trim()
+      : "";
+
+  return (
+    tokenCookie ||
+    tokenBearer ||
+    ""
+  );
+}
+
+function limparCookieToken(res) {
+  res.clearCookie(
+    "token",
+    {
+      httpOnly: true,
+      secure:
+        process.env.NODE_ENV ===
+        "production",
+      sameSite: "lax",
+      path: "/"
     }
+  );
+}
 
-    req.usuario =
-      jwt.verify(
-        token,
-        JWT_SECRET
-      );
+async function autenticar(
+  req,
+  res,
+  next
+) {
+  const token =
+    extrairTokenRequisicao(req);
 
-    next();
-  } catch (erro) {
+  if (!token) {
     return res.status(401).json({
       ok: false,
       mensagem:
-        "Sessão inválida ou expirada."
+        "Acesso não autorizado."
+    });
+  }
+
+  try {
+    req.usuario =
+      await obterUsuarioAtivoPorToken(
+        token
+      );
+
+    return next();
+  } catch (erro) {
+    limparCookieToken(res);
+
+    return res.status(401).json({
+      ok: false,
+      mensagem:
+        "Sessão inválida, expirada ou usuário inativo."
     });
   }
 }
@@ -151,11 +262,23 @@ function autenticar(req, res, next) {
 function autorizarPerfis(
   ...perfisPermitidos
 ) {
+  const perfisNormalizados =
+    new Set(
+      perfisPermitidos.map(
+        normalizarPerfil
+      )
+    );
+
   return (req, res, next) => {
+    const perfilAtual =
+      normalizarPerfil(
+        req.usuario?.perfil
+      );
+
     if (
-      !req.usuario ||
-      !perfisPermitidos.includes(
-        req.usuario.perfil
+      !perfilAtual ||
+      !perfisNormalizados.has(
+        perfilAtual
       )
     ) {
       return res.status(403).json({
@@ -165,11 +288,11 @@ function autorizarPerfis(
       });
     }
 
-    next();
+    return next();
   };
 }
 
-function autenticarPagina(
+async function autenticarPagina(
   req,
   res,
   next
@@ -203,13 +326,15 @@ function autenticarPagina(
   }
 
   try {
-    jwt.verify(
-      token,
-      JWT_SECRET
-    );
+    req.usuario =
+      await obterUsuarioAtivoPorToken(
+        token
+      );
 
     return next();
   } catch (erro) {
+    limparCookieToken(res);
+
     return res.redirect(
       "/index.html"
     );
@@ -219,7 +344,18 @@ function autenticarPagina(
 function protegerPaginaPorPerfil(
   perfisPermitidos
 ) {
-  return (req, res, next) => {
+  const perfisNormalizados =
+    new Set(
+      perfisPermitidos.map(
+        normalizarPerfil
+      )
+    );
+
+  return async (
+    req,
+    res,
+    next
+  ) => {
     const token =
       req.cookies?.token;
 
@@ -231,13 +367,12 @@ function protegerPaginaPorPerfil(
 
     try {
       const usuario =
-        jwt.verify(
-          token,
-          JWT_SECRET
+        await obterUsuarioAtivoPorToken(
+          token
         );
 
       if (
-        !perfisPermitidos.includes(
+        !perfisNormalizados.has(
           usuario.perfil
         )
       ) {
@@ -252,6 +387,8 @@ function protegerPaginaPorPerfil(
 
       return next();
     } catch (erro) {
+      limparCookieToken(res);
+
       return res.redirect(
         "/index.html"
       );
