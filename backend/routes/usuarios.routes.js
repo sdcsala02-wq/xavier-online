@@ -21,11 +21,6 @@ const PERFIS = Object.freeze([
     descricao: "Cadastro e atualização de atendimentos e demandas."
   },
   {
-    codigo: "SECRETARIA",
-    nome: "Secretaria",
-    descricao: "Acesso às demandas vinculadas à sua secretaria."
-  },
-  {
     codigo: "CONSULTA",
     nome: "Consulta",
     descricao: "Acesso somente para consulta."
@@ -95,7 +90,6 @@ function prepararUsuario(row) {
     email: row.email,
     cpf: row.cpf,
     perfil: row.perfil,
-    secretaria: row.secretaria,
     ativo: row.ativo,
     senhaTemporaria:
       row.senha_temporaria,
@@ -166,7 +160,7 @@ function responderErro(
     return res.status(400).json({
       ok: false,
       mensagem:
-        "Perfil ou vínculo de secretaria inválido."
+        "Perfil inválido."
     });
   }
 
@@ -224,7 +218,6 @@ router.get(
             nome ILIKE $${parametros.length}
             OR COALESCE(email, '') ILIKE $${parametros.length}
             OR cpf ILIKE $${parametros.length}
-            OR COALESCE(secretaria, '') ILIKE $${parametros.length}
           )
         `);
       }
@@ -272,7 +265,6 @@ router.get(
             email,
             cpf,
             perfil,
-            secretaria,
             ativo,
             senha_temporaria,
             ultimo_login_em,
@@ -335,11 +327,6 @@ router.post(
         req.body.perfil
       );
 
-    const secretariaRecebida =
-      normalizarTexto(
-        req.body.secretaria
-      );
-
     if (!nome) {
       return res.status(400).json({
         ok: false,
@@ -380,22 +367,6 @@ router.post(
       });
     }
 
-    if (
-      perfil === "SECRETARIA" &&
-      !secretariaRecebida
-    ) {
-      return res.status(400).json({
-        ok: false,
-        mensagem:
-          "Informe a secretaria vinculada ao usuário."
-      });
-    }
-
-    const secretaria =
-      perfil === "SECRETARIA"
-        ? secretariaRecebida
-        : null;
-
     const client =
       await db.connect();
 
@@ -420,7 +391,6 @@ router.post(
             cpf,
             senha_hash,
             perfil,
-            secretaria,
             ativo,
             senha_temporaria,
             criado_por,
@@ -432,10 +402,9 @@ router.post(
             $3,
             $4,
             $5,
+            TRUE,
+            TRUE,
             $6,
-            TRUE,
-            TRUE,
-            $7,
             NOW()
           )
           RETURNING
@@ -444,7 +413,6 @@ router.post(
             email,
             cpf,
             perfil,
-            secretaria,
             ativo,
             senha_temporaria,
             ultimo_login_em,
@@ -457,7 +425,6 @@ router.post(
             cpf,
             senhaHash,
             perfil,
-            secretaria,
             req.usuario.id
           ]
         );
@@ -484,8 +451,6 @@ router.post(
               usuario.cpf,
             perfil:
               usuario.perfil,
-            secretaria:
-              usuario.secretaria,
             ativo:
               usuario.ativo,
             senhaTemporaria:
@@ -573,7 +538,6 @@ async function buscarUsuarioPorId(
         email,
         cpf,
         perfil,
-        secretaria,
         ativo,
         senha_temporaria,
         ultimo_login_em,
@@ -655,11 +619,6 @@ router.put(
         req.body.perfil
       );
 
-    const secretariaRecebida =
-      normalizarTexto(
-        req.body.secretaria
-      );
-
     if (!nome) {
       return res.status(400).json({
         ok: false,
@@ -691,22 +650,6 @@ router.put(
           "Selecione um perfil válido."
       });
     }
-
-    if (
-      perfil === "SECRETARIA" &&
-      !secretariaRecebida
-    ) {
-      return res.status(400).json({
-        ok: false,
-        mensagem:
-          "Informe a secretaria vinculada ao usuário."
-      });
-    }
-
-    const secretaria =
-      perfil === "SECRETARIA"
-        ? secretariaRecebida
-        : null;
 
     let client = null;
     let transacaoAtiva = false;
@@ -773,16 +716,14 @@ router.put(
             nome = $1,
             email = $2,
             cpf = $3,
-            perfil = $4,
-            secretaria = $5
-          WHERE id = $6
+            perfil = $4
+          WHERE id = $5
           RETURNING
             id,
             nome,
             email,
             cpf,
             perfil,
-            secretaria,
             ativo,
             senha_temporaria,
             ultimo_login_em,
@@ -794,7 +735,6 @@ router.put(
             email,
             cpf,
             perfil,
-            secretaria,
             usuarioId
           ]
         );
@@ -973,7 +913,6 @@ router.patch(
             email,
             cpf,
             perfil,
-            secretaria,
             ativo,
             senha_temporaria,
             ultimo_login_em,
@@ -1120,7 +1059,6 @@ router.patch(
             email,
             cpf,
             perfil,
-            secretaria,
             ativo,
             senha_temporaria,
             ultimo_login_em,

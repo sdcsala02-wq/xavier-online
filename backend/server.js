@@ -1614,6 +1614,37 @@ app.get(
 );
 
 app.get(
+  "/usuarios.html",
+  protegerPaginaPorPerfil([
+    "ADMIN"
+  ]),
+  (req, res) => {
+    res.sendFile(
+      path.join(
+        frontendPath,
+        "usuarios.html"
+      )
+    );
+  }
+);
+
+app.get(
+  "/disparos.html",
+  protegerPaginaPorPerfil([
+    "ADMIN",
+    "ASSESSOR"
+  ]),
+  (req, res) => {
+    res.sendFile(
+      path.join(
+        frontendPath,
+        "disparos.html"
+      )
+    );
+  }
+);
+
+app.get(
   "/configuracoes.html",
   protegerPaginaPorPerfil([
     "ADMIN"

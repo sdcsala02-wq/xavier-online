@@ -52,6 +52,8 @@ function aplicarPermissoesMenu(perfil) {
       "importar.html",
       "secretarias.html",
       "liderancas.html",
+      "disparos.html",
+      "usuarios.html",
       "configuracoes.html"
     ],
 
@@ -66,7 +68,8 @@ function aplicarPermissoesMenu(perfil) {
       "interacoes.html",
       "importar.html",
       "secretarias.html",
-      "liderancas.html"
+      "liderancas.html",
+      "disparos.html"
     ],
 
     LIDERANCA: [
