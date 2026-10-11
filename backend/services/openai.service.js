@@ -1,31 +1,15 @@
-const OpenAI = require("openai");
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-async function testarOpenAI(pergunta) {
-
-  const resposta = await client.responses.create({
-
-    model: "gpt-5.6",
-
-    input: `
-Você é a assistente virtual do Gabinete do Vereador Eduardo Xavier.
-
-Responda sempre em português.
-
-Pergunta do cidadão:
-
-${pergunta}
-`
-
-  });
-
-  return resposta.output_text;
-
-}
-
-module.exports = {
-  testarOpenAI
-};
+No linha:1 caractere:146
++ ... 2\backend/services/openai.service.js'); [Console]::Out.Write(.Substri ...
++                                                                  ~
+')' ausente na chamada do método.
+No linha:1 caractere:146
++ ... services/openai.service.js'); [Console]::Out.Write(.Substring(0,479))
++                                                        ~~~~~~~~~~
+Token '.Substring' inesperado na expressão ou instrução.
+No linha:1 caractere:163
++ ... services/openai.service.js'); [Console]::Out.Write(.Substring(0,479))
++                                                                         ~
+Token ')' inesperado na expressão ou instrução.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MissingEndParenthesisInMethodCall
+ 
