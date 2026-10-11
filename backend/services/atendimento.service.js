@@ -87,7 +87,7 @@ async function enviarMenuInicial(telefone, cidadao) {
 
   const mensagem = `${saudacao}
 
-Sou a assistente virtual do Gabinete do Vereador Eduardo Xavier.
+Sou a assistente virtual do SDC Serviços de Dados e Comunicação.
 
 Como posso ajudar?
 
@@ -154,7 +154,7 @@ Por favor, envie uma mensagem explicando brevemente o assunto.`
     case "4":
       await enviarTextoWhatsApp(
         telefone,
-        `O Xavier Online é o canal digital de atendimento do Gabinete do Vereador Eduardo Xavier.
+        `O SDC Serviços de Dados e Comunicação é o canal digital de atendimento do SDC Serviços de Dados e Comunicação.
 
 Por este canal, você pode registrar solicitações, consultar protocolos e solicitar atendimento da equipe.
 
@@ -218,7 +218,7 @@ Para voltar ao início, digite MENU.`
 
   await enviarTextoWhatsApp(
     telefone,
-    `📋 Xavier Online
+    `📋 SDC Serviços de Dados e Comunicação
 
 Protocolo: ${solicitacao.protocolo}
 

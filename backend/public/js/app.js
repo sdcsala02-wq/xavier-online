@@ -1,5 +1,5 @@
-const API_DEMANDAS = "/api/demandas-gabinete";
-const API_INTERACOES = "/api/interacoes";
+const XAVIER_APP_API_DEMANDAS = "/api/demandas-gabinete";
+const XAVIER_APP_API_INTERACOES = "/api/interacoes";
 
 let USUARIO_LOGADO = null;
 
@@ -36,92 +36,348 @@ async function carregarUsuarioLogado() {
   }
 }
 
-function aplicarPermissoesMenu(perfil) {
-  const perfilNormalizado = String(perfil || "").toUpperCase();
-
-  const regras = {
-    ADMIN: [
-      "dashboard.html",
-      "demandas-gabinete.html",
-      "nova-demanda.html",
-      "protocolo.html",
-      "mapa.html",
-      "eleitores.html",
-      "relatorio-legislativo.html",
-      "interacoes.html",
-      "importar.html",
-      "secretarias.html",
-      "liderancas.html",
-      "disparos.html",
-      "usuarios.html",
-      "configuracoes.html"
-    ],
-
-    ASSESSOR: [
-      "dashboard.html",
-      "demandas-gabinete.html",
-      "nova-demanda.html",
-      "protocolo.html",
-      "mapa.html",
-      "eleitores.html",
-      "relatorio-legislativo.html",
-      "interacoes.html",
-      "importar.html",
-      "secretarias.html",
-      "liderancas.html",
-      "disparos.html"
-    ],
-
-    LIDERANCA: [
-      "dashboard.html",
-      "demandas-gabinete.html",
-      "nova-demanda.html",
-      "protocolo.html",
-      "mapa.html",
-      "liderancas.html"
-    ],
-
-    CONSULTA: [
-      "dashboard.html",
-      "protocolo.html",
-      "mapa.html",
-      "relatorio-legislativo.html"
+const ITENS_MENU =
+  Object.freeze(
+    [
+  [
+    "/dashboard.html",
+    "▣",
+    "Dashboard",
+    [
+      "ADMIN",
+      "ASSESSOR",
+      "ATENDENTE",
+      "CONSULTA",
+      "LIDERANCA"
     ]
-  };
+  ],
+  [
+    "/demandas-gabinete.html",
+    "📋",
+    "Demandas",
+    [
+      "ADMIN",
+      "ASSESSOR",
+      "ATENDENTE",
+      "CONSULTA",
+      "LIDERANCA"
+    ]
+  ],
+  [
+    "/nova-demanda.html",
+    "➕",
+    "Nova Demanda",
+    [
+      "ADMIN",
+      "ASSESSOR",
+      "ATENDENTE",
+      "LIDERANCA"
+    ]
+  ],
+  [
+    "/protocolo.html",
+    "🔎",
+    "Protocolo",
+    [
+      "ADMIN",
+      "ASSESSOR",
+      "ATENDENTE",
+      "CONSULTA",
+      "LIDERANCA"
+    ]
+  ],
+  [
+    "/mapa.html",
+    "🗺️",
+    "Mapa da Cidade",
+    [
+      "ADMIN",
+      "ASSESSOR",
+      "CONSULTA",
+      "LIDERANCA"
+    ]
+  ],
+  [
+    "/eleitores.html",
+    "🗳️",
+    "Eleitores",
+    [
+      "ADMIN",
+      "ASSESSOR"
+    ]
+  ],
+  [
+    "/interacoes.html",
+    "💬",
+    "Interações",
+    [
+      "ADMIN",
+      "ASSESSOR",
+      "ATENDENTE"
+    ]
+  ],
+  [
+    "/importar.html",
+    "⬆",
+    "Importar Planilha",
+    [
+      "ADMIN",
+      "ASSESSOR"
+    ]
+  ],
+  [
+    "/api/demandas-gabinete/exportar/excel",
+    "⬇",
+    "Exportar Excel",
+    [
+      "ADMIN",
+      "ASSESSOR"
+    ],
+    true
+  ],
+  [
+    "/api/demandas-gabinete/exportar/pdf",
+    "📄",
+    "Exportar PDF",
+    [
+      "ADMIN",
+      "ASSESSOR"
+    ],
+    true
+  ],
+  [
+    "/secretarias.html",
+    "☷",
+    "Secretarias",
+    [
+      "ADMIN",
+      "ASSESSOR"
+    ]
+  ],
+  [
+    "/liderancas.html",
+    "👥",
+    "Lideranças",
+    [
+      "ADMIN",
+      "ASSESSOR"
+    ]
+  ],
+  [
+    "/disparos.html",
+    "📣",
+    "Central de Disparos",
+    [
+      "ADMIN",
+      "ASSESSOR"
+    ]
+  ],
+  [
+    "/usuarios.html",
+    "👤",
+    "Usuários",
+    [
+      "ADMIN"
+    ]
+  ],
+  [
+    "/configuracoes.html",
+    "⚙",
+    "Configurações",
+    [
+      "ADMIN"
+    ]
+  ]
+]
+  );
 
-  const permitidos = regras[perfilNormalizado] || regras.CONSULTA;
+function aplicarPermissoesMenu(
+  perfil
+) {
+  const menu =
+    document.querySelector(
+      ".menu"
+    );
 
-  document.querySelectorAll(".menu a").forEach(link => {
+  if (!menu) {
+    return;
+  }
 
-    const href = link.getAttribute("href");
+  const perfilAtual =
+    String(perfil || "")
+      .trim()
+      .toUpperCase();
 
-    if (!href || href === "#" || href.startsWith("http")) return;
+  menu.replaceChildren();
 
-    // Remove a barra inicial (/dashboard.html -> dashboard.html)
-    const pagina = href.replace(/^\//, "");
-
-    if (!permitidos.includes(pagina)) {
-      link.style.display = "none";
-    } else {
-      link.style.display = "";
+  for (
+    const [
+      href,
+      icone,
+      rotulo,
+      perfis,
+      externo
+    ] of ITENS_MENU
+  ) {
+    if (
+      !perfis.includes(
+        perfilAtual
+      )
+    ) {
+      continue;
     }
 
-  });
+    const link =
+      document.createElement("a");
+
+    const elementoIcone =
+      document.createElement("span");
+
+    const elementoRotulo =
+      document.createElement("span");
+
+    link.href = href;
+
+    if (externo) {
+      link.target = "_blank";
+      link.rel = "noopener";
+    }
+
+    elementoIcone.className =
+      "menu-icone";
+
+    elementoIcone.textContent =
+      icone;
+
+    elementoRotulo.className =
+      "menu-rotulo";
+
+    elementoRotulo.textContent =
+      rotulo;
+
+    link.append(
+      elementoIcone,
+      elementoRotulo
+    );
+
+    menu.appendChild(link);
+  }
 }
 
 function marcarPaginaAtiva() {
-  const paginaAtual = window.location.pathname.split("/").pop();
+  const paginaAtual =
+    window.location.pathname
+      .split("/")
+      .pop();
 
-  document.querySelectorAll(".menu a").forEach(link => {
-    const href = link.getAttribute("href");
+  document
+    .querySelectorAll(".menu a")
+    .forEach((link) => {
+      const destino =
+        new URL(
+          link.href,
+          window.location.origin
+        );
 
-    link.classList.remove("active");
-    link.classList.remove("ativo");
+      const paginaDestino =
+        destino.pathname
+          .split("/")
+          .pop();
 
-    if (href === paginaAtual) {
-      link.classList.add("active");
-    }
-  });
+      link.classList.remove(
+        "active",
+        "ativo"
+      );
+
+      link.removeAttribute(
+        "aria-current"
+      );
+
+      if (
+        paginaDestino ===
+        paginaAtual
+      ) {
+        link.classList.add(
+          "active"
+        );
+
+        link.setAttribute(
+          "aria-current",
+          "page"
+        );
+      }
+    });
+}
+
+function adicionarBotaoVoltarAoPainel() {
+  const paginaAtual =
+    window.location.pathname
+      .split("/")
+      .pop();
+
+  if (
+    !paginaAtual ||
+    paginaAtual === "dashboard.html" ||
+    paginaAtual === "index.html"
+  ) {
+    return;
+  }
+
+  const barraSuperior =
+    document.querySelector(
+      ".dashboard-mobile-top"
+    );
+
+  if (
+    !barraSuperior ||
+    barraSuperior.querySelector(
+      ".topbar-acoes-direita"
+    )
+  ) {
+    return;
+  }
+
+  const botaoSair =
+    barraSuperior.querySelector(
+      ".btn-sair-discreto"
+    );
+
+  const grupoAcoes =
+    document.createElement("div");
+
+  grupoAcoes.className =
+    "topbar-acoes-direita";
+
+  const botaoVoltar =
+    document.createElement("a");
+
+  botaoVoltar.href =
+    "/dashboard.html";
+
+  botaoVoltar.className =
+    "btn-voltar-painel";
+
+  botaoVoltar.textContent =
+    "← Voltar ao painel";
+
+  botaoVoltar.setAttribute(
+    "aria-label",
+    "Voltar ao Dashboard"
+  );
+
+  grupoAcoes.appendChild(
+    botaoVoltar
+  );
+
+  if (botaoSair) {
+    grupoAcoes.appendChild(
+      botaoSair
+    );
+  }
+
+  barraSuperior.appendChild(
+    grupoAcoes
+  );
 }
 
 async function logoutSistema() {
@@ -147,17 +403,17 @@ async function carregarDashboard() {
       resInteracoes,
       resLista
     ] = await Promise.all([
-      fetch(`${API_DEMANDAS}/resumo`, {
+      fetch(`${XAVIER_APP_API_DEMANDAS}/resumo`, {
         credentials: "include",
         cache: "no-store"
       }),
 
-      fetch(`${API_INTERACOES}/resumo`, {
+      fetch(`${XAVIER_APP_API_INTERACOES}/resumo`, {
         credentials: "include",
         cache: "no-store"
       }),
 
-      fetch(API_DEMANDAS, {
+      fetch(XAVIER_APP_API_DEMANDAS, {
         credentials: "include",
         cache: "no-store"
       })
@@ -905,6 +1161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   marcarPaginaAtiva();
+  adicionarBotaoVoltarAoPainel();
 
   // Ativa a máscara e a validação do telefone
   configurarCampoTelefone();

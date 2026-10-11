@@ -33,6 +33,8 @@ const cidadaosRoutes = require("./routes/cidadaos.routes");
 const demandasGabineteRoutes = require("./routes/demandas-gabinete.routes");
 const eleitoresRoutes = require("./routes/eleitores.routes");
 const usuariosRoutes = require("./routes/usuarios.routes");
+const disparosRoutes = require("./routes/disparos.routes");
+const disparosContatosRoutes = require("./routes/disparos-contatos.routes");
 
 const app = express();
 
@@ -87,7 +89,12 @@ app.use(
 
 app.use(
   express.json({
-    limit: "20mb"
+    limit: "20mb",
+    verify: (req, res, buffer) => {
+      if (req.originalUrl === "/api/webhook") {
+        req.rawBody = Buffer.from(buffer);
+      }
+    }
   })
 );
 
@@ -529,7 +536,7 @@ app.get(
   (req, res) => {
     res.json({
       sistema:
-        "Xavier Online",
+        "SDC Serviços de Dados e Comunicação",
 
       status:
         "API funcionando"
@@ -1033,7 +1040,7 @@ app.post(
           cidadaoId,
           "PROTOCOLO",
           `Novo protocolo criado: ${protocolo}. Serviço: ${servico}`,
-          "SISTEMA XAVIER ONLINE"
+          "SDC Serviços de Dados e Comunicação"
         ]
       );
 
@@ -1164,7 +1171,7 @@ app.post(
       const mensagemCidadao = `
 Olá, ${nome.trim()}.
 
-Sua solicitação foi registrada com sucesso no Xavier Online.
+Sua solicitação foi registrada com sucesso no SDC Serviços de Dados e Comunicação.
 📌 Protocolo: ${protocolo}
 
 🏥 Serviço: ${servico}
@@ -1177,11 +1184,11 @@ Status atual: RECEBIDA
 
 Guarde este protocolo para acompanhar sua solicitação.
 
-Xavier Online - Atendimento ao cidadão.
+SDC Serviços de Dados e Comunicação - Atendimento ao cidadão.
 `;
 
       const mensagemGabinete = `
-🚨 NOVA DEMANDA - XAVIER ONLINE
+🚨 NOVA DEMANDA - SDC Serviços de Dados e Comunicação
 
 Protocolo: ${protocolo}
 
@@ -1522,6 +1529,10 @@ app.get(
 app.use(
   "/api/relatorios",
   autenticar,
+  autorizarPerfis(
+    "ADMIN",
+    "ASSESSOR"
+  ),
   relatoriosRoutes
 );
 
@@ -1555,12 +1566,21 @@ app.use(
 app.use(
   "/api/cidadaos",
   autenticar,
+  autorizarPerfis(
+    "ADMIN",
+    "ASSESSOR",
+    "ATENDENTE"
+  ),
   cidadaosRoutes
 );
 
 app.use(
   "/api/demandas-gabinete",
   autenticar,
+  autorizarPerfis(
+    "ADMIN",
+    "ASSESSOR"
+  ),
   demandasExportacoesRoutes
 );
 
@@ -1568,6 +1588,29 @@ app.use(
   "/api/demandas-gabinete",
   autenticar,
   demandasGabineteRoutes
+);
+
+// SDC_WHATSAPP_WEB_MOUNT_V1
+app.use("/api/disparos/sdc-web", autenticar, require("./routes/sdc-disparos-web.routes"));
+
+app.use(
+  "/api/disparos",
+  autenticar,
+  autorizarPerfis(
+    "ADMIN",
+    "ASSESSOR"
+  ),
+  disparosContatosRoutes
+);
+
+app.use(
+  "/api/disparos",
+  autenticar,
+  autorizarPerfis(
+    "ADMIN",
+    "ASSESSOR"
+  ),
+  disparosRoutes
 );
 
 app.use(
@@ -1691,9 +1734,133 @@ app.get(
   }
 );
 
+const PERFIS_POR_PAGINA =
+  Object.freeze(
+    {
+  "admin.html": [
+    "ADMIN"
+  ],
+  "cadastro.html": [
+    "ADMIN"
+  ],
+  "dashboard.html": [
+    "ADMIN",
+    "ASSESSOR",
+    "ATENDENTE",
+    "CONSULTA",
+    "LIDERANCA"
+  ],
+  "demandas-gabinete.html": [
+    "ADMIN",
+    "ASSESSOR",
+    "ATENDENTE",
+    "CONSULTA",
+    "LIDERANCA"
+  ],
+  "protocolo.html": [
+    "ADMIN",
+    "ASSESSOR",
+    "ATENDENTE",
+    "CONSULTA",
+    "LIDERANCA"
+  ],
+  "mapa.html": [
+    "ADMIN",
+    "ASSESSOR",
+    "CONSULTA",
+    "LIDERANCA"
+  ],
+  "eleitores.html": [
+    "ADMIN",
+    "ASSESSOR"
+  ],
+  "interacoes.html": [
+    "ADMIN",
+    "ASSESSOR",
+    "ATENDENTE"
+  ],
+  "cidadao.html": [
+    "ADMIN",
+    "ASSESSOR",
+    "ATENDENTE"
+  ],
+  "importar.html": [
+    "ADMIN",
+    "ASSESSOR"
+  ],
+  "secretarias.html": [
+    "ADMIN",
+    "ASSESSOR"
+  ],
+  "liderancas.html": [
+    "ADMIN",
+    "ASSESSOR"
+  ],
+  "disparos.html": [
+    "ADMIN",
+    "ASSESSOR"
+  ],
+  "usuarios.html": [
+    "ADMIN"
+  ],
+  "configuracoes.html": [
+    "ADMIN"
+  ],
+  "relatorio-legislativo.html": [
+    "ADMIN",
+    "ASSESSOR",
+    "CONSULTA"
+  ],
+  "relatorios.html": [
+    "ADMIN",
+    "ASSESSOR"
+  ]
+}
+  );
+
+function autorizarPaginaMapeada(
+  req,
+  res,
+  next
+) {
+  const pagina =
+    String(
+      req.params.pagina || ""
+    );
+
+  const perfisPermitidos =
+    PERFIS_POR_PAGINA[
+      pagina
+    ];
+
+  if (!perfisPermitidos) {
+    return next();
+  }
+
+  const perfilAtual =
+    normalizarPerfil(
+      req.usuario?.perfil
+    );
+
+  if (
+    !perfisPermitidos.includes(
+      perfilAtual
+    )
+  ) {
+    return res
+      .status(403)
+      .send(
+        "Acesso negado."
+      );
+  }
+
+  return next();
+}
+
 app.get(
   "/:pagina",
   autenticarPagina,
+  autorizarPaginaMapeada,
   (req, res, next) => {
     const pagina =
       req.params.pagina;
@@ -1746,6 +1913,6 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
   console.log(
-    `Servidor Xavier Online rodando na porta ${PORT}`
+    `Servidor SDC Serviços de Dados e Comunicação rodando na porta ${PORT}`
   );
 });

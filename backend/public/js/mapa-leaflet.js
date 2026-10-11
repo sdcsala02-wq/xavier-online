@@ -6,7 +6,7 @@ const mapa = L.map("mapaLeaflet", {
 }).setView([-24.01, -46.43], 11);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "Xavier Online"
+  attribution: "SDC Serviços de Dados e Comunicação"
 }).addTo(mapa);
 
 let demandasPorBairro = {};

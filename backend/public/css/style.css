@@ -887,7 +887,7 @@ grid-template-columns:1fr;
   }
 }
 
-/* DASHBOARD MODERNO XAVIER ONLINE */
+/* DASHBOARD MODERNO SDC Serviços de Dados e Comunicação */
 
 .xavier-dashboard {
   margin: 0;
@@ -2283,7 +2283,7 @@ body.tela-sistema .card-protocolo {
 ========================== */
 
 /* ==========================================
-   RESPONSIVIDADE OFICIAL XAVIER ONLINE
+   RESPONSIVIDADE OFICIAL SDC Serviços de Dados e Comunicação
 ========================================== */
 
 .mobile-menu-btn {
@@ -2746,7 +2746,7 @@ body.tela-sistema .card-protocolo {
 }
 
 /* =====================================================
-   CORREÇÃO MOBILE GERAL - XAVIER ONLINE
+   CORREÇÃO MOBILE GERAL - SDC Serviços de Dados e Comunicação
    ===================================================== */
 
 @media (max-width: 768px) {
@@ -3343,7 +3343,7 @@ body:has(.hero) {
 }
 
 /* ==========================================
-   RANKINGS - ESTILO NOVO XAVIER ONLINE
+   RANKINGS - ESTILO NOVO SDC Serviços de Dados e Comunicação
 ========================================== */
 
 .ranking-bairros {
@@ -4357,4 +4357,110 @@ body.xavier-dashboard .dashboard-mobile-top .btn-sair-discreto:hover {
 
 .modal-sucesso-card .btn-secondary:hover{
   background:#1d4ed8;
+}
+
+/* MENU LATERAL CENTRALIZADO POR PERFIL */
+.menu a {
+  min-height: 34px;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.menu-icone {
+  width: 18px;
+  flex: 0 0 18px;
+  text-align: center;
+}
+
+.menu-rotulo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* BOTAO-VOLTAR-PAINEL-CENTRALIZADO */
+.dashboard-mobile-top {
+  gap: 12px;
+}
+
+.btn-voltar-painel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  border-radius: 10px;
+  background: rgba(30, 41, 59, 0.78);
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.btn-voltar-painel:hover,
+.btn-voltar-painel:focus-visible {
+  border-color: #3b82f6;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .btn-voltar-painel {
+    min-height: 36px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+}
+/* ALINHAMENTO-VOLTAR-E-SAIR */
+.dashboard-mobile-top .btn-voltar-painel {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.dashboard-mobile-top .btn-sair-discreto {
+  flex: 0 0 auto;
+}
+/* GRUPO-ACOES-TOPO-DIREITA */
+.dashboard-mobile-top .topbar-acoes-direita {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.dashboard-mobile-top
+.topbar-acoes-direita
+.btn-voltar-painel {
+  margin-left: 0 !important;
+  flex: 0 0 auto;
+}
+
+.dashboard-mobile-top
+.topbar-acoes-direita
+.btn-sair-discreto {
+  margin-left: 0 !important;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 640px) {
+  .dashboard-mobile-top .topbar-acoes-direita {
+    gap: 6px;
+  }
+
+  .dashboard-mobile-top
+  .topbar-acoes-direita
+  .btn-voltar-painel {
+    padding: 7px 9px;
+  }
 }

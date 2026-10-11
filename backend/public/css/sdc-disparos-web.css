@@ -1,0 +1,17 @@
+.sdc-web-panel { margin: 20px 0; }
+.sdc-web-panel h3 { margin-top: 20px; }
+.sdc-web-panel label { display: block; margin: 14px 0; }
+.sdc-web-panel select { display: block; width: 100%; max-width: 640px; padding: 10px; margin-top: 8px; }
+.sdc-web-panel button { margin: 8px 8px 8px 0; }
+.sdc-web-panel #sdcStatus { display: inline-block; margin-left: 12px; }
+.sdc-web-panel #sdcQr { display: block; margin: 16px 0; background: white; border-radius: 8px; }
+.sdc-web-panel #sdcQr[hidden] { display: none; }
+.sdc-web-panel .sdc-message { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; margin: 16px 0; background: #eef5fc; color: #10243a; border-radius: 8px; }
+.sdc-web-panel .sdc-error { color: #a61717; }
+.sdc-web-panel td { overflow-wrap: anywhere; max-width: 320px; }
+.sdc-web-panel button:disabled { opacity: .55; cursor: not-allowed; }
+.sdc-web-panel #sdcMidiaPrevia { min-height: 0; max-height: 430px; overflow: auto; display: grid; gap: 12px; justify-items: center; }
+.sdc-web-panel #sdcMidiaPrevia strong { width: 100%; text-align: center; overflow-wrap: anywhere; }
+.sdc-web-panel #sdcMidiaPrevia img { display: block; max-width: min(100%, 680px); max-height: 340px; width: auto; height: auto; object-fit: contain; border-radius: 10px; cursor: zoom-in; }
+.sdc-web-panel #sdcMidiaPrevia img.sdc-midia-ampliada { max-width: 100%; max-height: none; cursor: zoom-out; }
+.sdc-web-panel #sdcMidiaPrevia audio, .sdc-web-panel #sdcMidiaPrevia video { width: min(100%, 680px); max-height: 340px; }

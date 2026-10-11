@@ -146,7 +146,7 @@ router.get("/exportar/excel", async (req, res) => {
 
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=Demandas_Xavier_Online.xlsx"
+      "attachment; filename=Demandas_SDC.xlsx"
     );
 
     await workbook.xlsx.write(res);
@@ -233,7 +233,7 @@ router.get("/exportar/pdf", async (req, res) => {
         .fontSize(21)
         .fillColor("#FFFFFF")
         .text(
-          "XAVIER ONLINE",
+          "SDC Serviços de Dados e Comunicação",
           40,
           27,
           {
@@ -246,7 +246,7 @@ router.get("/exportar/pdf", async (req, res) => {
         .fontSize(11)
         .fillColor("#DCEAF7")
         .text(
-          "Gabinete do Vereador Eduardo Xavier",
+          "SDC Serviços de Dados e Comunicação",
           40,
           56,
           {
@@ -295,7 +295,7 @@ router.get("/exportar/pdf", async (req, res) => {
 
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=Demandas_Xavier_Online.pdf"
+      "attachment; filename=Demandas_SDC.pdf"
     );
 
     doc.on(

@@ -1,4 +1,4 @@
-// Serviço responsável pela lógica do chatbot Xavier Online
+// Serviço responsável pela lógica do chatbot SDC Serviços de Dados e Comunicação
 // Será desenvolvido na próxima etapa com a migração do fluxo atual
 
 exports.processarMensagem = async (dados) => {

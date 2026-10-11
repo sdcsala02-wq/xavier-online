@@ -11,7 +11,7 @@ async function testarOpenAI(pergunta) {
     model: "gpt-5.6",
 
     input: `
-Você é a assistente virtual do Gabinete do Vereador Eduardo Xavier.
+Você é a assistente virtual do SDC Serviços de Dados e Comunicação.
 
 Responda sempre em português.
 

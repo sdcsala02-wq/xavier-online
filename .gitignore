@@ -1,7 +1,14 @@
-﻿node_modules/
+node_modules/
 backend/node_modules/
 .env
 .env.local
+.xavier-project-key.json
+*.service-account-key.json
+*.backup-*
 npm-debug.log
 .DS_Store
 databaseschema.sql.txt.bkp
+
+.sdc_wwebjs_auth/
+
+.sdc_wwebjs_cache/

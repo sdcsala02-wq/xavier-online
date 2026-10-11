@@ -301,7 +301,7 @@ router.get("/exportar/excel", async (req, res) => {
 
     const workbook = new ExcelJS.Workbook();
 
-    workbook.creator = "Xavier Online";
+    workbook.creator = "SDC Serviços de Dados e Comunicação";
     workbook.created = new Date();
 
     const sheet =
@@ -396,7 +396,7 @@ router.get("/exportar/excel", async (req, res) => {
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="interacoes-xavier-online-${data}.xlsx"`
+      `attachment; filename="interacoes-sdc-${data}.xlsx"`
     );
 
     await workbook.xlsx.write(res);
@@ -434,7 +434,7 @@ router.get("/exportar/pdf", async (req, res) => {
 
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="interacoes-xavier-online-${data}.pdf"`
+      `attachment; filename="interacoes-sdc-${data}.pdf"`
     );
 
     const doc = new PDFDocument({
@@ -446,7 +446,7 @@ router.get("/exportar/pdf", async (req, res) => {
 
     doc
       .fontSize(18)
-      .text("Xavier Online", {
+      .text("SDC Serviços de Dados e Comunicação", {
         align: "center"
       });
 

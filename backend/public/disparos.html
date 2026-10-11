@@ -1,8 +1,439 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Central de Disparos | Xavier Online</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/disparos.css"></head>
-<body class="xavier-dashboard"><div class="sidebar-overlay" onclick="fecharSidebar()"></div><div class="app-layout"><aside class="sidebar"><div class="brand"><div class="brand-icon">🏛️</div><div><h2>XAVIER ONLINE</h2><span>PRAIA GRANDE - SP</span></div></div><nav class="menu">
-<a href="dashboard.html">▣ Dashboard</a><a href="demandas-gabinete.html">📋 Demandas</a><a href="nova-demanda.html">➕ Nova Demanda</a><a href="protocolo.html">🔎 Protocolo</a><a href="mapa.html">🗺️ Mapa da Cidade</a><a href="eleitores.html">🗳️ Eleitores</a><a href="relatorio-legislativo.html">📊 Relatório Legislativo</a><a href="interacoes.html">💬 Interações</a><a href="importar.html">⬆ Importar Planilha</a><a href="#" onclick="exportarExcel();return false">⬇ Exportar Excel</a><a href="#" onclick="exportarPDF();return false">📄 Exportar PDF</a><a href="secretarias.html">☷ Secretarias</a><a href="liderancas.html">👥 Lideranças</a><a href="disparos.html">📣 Central de Disparos</a><a href="usuarios.html">👤 Usuários</a><a href="configuracoes.html">⚙ Configurações</a>
-</nav><div class="sidebar-phone"><img class="foto-edu" src="img/edu.PNG" alt="Eduardo Xavier"><img class="celular-img" src="img/celular.png" alt="Xavier Online"></div><div class="sidebar-footer"><strong>XAVIER ONLINE</strong><p>Comunicação oficial e auditável.</p><span>Versão 1.0.0</span></div></aside>
-<main class="conteudo main-dashboard disparos-page"><header class="topbar dashboard-mobile-top"><button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button><button class="btn-sair-discreto" onclick="sairSistema()">⇱ Sair</button></header><header class="topbar"><div><h2>📣 Central de Disparos</h2><p class="subtitulo-dashboard">Campanhas oficiais, segmentação e acompanhamento de mensagens</p></div><span class="disparo-status">MODO DE PREPARAÇÃO</span></header><div class="disparos-aviso"><strong>Nenhuma mensagem será enviada nesta etapa.</strong> A tela está disponível para aprovação visual. Banco, fila, consentimento e envio controlado serão conectados na Etapa 7A.2.</div>
-<section class="disparos-kpis"><div class="disparo-kpi"><strong>0</strong><span>CAMPANHAS</span></div><div class="disparo-kpi"><strong>0</strong><span>DESTINATÁRIOS</span></div><div class="disparo-kpi"><strong>0</strong><span>ENTREGUES</span></div><div class="disparo-kpi"><strong>0</strong><span>FALHAS</span></div></section>
-<section class="disparos-grid"><article class="disparo-card"><h3>Preparar campanha</h3><p>Defina o público e a mensagem antes de solicitar aprovação.</p><form class="disparo-form"><label>Nome da campanha<input placeholder="Ex.: Prestação de contas do bairro"></label><label>Base de destinatários<select><option>Cidadãos</option><option>Eleitores</option><option>Lideranças</option></select></label><label>Bairro<input placeholder="Todos os bairros"></label><label>Secretaria<input placeholder="Todas as secretarias"></label><label>Tipo de mensagem<select><option>Template oficial aprovado</option><option>Mensagem da janela de atendimento</option></select></label><label>Agendamento<input type="datetime-local"></label><label class="largo">Mensagem<textarea id="mensagemDisparo" maxlength="1000" placeholder="Digite a mensagem para visualizar a prévia"></textarea><small id="contadorMensagem" class="disparo-contador">0 caracteres</small></label></form><div class="disparo-acoes"><button class="disparo-btn" type="button" disabled>Salvar rascunho</button><button class="disparo-btn" type="button" disabled>Solicitar aprovação</button></div></article><article class="disparo-card"><h3>Prévia da mensagem</h3><p>Confira como o conteúdo ficará antes da campanha.</p><div id="previaDisparo" class="disparo-preview"></div><h3 style="margin-top:20px">Fluxo protegido</h3><p>Rascunho → validação dos números → aprovação humana → fila com limite → acompanhamento e auditoria.</p></article></section></main></div>
-<script src="js/auth.js"></script><script src="js/app.js"></script><script src="js/disparos.js"></script><script>function toggleSidebar(){document.querySelector('.sidebar')?.classList.toggle('active');document.querySelector('.sidebar-overlay')?.classList.toggle('active');document.body.classList.toggle('menu-aberto')}function fecharSidebar(){document.querySelector('.sidebar')?.classList.remove('active');document.querySelector('.sidebar-overlay')?.classList.remove('active');document.body.classList.remove('menu-aberto')}async function sairSistema(){try{await fetch('/api/auth/logout',{method:'POST',credentials:'include'})}catch{}localStorage.clear();sessionStorage.clear();location.href='/index.html'}</script></body></html>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Central de Disparos | SDC Serviços de Dados e Comunicação</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/disparos.css"><link rel="stylesheet" href="css/sdc-disparos-web.css">
+</head>
+<body class="xavier-dashboard"><div class="sidebar-overlay" onclick="fecharSidebar()"></div><div class="app-layout"><aside class="sidebar"><div class="brand"><div class="brand-icon">🏛️</div><div><h2>SDC Serviços de Dados e Comunicação</h2><span>PRAIA GRANDE - SP</span></div></div><nav class="menu" aria-label="Menu principal"></nav><div class="sidebar-phone"><img src="/img/sdc-marca.svg" alt="SDC Serviços de Dados e Comunicação" style="display:block;width:100%;max-width:220px;height:auto;margin:12px auto"></div><div class="sidebar-footer"><strong>SDC Serviços de Dados e Comunicação</strong><p>Comunicação oficial e auditável.</p><span>Versão 1.0.0</span></div></aside>
+<main class="conteudo main-dashboard disparos-page"><header class="topbar dashboard-mobile-top"><button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button><button class="btn-sair-discreto" onclick="sairSistema()">⇱ Sair</button></header><header class="topbar"><div><h2>📣 Central de Disparos</h2><p class="subtitulo-dashboard">Campanhas oficiais, segmentação e acompanhamento de mensagens</p></div><span class="disparo-status">MODO DE PREPARAÇÃO</span></header><div class="disparos-aviso"><strong>Nenhuma mensagem será enviada nesta etapa.</strong> Banco, consentimento e auditoria estão conectados. A fila permanece bloqueada até a habilitação controlada.</div>
+<section class="disparos-kpis">
+  <div class="disparo-kpi">
+    <strong id="kpiCampanhas">0</strong>
+    <span>CAMPANHAS</span>
+  </div>
+
+  <div class="disparo-kpi">
+    <strong id="kpiDestinatarios">0</strong>
+    <span>DESTINATÁRIOS</span>
+  </div>
+
+  <div class="disparo-kpi">
+    <strong id="kpiEntregues">0</strong>
+    <span>ENTREGUES</span>
+  </div>
+
+  <div class="disparo-kpi">
+    <strong id="kpiFalhas">0</strong>
+    <span>FALHAS</span>
+  </div>
+</section>
+
+<div
+  id="mensagemSistemaDisparos"
+  class="disparo-mensagem"
+  hidden
+></div>
+
+<section class="disparo-card disparos-contatos-base">
+  <div class="disparos-contatos-cabecalho">
+    <div>
+      <h3>Base de contatos para disparos</h3>
+
+      <p>
+        Importe os números autorizados e organize cada contato
+        em uma ou várias categorias.
+      </p>
+    </div>
+
+    <a
+      class="disparo-btn disparo-btn-secundario"
+      href="/api/disparos/contatos/modelo"
+      id="baixarModeloContatos"
+    >
+      Baixar modelo Excel
+    </a>
+  </div>
+
+  <form
+    id="formImportacaoContatos"
+    class="disparos-importacao-form"
+    enctype="multipart/form-data"
+  >
+    <label class="disparos-arquivo">
+      Planilha de contatos
+
+      <input
+        id="arquivoContatos"
+        name="arquivo"
+        type="file"
+        accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        required
+      >
+    </label>
+
+    <button
+      id="importarContatos"
+      class="disparo-btn"
+      type="submit"
+    >
+      Importar contatos
+    </button>
+  </form>
+
+  <div class="disparos-contatos-aviso">
+    A importação cadastra e categoriza os contatos, mas não envia
+    nenhuma mensagem. Telefones recusados, revogados ou bloqueados
+    permanecem protegidos.
+  </div>
+
+  <div class="disparos-contatos-resumo">
+    <div>
+      <strong id="totalContatosBase">0</strong>
+      <span>CONTATOS</span>
+    </div>
+
+    <div>
+      <strong id="totalCategoriasBase">0</strong>
+      <span>CATEGORIAS</span>
+    </div>
+
+    <div>
+      <strong id="totalAutorizadosBase">0</strong>
+      <span>AUTORIZADOS NO FILTRO</span>
+    </div>
+  </div>
+
+  <div class="disparos-contatos-filtros">
+    <label>
+      Categoria
+
+      <select id="filtroCategoriaContatos">
+        <option value="">
+          Todas as categorias
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Gênero
+
+      <select id="filtroGeneroContatos">
+        <option value="">
+          Todos os gêneros
+        </option>
+
+        <option value="HOMEM">
+          Homens
+        </option>
+
+        <option value="MULHER">
+          Mulheres
+        </option>
+
+        <option value="NAO_INFORMADO">
+          Não informado
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Consentimento
+
+      <select id="filtroConsentimentoContatos">
+        <option value="">
+          Todos os consentimentos
+        </option>
+
+        <option value="AUTORIZADO">
+          Autorizado
+        </option>
+
+        <option value="SEM_REGISTRO">
+          Sem registro
+        </option>
+
+        <option value="RECUSADO">
+          Recusado
+        </option>
+
+        <option value="REVOGADO">
+          Revogado
+        </option>
+
+        <option value="BLOQUEADO">
+          Bloqueado
+        </option>
+      </select>
+    </label>
+
+    <label class="disparos-busca-contato">
+      Buscar contato
+
+      <input
+        id="buscaContatos"
+        maxlength="200"
+        placeholder="Nome, telefone, bairro ou cidade"
+      >
+    </label>
+
+    <button
+      id="filtrarContatos"
+      class="disparo-btn disparo-btn-secundario"
+      type="button"
+    >
+      Filtrar
+    </button>
+  </div>
+
+  <div class="disparos-tabela-container">
+    <table class="disparos-tabela disparos-contatos-tabela">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Gênero</th>
+          <th>Telefone</th>
+          <th>Categorias</th>
+          <th>Localidade</th>
+          <th>Consentimento</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="listaContatosDisparos">
+        <tr>
+          <td colspan="7">
+            Carregando contatos...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="disparos-grid">
+  <article class="disparo-card">
+    <h3>Preparar campanha</h3>
+
+    <p>
+      Defina o público e salve o rascunho antes da validação e aprovação.
+    </p>
+
+    <form
+      id="formCampanha"
+      class="disparo-form"
+    >
+      <label>
+        Nome da campanha
+
+        <input
+          id="nomeCampanha"
+          maxlength="160"
+          placeholder="Ex.: Prestação de contas do bairro"
+          required
+        >
+      </label>
+
+      <label>
+        Base de destinatários
+
+        <select id="baseDestinatarios">
+          <option value="CONTATOS">
+            Contatos importados por planilha
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Categoria do público
+
+        <select id="categoriaCampanha">
+          <option value="">
+            Todas as categorias
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Bairro
+
+        <input
+          id="bairroCampanha"
+          maxlength="160"
+          placeholder="Todos os bairros"
+        >
+      </label>
+
+      <label>
+        Gênero do público
+
+        <select id="generoCampanha">
+          <option value="TODOS">
+            Todos os gêneros
+          </option>
+
+          <option value="HOMEM">
+            Somente homens
+          </option>
+
+          <option value="MULHER">
+            Somente mulheres
+          </option>
+
+          <option value="NAO_INFORMADO">
+            Somente não informados
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Tipo de mensagem
+
+        <select id="tipoMensagem">
+          <option value="TEMPLATE_OFICIAL">
+            Template oficial aprovado
+          </option>
+
+          <option value="JANELA_24H">
+            Mensagem da janela de atendimento
+          </option>
+        </select>
+      </label>
+
+      <label id="campoTemplate">
+        Template oficial
+
+        <select id="templateCampanha">
+          <option value="">
+            Nenhum template cadastrado
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Agendamento
+
+        <input
+          id="agendamentoCampanha"
+          type="datetime-local"
+        >
+      </label>
+
+      <label class="largo">
+        Mensagem ou prévia
+
+        <textarea
+          id="mensagemDisparo"
+          maxlength="1000"
+          placeholder="Digite o conteúdo para visualizar a prévia"
+        ></textarea>
+
+        <small
+          id="contadorMensagem"
+          class="disparo-contador"
+        >
+          0 caracteres
+        </small>
+      </label>
+    </form>
+
+    <div class="disparo-seguranca">
+      Somente destinatários com telefone válido e consentimento
+      autorizado poderão avançar nas próximas etapas.
+      Público autorizado estimado:
+      <strong id="totalPublicoCampanha">0</strong>
+      contato(s) único(s).
+      <span id="resumoPublicoCampanha"></span>
+    </div>
+
+    <div class="disparo-acoes">
+      <button
+        id="salvarRascunho"
+        class="disparo-btn"
+        type="submit"
+        form="formCampanha"
+      >
+        Salvar rascunho
+      </button>
+
+      <button
+        id="enviarTemplateDemo"
+        class="disparo-btn disparo-btn-secundario"
+        type="button"
+        hidden
+      >
+        Enviar demonstra??o
+      </button>
+
+      <button
+        id="solicitarAprovacao"
+        class="disparo-btn"
+        type="button"
+        disabled
+      >
+        Solicitar aprovação
+      </button>
+    </div>
+  </article>
+
+  <article class="disparo-card">
+    <h3>Prévia da mensagem</h3>
+
+    <p>
+      Confira como o conteúdo ficará antes da campanha.
+    </p>
+
+    <div
+      id="previaDisparo"
+      class="disparo-preview"
+    >
+      A prévia da mensagem aparecerá aqui.
+    </div>
+
+    <h3 class="disparo-fluxo-titulo">
+      Fluxo protegido
+    </h3>
+
+    <p>
+      Rascunho → validação dos números → consentimento →
+      aprovação humana → fila limitada → auditoria.
+    </p>
+  </article>
+</section>
+
+<section class="disparo-card disparos-listagem">
+  <div class="disparos-listagem-cabecalho">
+    <div>
+      <h3>Campanhas cadastradas</h3>
+      <p>Rascunhos e campanhas em preparação.</p>
+    </div>
+
+    <button
+      id="atualizarCampanhas"
+      class="disparo-btn disparo-btn-secundario"
+      type="button"
+    >
+      Atualizar
+    </button>
+  </div>
+
+  <div class="disparos-tabela-container">
+    <table class="disparos-tabela">
+      <thead>
+        <tr>
+          <th>Campanha</th>
+          <th>Base</th>
+          <th>Status</th>
+          <th>Destinatários</th>
+          <th>Criada em</th>
+        </tr>
+      </thead>
+
+      <tbody id="listaCampanhas">
+        <tr>
+          <td colspan="5">
+            Carregando campanhas...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</main></div>
+<script src="js/auth.js"></script><script src="js/app.js"></script><script src="js/disparos.js"></script><script>function toggleSidebar(){document.querySelector('.sidebar')?.classList.toggle('active');document.querySelector('.sidebar-overlay')?.classList.toggle('active');document.body.classList.toggle('menu-aberto')}function fecharSidebar(){document.querySelector('.sidebar')?.classList.remove('active');document.querySelector('.sidebar-overlay')?.classList.remove('active');document.body.classList.remove('menu-aberto')}async function sairSistema(){try{await fetch('/api/auth/logout',{method:'POST',credentials:'include'})}catch{}localStorage.clear();sessionStorage.clear();location.href='/index.html'}</script><script src="js/sdc-disparos-web.js"></script>
+</body></html>

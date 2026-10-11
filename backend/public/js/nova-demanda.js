@@ -36,7 +36,7 @@ function limparFormularioNovaDemanda() {
 function abrirWhatsAppDemanda(dados, protocolo) {
   const telefoneDestino = "5513974172763";
 
-  const mensagem = `Nova demanda Xavier Online
+  const mensagem = `Nova demanda SDC Serviços de Dados e Comunicação
 
 Protocolo: ${protocolo}
 Nome: ${dados.nome}
@@ -118,7 +118,7 @@ async function salvarNovaDemanda(event) {
 
       const mensagem = `Olá, ${dados.nome}.
 
-Sua solicitação foi registrada no Xavier Online.
+Sua solicitação foi registrada no SDC Serviços de Dados e Comunicação.
 
 Protocolo: ${protocolo}
 Serviço: ${dados.servico}
